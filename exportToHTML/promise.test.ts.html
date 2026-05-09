@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>promise.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+promise.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">util </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s2">const </span><span class="s1">promSchema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">promise</span><span class="s3">(</span>
+  <span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s1">age</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+  <span class="s3">})</span>
+<span class="s3">);</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;promise inference&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">type promSchemaType </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">promSchema</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">promSchemaType</span><span class="s3">, </span><span class="s1">Promise</span><span class="s3">&lt;{ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">age</span><span class="s3">: </span><span class="s1">number </span><span class="s3">}&gt;&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;promise parsing success&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">pr </span><span class="s3">= </span><span class="s1">promSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">Promise</span><span class="s3">.</span><span class="s1">resolve</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;Bobby&quot;</span><span class="s3">, </span><span class="s1">age</span><span class="s3">: </span><span class="s5">10 </span><span class="s3">}));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">pr</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">Promise</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">pr</span><span class="s3">;</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">result</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s4">&quot;object&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">result</span><span class="s3">.</span><span class="s1">age</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s4">&quot;number&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">result</span><span class="s3">.</span><span class="s1">name</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s4">&quot;string&quot;</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;promise parsing success 2&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">fakePromise </span><span class="s3">= {</span>
+    <span class="s1">then</span><span class="s3">() {</span>
+      <span class="s2">return this</span><span class="s3">;</span>
+    <span class="s3">},</span>
+    <span class="s2">catch</span><span class="s3">() {</span>
+      <span class="s2">return this</span><span class="s3">;</span>
+    <span class="s3">},</span>
+  <span class="s3">};</span>
+  <span class="s1">promSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">fakePromise</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;promise parsing fail&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">bad </span><span class="s3">= </span><span class="s1">promSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">Promise</span><span class="s3">.</span><span class="s1">resolve</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;Bobby&quot;</span><span class="s3">, </span><span class="s1">age</span><span class="s3">: </span><span class="s4">&quot;10&quot; </span><span class="s3">}));</span>
+  <span class="s0">// return await expect(bad).resolves.toBe({ name: 'Bobby', age: '10' });</span>
+  <span class="s2">return await </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">bad</span><span class="s3">).</span><span class="s1">rejects</span><span class="s3">.</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError</span><span class="s3">);</span>
+  <span class="s0">// done();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;promise parsing fail 2&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">failPromise </span><span class="s3">= </span><span class="s1">promSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">Promise</span><span class="s3">.</span><span class="s1">resolve</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;Bobby&quot;</span><span class="s3">, </span><span class="s1">age</span><span class="s3">: </span><span class="s4">&quot;10&quot; </span><span class="s3">}));</span>
+  <span class="s2">await </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">failPromise</span><span class="s3">).</span><span class="s1">rejects</span><span class="s3">.</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError</span><span class="s3">);</span>
+  <span class="s0">// done();/z</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;promise parsing fail&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">bad </span><span class="s3">= () =&gt; </span><span class="s1">promSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">then</span><span class="s3">: () =&gt; {}, </span><span class="s2">catch</span><span class="s3">: {} });</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">bad</span><span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s0">// test('sync promise parsing', () =&gt; {</span>
+<span class="s0">//   expect(() =&gt; z.promise(z.string()).parse(Promise.resolve('asfd'))).toThrow();</span>
+<span class="s0">// });</span>
+
+<span class="s2">const </span><span class="s1">asyncFunction </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">function</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">tuple</span><span class="s3">([]), </span><span class="s1">promSchema</span><span class="s3">);</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;async function pass&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">validatedFunction </span><span class="s3">= </span><span class="s1">asyncFunction</span><span class="s3">.</span><span class="s1">implement</span><span class="s3">(</span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+    <span class="s2">return </span><span class="s3">{ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;jimmy&quot;</span><span class="s3">, </span><span class="s1">age</span><span class="s3">: </span><span class="s5">14 </span><span class="s3">};</span>
+  <span class="s3">});</span>
+  <span class="s2">await </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">validatedFunction</span><span class="s3">()).</span><span class="s1">resolves</span><span class="s3">.</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;jimmy&quot;</span><span class="s3">,</span>
+    <span class="s1">age</span><span class="s3">: </span><span class="s5">14</span><span class="s3">,</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;async function fail&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">validatedFunction </span><span class="s3">= </span><span class="s1">asyncFunction</span><span class="s3">.</span><span class="s1">implement</span><span class="s3">(() =&gt; {</span>
+    <span class="s2">return </span><span class="s1">Promise</span><span class="s3">.</span><span class="s1">resolve</span><span class="s3">(</span><span class="s4">&quot;asdf&quot; </span><span class="s3">as </span><span class="s1">any</span><span class="s3">);</span>
+  <span class="s3">});</span>
+  <span class="s2">await </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">validatedFunction</span><span class="s3">()).</span><span class="s1">rejects</span><span class="s3">.</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;async promise parsing&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">res </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">promise</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()).</span><span class="s1">parseAsync</span><span class="s3">(</span><span class="s1">Promise</span><span class="s3">.</span><span class="s1">resolve</span><span class="s3">(</span><span class="s5">12</span><span class="s3">));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">res</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">Promise</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;resolves&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">foo </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">literal</span><span class="s3">(</span><span class="s4">&quot;foo&quot;</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">res </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">promise</span><span class="s3">(</span><span class="s1">foo</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">res</span><span class="s3">.</span><span class="s1">unwrap</span><span class="s3">()).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">foo</span><span class="s3">);</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

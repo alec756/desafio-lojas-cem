@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>errors.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+errors.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">type </span><span class="s2">{ </span><span class="s1">ZodErrorMap </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;./ZodError.js&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">defaultErrorMap from </span><span class="s3">&quot;./locales/en.js&quot;</span><span class="s2">;</span>
+
+<span class="s0">let </span><span class="s1">overrideErrorMap </span><span class="s2">= </span><span class="s1">defaultErrorMap</span><span class="s2">;</span>
+<span class="s0">export </span><span class="s2">{ </span><span class="s1">defaultErrorMap </span><span class="s2">};</span>
+
+<span class="s0">export function </span><span class="s1">setErrorMap</span><span class="s2">(</span><span class="s1">map</span><span class="s2">: </span><span class="s1">ZodErrorMap</span><span class="s2">) {</span>
+  <span class="s1">overrideErrorMap </span><span class="s2">= </span><span class="s1">map</span><span class="s2">;</span>
+<span class="s2">}</span>
+
+<span class="s0">export function </span><span class="s1">getErrorMap</span><span class="s2">() {</span>
+  <span class="s0">return </span><span class="s1">overrideErrorMap</span><span class="s2">;</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

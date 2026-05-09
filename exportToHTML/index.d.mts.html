@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>index.d.mts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #cf8e6d;}
+.s4 { color: #5f826b; font-style: italic;}
+.s5 { color: #67a37c; font-style: italic;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+index.d.mts</font>
+</center></td></tr></table>
+<pre><span class="s0">//#region src/index.d.ts</span>
+<span class="s1">type RC </span><span class="s2">= </span><span class="s1">Record</span><span class="s2">&lt;</span><span class="s1">string</span><span class="s2">, </span><span class="s1">any</span><span class="s2">&gt;;</span>
+<span class="s3">interface </span><span class="s1">RCOptions </span><span class="s2">{</span>
+  <span class="s4">/**</span>
+   <span class="s4">* The name of the configuration file.</span>
+   <span class="s4">* </span><span class="s5">@optional</span>
+   <span class="s4">*/</span>
+  <span class="s1">name</span><span class="s2">?: </span><span class="s1">string</span><span class="s2">;</span>
+  <span class="s4">/**</span>
+   <span class="s4">* The directory where the configuration file is or should be written.</span>
+   <span class="s4">* </span><span class="s5">@optional</span>
+   <span class="s4">*/</span>
+  <span class="s1">dir</span><span class="s2">?: </span><span class="s1">string</span><span class="s2">;</span>
+  <span class="s4">/**</span>
+   <span class="s4">* Specifies whether the configuration should be treated as a flat object.</span>
+   <span class="s4">* </span><span class="s5">@optional</span>
+   <span class="s4">*/</span>
+  <span class="s1">flat</span><span class="s2">?: </span><span class="s1">boolean</span><span class="s2">;</span>
+<span class="s2">}</span>
+<span class="s4">/**</span>
+ <span class="s4">* The default options for the configuration file.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">const </span><span class="s1">defaults</span><span class="s2">: </span><span class="s1">RCOptions</span><span class="s2">;</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">parse</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">contents</span><span class="s2">: </span><span class="s1">string</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Parses a configuration string into an object.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{string} contents - The configuration data as a raw string.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions} [options={}] - Options to control the parsing behaviour. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{RC} - The parsed configuration object. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">parseFile</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">path</span><span class="s2">: </span><span class="s1">string</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Reads a configuration file from a default or specified location and parses its contents.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for reading the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{RC} - The parsed configuration object. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">read</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Reads a custom configuration file from a default or specified location and parses its contents.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for reading the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{RC} - The parsed configuration object.</span>
+ <span class="s4">* </span><span class="s5">@deprecated </span><span class="s4">Use {</span><span class="s5">@link </span><span class="s4">readUserConfig} instead, which uses `~/.config` following XDG conventions.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">readUser</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Serialises a configuration object to a string format.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RC} config - The configuration object to serialise. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{string} - The serialised configuration string.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">serialize</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">config</span><span class="s2">: </span><span class="s1">T</span><span class="s2">): </span><span class="s1">string</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Writes a configuration object to a file in a default or specified location.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RC} config - The configuration object to write. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for writing the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">write</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">config</span><span class="s2">: </span><span class="s1">T</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s3">void</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Writes a custom configuration object to a file in a default or specified location.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RC} config - The configuration object to write. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for writing the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@deprecated </span><span class="s4">Use {</span><span class="s5">@link </span><span class="s4">writeUserConfig} instead, which uses `~/.config` following XDG conventions.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">writeUser</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">config</span><span class="s2">: </span><span class="s1">T</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s3">void</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Reads a configuration file from `$XDG_CONFIG_HOME` or `$HOME/.config` and parses its contents.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for reading the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{RC} - The parsed configuration object.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">readUserConfig</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Writes a configuration object to a file in `$XDG_CONFIG_HOME` or `$HOME/.config`.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RC} config - The configuration object to write. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for writing the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">writeUserConfig</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">config</span><span class="s2">: </span><span class="s1">T</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s3">void</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Updates a configuration object in `$XDG_CONFIG_HOME` or `$HOME/.config` by merging and writing the result.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RC} config - The configuration object to update. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for updating the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{RC} - The updated configuration object.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">updateUserConfig</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">config</span><span class="s2">: </span><span class="s1">T</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Updates an existing configuration object by merging it with the contents of a configuration file and writing the result.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RC} config - The configuration object to update. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for updating the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{RC} - The updated configuration object. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">update</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">config</span><span class="s2">: </span><span class="s1">T</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Updates a custom configuration object by merging it with the contents of a configuration file in a default location and writing the result.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RC} config - The configuration object to update. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{RCOptions|string} [options] - Options for updating the configuration file, or the name of the configuration file. See {</span><span class="s5">@link </span><span class="s4">RCOptions}.</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{RC} - The updated configuration object. See {</span><span class="s5">@link </span><span class="s4">RC}.</span>
+ <span class="s4">* </span><span class="s5">@deprecated </span><span class="s4">Use {</span><span class="s5">@link </span><span class="s4">updateUserConfig} instead, which uses `~/.config` following XDG conventions.</span>
+ <span class="s4">*/</span>
+<span class="s1">declare </span><span class="s3">function </span><span class="s1">updateUser</span><span class="s2">&lt;</span><span class="s1">T </span><span class="s3">extends </span><span class="s1">RC </span><span class="s2">= </span><span class="s1">RC</span><span class="s2">&gt;(</span><span class="s1">config</span><span class="s2">: </span><span class="s1">T</span><span class="s2">, </span><span class="s1">options</span><span class="s2">?: </span><span class="s1">RCOptions </span><span class="s2">| </span><span class="s1">string</span><span class="s2">): </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s0">//#endregion</span>
+<span class="s3">export </span><span class="s2">{ </span><span class="s1">RC</span><span class="s2">, </span><span class="s1">RCOptions</span><span class="s2">, </span><span class="s1">defaults</span><span class="s2">, </span><span class="s1">parse</span><span class="s2">, </span><span class="s1">parseFile</span><span class="s2">, </span><span class="s1">read</span><span class="s2">, </span><span class="s1">readUser</span><span class="s2">, </span><span class="s1">readUserConfig</span><span class="s2">, </span><span class="s1">serialize</span><span class="s2">, </span><span class="s1">update</span><span class="s2">, </span><span class="s1">updateUser</span><span class="s2">, </span><span class="s1">updateUserConfig</span><span class="s2">, </span><span class="s1">write</span><span class="s2">, </span><span class="s1">writeUser</span><span class="s2">, </span><span class="s1">writeUserConfig </span><span class="s2">};</span></pre>
+</body>
+</html>

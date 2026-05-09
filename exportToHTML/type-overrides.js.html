@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>type-overrides.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #6aab73;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+type-overrides.js</font>
+</center></td></tr></table>
+<pre><span class="s0">'use strict'</span>
+
+<span class="s2">const </span><span class="s1">types </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'pg-types'</span><span class="s3">)</span>
+
+<span class="s2">function </span><span class="s1">TypeOverrides</span><span class="s3">(</span><span class="s1">userTypes</span><span class="s3">) {</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">_types </span><span class="s3">= </span><span class="s1">userTypes </span><span class="s3">|| </span><span class="s1">types</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">text </span><span class="s3">= {}</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">binary </span><span class="s3">= {}</span>
+<span class="s3">}</span>
+
+<span class="s1">TypeOverrides</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">getOverrides </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">format</span><span class="s3">) {</span>
+  <span class="s2">switch </span><span class="s3">(</span><span class="s1">format</span><span class="s3">) {</span>
+    <span class="s2">case </span><span class="s0">'text'</span><span class="s3">:</span>
+      <span class="s2">return this</span><span class="s3">.</span><span class="s1">text</span>
+    <span class="s2">case </span><span class="s0">'binary'</span><span class="s3">:</span>
+      <span class="s2">return this</span><span class="s3">.</span><span class="s1">binary</span>
+    <span class="s2">default</span><span class="s3">:</span>
+      <span class="s2">return </span><span class="s3">{}</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s1">TypeOverrides</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">setTypeParser </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">oid</span><span class="s3">, </span><span class="s1">format</span><span class="s3">, </span><span class="s1">parseFn</span><span class="s3">) {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">format </span><span class="s3">=== </span><span class="s0">'function'</span><span class="s3">) {</span>
+    <span class="s1">parseFn </span><span class="s3">= </span><span class="s1">format</span>
+    <span class="s1">format </span><span class="s3">= </span><span class="s0">'text'</span>
+  <span class="s3">}</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">getOverrides</span><span class="s3">(</span><span class="s1">format</span><span class="s3">)[</span><span class="s1">oid</span><span class="s3">] = </span><span class="s1">parseFn</span>
+<span class="s3">}</span>
+
+<span class="s1">TypeOverrides</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">getTypeParser </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">oid</span><span class="s3">, </span><span class="s1">format</span><span class="s3">) {</span>
+  <span class="s1">format </span><span class="s3">= </span><span class="s1">format </span><span class="s3">|| </span><span class="s0">'text'</span>
+  <span class="s2">return this</span><span class="s3">.</span><span class="s1">getOverrides</span><span class="s3">(</span><span class="s1">format</span><span class="s3">)[</span><span class="s1">oid</span><span class="s3">] || </span><span class="s2">this</span><span class="s3">.</span><span class="s1">_types</span><span class="s3">.</span><span class="s1">getTypeParser</span><span class="s3">(</span><span class="s1">oid</span><span class="s3">, </span><span class="s1">format</span><span class="s3">)</span>
+<span class="s3">}</span>
+
+<span class="s1">module</span><span class="s3">.</span><span class="s1">exports </span><span class="s3">= </span><span class="s1">TypeOverrides</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>complex.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+complex.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">expect</span><span class="s2">, </span><span class="s1">test </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;vitest&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s2">* as </span><span class="s1">z from </span><span class="s3">&quot;zod/v3&quot;</span><span class="s2">;</span>
+
+<span class="s0">const </span><span class="s1">crazySchema </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">object</span><span class="s2">({</span>
+  <span class="s1">tuple</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">tuple</span><span class="s2">([</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nullable</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">(),</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">number</span><span class="s2">().</span><span class="s1">nullable</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">(),</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">boolean</span><span class="s2">().</span><span class="s1">nullable</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">(),</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">null</span><span class="s2">().</span><span class="s1">nullable</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">(),</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">undefined</span><span class="s2">().</span><span class="s1">nullable</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">(),</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">literal</span><span class="s2">(</span><span class="s3">&quot;1234&quot;</span><span class="s2">).</span><span class="s1">nullable</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">(),</span>
+  <span class="s2">]),</span>
+  <span class="s1">merged</span><span class="s2">: </span><span class="s1">z</span>
+    <span class="s2">.</span><span class="s1">object</span><span class="s2">({</span>
+      <span class="s1">k1</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">(),</span>
+    <span class="s2">})</span>
+    <span class="s2">.</span><span class="s1">merge</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">object</span><span class="s2">({ </span><span class="s1">k1</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nullable</span><span class="s2">(), </span><span class="s1">k2</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">number</span><span class="s2">() })),</span>
+  <span class="s1">union</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">array</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">union</span><span class="s2">([</span><span class="s1">z</span><span class="s2">.</span><span class="s1">literal</span><span class="s2">(</span><span class="s3">&quot;asdf&quot;</span><span class="s2">), </span><span class="s1">z</span><span class="s2">.</span><span class="s1">literal</span><span class="s2">(</span><span class="s4">12</span><span class="s2">)])).</span><span class="s1">nonempty</span><span class="s2">(),</span>
+  <span class="s1">array</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">array</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">number</span><span class="s2">()),</span>
+  <span class="s5">// sumTransformer: z.transformer(z.array(z.number()), z.number(), (arg) =&gt; {</span>
+  <span class="s5">//   return arg.reduce((a, b) =&gt; a + b, 0);</span>
+  <span class="s5">// }),</span>
+  <span class="s1">sumMinLength</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">array</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">number</span><span class="s2">()).</span><span class="s1">refine</span><span class="s2">((</span><span class="s1">arg</span><span class="s2">) =&gt; </span><span class="s1">arg</span><span class="s2">.</span><span class="s1">length </span><span class="s2">&gt; </span><span class="s4">5</span><span class="s2">),</span>
+  <span class="s1">intersection</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">intersection</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">object</span><span class="s2">({ </span><span class="s1">p1</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">() }), </span><span class="s1">z</span><span class="s2">.</span><span class="s1">object</span><span class="s2">({ </span><span class="s1">p1</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">number</span><span class="s2">().</span><span class="s1">optional</span><span class="s2">() })),</span>
+  <span class="s0">enum</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">intersection</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">enum</span><span class="s2">([</span><span class="s3">&quot;zero&quot;</span><span class="s2">, </span><span class="s3">&quot;one&quot;</span><span class="s2">]), </span><span class="s1">z</span><span class="s2">.</span><span class="s1">enum</span><span class="s2">([</span><span class="s3">&quot;one&quot;</span><span class="s2">, </span><span class="s3">&quot;two&quot;</span><span class="s2">])),</span>
+  <span class="s1">nonstrict</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">object</span><span class="s2">({ </span><span class="s1">points</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">number</span><span class="s2">() }).</span><span class="s1">nonstrict</span><span class="s2">(),</span>
+  <span class="s1">numProm</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">promise</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">number</span><span class="s2">()),</span>
+  <span class="s1">lenfun</span><span class="s2">: </span><span class="s1">z</span><span class="s2">.</span><span class="s1">function</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">tuple</span><span class="s2">([</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">()]), </span><span class="s1">z</span><span class="s2">.</span><span class="s1">boolean</span><span class="s2">()),</span>
+<span class="s2">});</span>
+
+<span class="s5">// const asyncCrazySchema = crazySchema.extend({</span>
+<span class="s5">//   // async_transform: z.transformer(</span>
+<span class="s5">//   //   z.array(z.number()),</span>
+<span class="s5">//   //   z.number(),</span>
+<span class="s5">//   //   async (arg) =&gt; {</span>
+<span class="s5">//   //     return arg.reduce((a, b) =&gt; a + b, 0);</span>
+<span class="s5">//   //   }</span>
+<span class="s5">//   // ),</span>
+<span class="s5">//   async_refine: z.array(z.number()).refine(async (arg) =&gt; arg.length &gt; 5),</span>
+<span class="s5">// });</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;parse&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">input </span><span class="s2">= {</span>
+    <span class="s1">tuple</span><span class="s2">: [</span><span class="s3">&quot;asdf&quot;</span><span class="s2">, </span><span class="s4">1234</span><span class="s2">, </span><span class="s0">true</span><span class="s2">, </span><span class="s0">null</span><span class="s2">, </span><span class="s1">undefined</span><span class="s2">, </span><span class="s3">&quot;1234&quot;</span><span class="s2">],</span>
+    <span class="s1">merged</span><span class="s2">: { </span><span class="s1">k1</span><span class="s2">: </span><span class="s3">&quot;asdf&quot;</span><span class="s2">, </span><span class="s1">k2</span><span class="s2">: </span><span class="s4">12 </span><span class="s2">},</span>
+    <span class="s1">union</span><span class="s2">: [</span><span class="s3">&quot;asdf&quot;</span><span class="s2">, </span><span class="s4">12</span><span class="s2">, </span><span class="s3">&quot;asdf&quot;</span><span class="s2">, </span><span class="s4">12</span><span class="s2">, </span><span class="s3">&quot;asdf&quot;</span><span class="s2">, </span><span class="s4">12</span><span class="s2">],</span>
+    <span class="s1">array</span><span class="s2">: [</span><span class="s4">12</span><span class="s2">, </span><span class="s4">15</span><span class="s2">, </span><span class="s4">16</span><span class="s2">],</span>
+    <span class="s5">// sumTransformer: [12, 15, 16],</span>
+    <span class="s1">sumMinLength</span><span class="s2">: [</span><span class="s4">12</span><span class="s2">, </span><span class="s4">15</span><span class="s2">, </span><span class="s4">16</span><span class="s2">, </span><span class="s4">98</span><span class="s2">, </span><span class="s4">24</span><span class="s2">, </span><span class="s4">63</span><span class="s2">],</span>
+    <span class="s1">intersection</span><span class="s2">: {},</span>
+    <span class="s0">enum</span><span class="s2">: </span><span class="s3">&quot;one&quot;</span><span class="s2">,</span>
+    <span class="s1">nonstrict</span><span class="s2">: { </span><span class="s1">points</span><span class="s2">: </span><span class="s4">1234 </span><span class="s2">},</span>
+    <span class="s1">numProm</span><span class="s2">: </span><span class="s1">Promise</span><span class="s2">.</span><span class="s1">resolve</span><span class="s2">(</span><span class="s4">12</span><span class="s2">),</span>
+    <span class="s1">lenfun</span><span class="s2">: (</span><span class="s1">x</span><span class="s2">: </span><span class="s1">string</span><span class="s2">) =&gt; </span><span class="s1">x</span><span class="s2">.</span><span class="s1">length</span><span class="s2">,</span>
+  <span class="s2">};</span>
+
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">crazySchema</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">input</span><span class="s2">);</span>
+
+  <span class="s5">// Verify the parsed result structure</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">tuple</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">tuple</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">merged</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">merged</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">union</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">union</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">array</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">array</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">sumMinLength</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">sumMinLength</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">intersection</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">intersection</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">enum</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">enum</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">nonstrict</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s1">input</span><span class="s2">.</span><span class="s1">nonstrict</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">numProm</span><span class="s2">).</span><span class="s1">toBeInstanceOf</span><span class="s2">(</span><span class="s1">Promise</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s0">typeof </span><span class="s1">result</span><span class="s2">.</span><span class="s1">lenfun</span><span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s3">&quot;function&quot;</span><span class="s2">);</span>
+<span class="s2">});</span>
+</pre>
+</body>
+</html>

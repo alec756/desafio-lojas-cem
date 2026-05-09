@@ -1,0 +1,193 @@
+<html>
+<head>
+<title>record.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+record.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">util </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s2">const </span><span class="s1">booleanRecord </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">record</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">boolean</span><span class="s3">());</span>
+<span class="s1">type booleanRecord </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">booleanRecord</span><span class="s3">&gt;;</span>
+
+<span class="s2">const </span><span class="s1">recordWithEnumKeys </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">record</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">enum</span><span class="s3">([</span><span class="s4">&quot;Tuna&quot;</span><span class="s3">, </span><span class="s4">&quot;Salmon&quot;</span><span class="s3">]), </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">());</span>
+<span class="s1">type recordWithEnumKeys </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">recordWithEnumKeys</span><span class="s3">&gt;;</span>
+
+<span class="s2">const </span><span class="s1">recordWithLiteralKeys </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">record</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">union</span><span class="s3">([</span><span class="s1">z</span><span class="s3">.</span><span class="s1">literal</span><span class="s3">(</span><span class="s4">&quot;Tuna&quot;</span><span class="s3">), </span><span class="s1">z</span><span class="s3">.</span><span class="s1">literal</span><span class="s3">(</span><span class="s4">&quot;Salmon&quot;</span><span class="s3">)]), </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">());</span>
+<span class="s1">type recordWithLiteralKeys </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">recordWithLiteralKeys</span><span class="s3">&gt;;</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;type inference&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">booleanRecord</span><span class="s3">, </span><span class="s1">Record</span><span class="s3">&lt;</span><span class="s1">string</span><span class="s3">, </span><span class="s1">boolean</span><span class="s3">&gt;&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">recordWithEnumKeys</span><span class="s3">, </span><span class="s1">Partial</span><span class="s3">&lt;</span><span class="s1">Record</span><span class="s3">&lt;</span><span class="s4">&quot;Tuna&quot; </span><span class="s3">| </span><span class="s4">&quot;Salmon&quot;</span><span class="s3">, </span><span class="s1">string</span><span class="s3">&gt;&gt;&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">recordWithLiteralKeys</span><span class="s3">, </span><span class="s1">Partial</span><span class="s3">&lt;</span><span class="s1">Record</span><span class="s3">&lt;</span><span class="s4">&quot;Tuna&quot; </span><span class="s3">| </span><span class="s4">&quot;Salmon&quot;</span><span class="s3">, </span><span class="s1">string</span><span class="s3">&gt;&gt;&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;methods&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">booleanRecord</span><span class="s3">.</span><span class="s1">optional</span><span class="s3">();</span>
+  <span class="s1">booleanRecord</span><span class="s3">.</span><span class="s1">nullable</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;string record parse - pass&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">booleanRecord</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">k1</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+    <span class="s1">k2</span><span class="s3">: </span><span class="s2">false</span><span class="s3">,</span>
+    <span class="s5">1234</span><span class="s3">: </span><span class="s2">false</span><span class="s3">,</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;string record parse - fail&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">badCheck </span><span class="s3">= () =&gt;</span>
+    <span class="s1">booleanRecord</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+      <span class="s1">asdf</span><span class="s3">: </span><span class="s5">1234</span><span class="s3">,</span>
+    <span class="s3">} as </span><span class="s1">any</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">badCheck</span><span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+
+  <span class="s1">expect</span><span class="s3">(() =&gt; </span><span class="s1">booleanRecord</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">)).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;string record parse - fail&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">badCheck </span><span class="s3">= () =&gt;</span>
+    <span class="s1">booleanRecord</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+      <span class="s1">asdf</span><span class="s3">: {},</span>
+    <span class="s3">} as </span><span class="s1">any</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">badCheck</span><span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;string record parse - fail&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">badCheck </span><span class="s3">= () =&gt;</span>
+    <span class="s1">booleanRecord</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+      <span class="s1">asdf</span><span class="s3">: [],</span>
+    <span class="s3">} as </span><span class="s1">any</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">badCheck</span><span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;key schema&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result1 </span><span class="s3">= </span><span class="s1">recordWithEnumKeys</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result2 </span><span class="s3">= </span><span class="s1">recordWithLiteralKeys</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s0">// shouldn't require us to specify all props in record</span>
+  <span class="s2">const </span><span class="s1">result3 </span><span class="s3">= </span><span class="s1">recordWithEnumKeys</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;abcd&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result3</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;abcd&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s0">// shouldn't require us to specify all props in record</span>
+  <span class="s2">const </span><span class="s1">result4 </span><span class="s3">= </span><span class="s1">recordWithLiteralKeys</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;abcd&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result4</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;abcd&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(() =&gt;</span>
+    <span class="s1">recordWithEnumKeys</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+      <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+      <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+      <span class="s1">Trout</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s3">})</span>
+  <span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+
+  <span class="s1">expect</span><span class="s3">(() =&gt;</span>
+    <span class="s1">recordWithLiteralKeys</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+      <span class="s1">Tuna</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+      <span class="s1">Salmon</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+
+      <span class="s1">Trout</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s3">})</span>
+  <span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s0">// test(&quot;record element&quot;, () =&gt; {</span>
+<span class="s0">//   expect(booleanRecord.element).toBeInstanceOf(z.ZodBoolean);</span>
+<span class="s0">// });</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;key and value getters&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">rec </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">record</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">());</span>
+
+  <span class="s1">rec</span><span class="s3">.</span><span class="s1">keySchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s1">rec</span><span class="s3">.</span><span class="s1">valueSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+  <span class="s1">rec</span><span class="s3">.</span><span class="s1">element</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;is not vulnerable to prototype pollution&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">rec </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">record</span><span class="s3">(</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+  <span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">data </span><span class="s3">= </span><span class="s1">JSON</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">`</span>
+    <span class="s4">{ 
+      &quot;__proto__&quot;: { 
+        &quot;a&quot;: &quot;evil&quot; 
+      }, 
+      &quot;b&quot;: { 
+        &quot;a&quot;: &quot;good&quot; 
+      } 
+    } 
+  `</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">obj1 </span><span class="s3">= </span><span class="s1">rec</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj1</span><span class="s3">.</span><span class="s1">a</span><span class="s3">).</span><span class="s1">toBeUndefined</span><span class="s3">();</span>
+
+  <span class="s2">const </span><span class="s1">obj2 </span><span class="s3">= </span><span class="s1">rec</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">obj2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj2</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">a</span><span class="s3">).</span><span class="s1">toBeUndefined</span><span class="s3">();</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">obj3 </span><span class="s3">= </span><span class="s2">await </span><span class="s1">rec</span><span class="s3">.</span><span class="s1">parseAsync</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj3</span><span class="s3">.</span><span class="s1">a</span><span class="s3">).</span><span class="s1">toBeUndefined</span><span class="s3">();</span>
+
+  <span class="s2">const </span><span class="s1">obj4 </span><span class="s3">= </span><span class="s2">await </span><span class="s1">rec</span><span class="s3">.</span><span class="s1">safeParseAsync</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj4</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">obj4</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj4</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">a</span><span class="s3">).</span><span class="s1">toBeUndefined</span><span class="s3">();</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;dont parse undefined values&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result1 </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">record</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">any</span><span class="s3">()).</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">foo</span><span class="s3">: </span><span class="s1">undefined </span><span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">foo</span><span class="s3">: </span><span class="s1">undefined</span><span class="s3">,</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

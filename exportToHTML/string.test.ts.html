@@ -1,0 +1,939 @@
+<html>
+<head>
+<title>string.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #7a7e85;}
+.s5 { color: #2aacb8;}
+.s6 { color: #42c3d4;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+string.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">Buffer </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;node:buffer&quot;</span><span class="s2">;</span>
+<span class="s4">// @ts-ignore TS6133</span>
+<span class="s0">import </span><span class="s2">{ </span><span class="s1">expect</span><span class="s2">, </span><span class="s1">test </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;vitest&quot;</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s2">* as </span><span class="s1">z from </span><span class="s3">&quot;zod/v3&quot;</span><span class="s2">;</span>
+
+<span class="s0">const </span><span class="s1">minFive </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">min</span><span class="s2">(</span><span class="s5">5</span><span class="s2">, </span><span class="s3">&quot;min5&quot;</span><span class="s2">);</span>
+<span class="s0">const </span><span class="s1">maxFive </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">max</span><span class="s2">(</span><span class="s5">5</span><span class="s2">, </span><span class="s3">&quot;max5&quot;</span><span class="s2">);</span>
+<span class="s0">const </span><span class="s1">justFive </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">length</span><span class="s2">(</span><span class="s5">5</span><span class="s2">);</span>
+<span class="s0">const </span><span class="s1">nonempty </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nonempty</span><span class="s2">(</span><span class="s3">&quot;nonempty&quot;</span><span class="s2">);</span>
+<span class="s0">const </span><span class="s1">includes </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">includes</span><span class="s2">(</span><span class="s3">&quot;includes&quot;</span><span class="s2">);</span>
+<span class="s0">const </span><span class="s1">includesFromIndex2 </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">includes</span><span class="s2">(</span><span class="s3">&quot;includes&quot;</span><span class="s2">, { </span><span class="s1">position</span><span class="s2">: </span><span class="s5">2 </span><span class="s2">});</span>
+<span class="s0">const </span><span class="s1">startsWith </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">startsWith</span><span class="s2">(</span><span class="s3">&quot;startsWith&quot;</span><span class="s2">);</span>
+<span class="s0">const </span><span class="s1">endsWith </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">endsWith</span><span class="s2">(</span><span class="s3">&quot;endsWith&quot;</span><span class="s2">);</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;passing validations&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s1">minFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;12345&quot;</span><span class="s2">);</span>
+  <span class="s1">minFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;123456&quot;</span><span class="s2">);</span>
+  <span class="s1">maxFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;12345&quot;</span><span class="s2">);</span>
+  <span class="s1">maxFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1234&quot;</span><span class="s2">);</span>
+  <span class="s1">nonempty</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1&quot;</span><span class="s2">);</span>
+  <span class="s1">justFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;12345&quot;</span><span class="s2">);</span>
+  <span class="s1">includes</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;XincludesXX&quot;</span><span class="s2">);</span>
+  <span class="s1">includesFromIndex2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;XXXincludesXX&quot;</span><span class="s2">);</span>
+  <span class="s1">startsWith</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;startsWithX&quot;</span><span class="s2">);</span>
+  <span class="s1">endsWith</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;XendsWith&quot;</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;failing validations&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">minFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1234&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">maxFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;123456&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">nonempty</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">justFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1234&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">justFive</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;123456&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">includes</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;XincludeXX&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">includesFromIndex2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;XincludesXX&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">startsWith</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;x&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">endsWith</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;x&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;email validations&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">validEmails </span><span class="s2">= [</span>
+    <span class="s3">`email@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`firstname.lastname@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email@subdomain.domain.com`</span><span class="s2">,</span>
+    <span class="s3">`firstname+lastname@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`1234567890@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email@domain-one.com`</span><span class="s2">,</span>
+    <span class="s3">`_______@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email@domain.name`</span><span class="s2">,</span>
+    <span class="s3">`email@domain.co.jp`</span><span class="s2">,</span>
+    <span class="s3">`firstname-lastname@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`very.common@example.com`</span><span class="s2">,</span>
+    <span class="s3">`disposable.style.email.with+symbol@example.com`</span><span class="s2">,</span>
+    <span class="s3">`other.email-with-hyphen@example.com`</span><span class="s2">,</span>
+    <span class="s3">`fully-qualified-domain@example.com`</span><span class="s2">,</span>
+    <span class="s3">`user.name+tag+sorting@example.com`</span><span class="s2">,</span>
+    <span class="s3">`x@example.com`</span><span class="s2">,</span>
+    <span class="s3">`mojojojo@asdf.example.com`</span><span class="s2">,</span>
+    <span class="s3">`example-indeed@strange-example.com`</span><span class="s2">,</span>
+    <span class="s3">`example@s.example`</span><span class="s2">,</span>
+    <span class="s3">`user-@example.org`</span><span class="s2">,</span>
+    <span class="s3">`user@my-example.com`</span><span class="s2">,</span>
+    <span class="s3">`a@b.cd`</span><span class="s2">,</span>
+    <span class="s3">`work+user@mail.com`</span><span class="s2">,</span>
+    <span class="s3">`tom@test.te-st.com`</span><span class="s2">,</span>
+    <span class="s3">`something@subdomain.domain-with-hyphens.tld`</span><span class="s2">,</span>
+    <span class="s3">`common'name@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`francois@etu.inp-n7.fr`</span><span class="s2">,</span>
+  <span class="s2">];</span>
+  <span class="s0">const </span><span class="s1">invalidEmails </span><span class="s2">= [</span>
+    <span class="s4">// no &quot;printable characters&quot;</span>
+    <span class="s4">// `user%example.com@example.org`,</span>
+    <span class="s4">// `mailhost!username@example.org`,</span>
+    <span class="s4">// `test/test@test.com`,</span>
+
+    <span class="s4">// double @</span>
+    <span class="s3">`francois@@etu.inp-n7.fr`</span><span class="s2">,</span>
+    <span class="s4">// do not support quotes</span>
+    <span class="s3">`&quot;email&quot;@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`&quot;e asdf sadf ?&lt;&gt;ail&quot;@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`&quot; &quot;@example.org`</span><span class="s2">,</span>
+    <span class="s3">`&quot;john..doe&quot;@example.org`</span><span class="s2">,</span>
+    <span class="s3">`&quot;very.(),:;&lt;&gt;[]</span><span class="s0">\&quot;</span><span class="s3">.VERY.</span><span class="s0">\&quot;</span><span class="s3">very@</span><span class="s0">\\ \&quot;</span><span class="s3">very</span><span class="s0">\&quot;</span><span class="s3">.unusual&quot;@strange.example.com`</span><span class="s2">,</span>
+    <span class="s4">// do not support comma</span>
+    <span class="s3">`a,b@domain.com`</span><span class="s2">,</span>
+
+    <span class="s4">// do not support IPv4</span>
+    <span class="s3">`email@123.123.123.123`</span><span class="s2">,</span>
+    <span class="s3">`email@[123.123.123.123]`</span><span class="s2">,</span>
+    <span class="s3">`postmaster@123.123.123.123`</span><span class="s2">,</span>
+    <span class="s3">`user@[68.185.127.196]`</span><span class="s2">,</span>
+    <span class="s3">`ipv4@[85.129.96.247]`</span><span class="s2">,</span>
+    <span class="s3">`valid@[79.208.229.53]`</span><span class="s2">,</span>
+    <span class="s3">`valid@[255.255.255.255]`</span><span class="s2">,</span>
+    <span class="s3">`valid@[255.0.55.2]`</span><span class="s2">,</span>
+    <span class="s3">`valid@[255.0.55.2]`</span><span class="s2">,</span>
+
+    <span class="s4">// do not support ipv6</span>
+    <span class="s3">`hgrebert0@[IPv6:4dc8:ac7:ce79:8878:1290:6098:5c50:1f25]`</span><span class="s2">,</span>
+    <span class="s3">`bshapiro4@[IPv6:3669:c709:e981:4884:59a3:75d1:166b:9ae]`</span><span class="s2">,</span>
+    <span class="s3">`jsmith@[IPv6:2001:db8::1]`</span><span class="s2">,</span>
+    <span class="s3">`postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]`</span><span class="s2">,</span>
+    <span class="s3">`postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:192.168.1.1]`</span><span class="s2">,</span>
+
+    <span class="s4">// microsoft test cases</span>
+    <span class="s3">`plainaddress`</span><span class="s2">,</span>
+    <span class="s3">`#@%^%#$@#$@#.com`</span><span class="s2">,</span>
+    <span class="s3">`@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`Joe Smith &amp;lt;email@domain.com&amp;gt;`</span><span class="s2">,</span>
+    <span class="s3">`email.domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email@domain@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`.email@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email.@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email..email@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`あいうえお@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email@domain.com (Joe Smith)`</span><span class="s2">,</span>
+    <span class="s3">`email@domain`</span><span class="s2">,</span>
+    <span class="s3">`email@-domain.com`</span><span class="s2">,</span>
+    <span class="s3">`email@111.222.333.44444`</span><span class="s2">,</span>
+    <span class="s3">`email@domain..com`</span><span class="s2">,</span>
+    <span class="s3">`Abc.example.com`</span><span class="s2">,</span>
+    <span class="s3">`A@b@c@example.com`</span><span class="s2">,</span>
+    <span class="s3">`colin..hacks@domain.com`</span><span class="s2">,</span>
+    <span class="s3">`a&quot;b(c)d,e:f;g&lt;h&gt;i[j</span><span class="s0">\k</span><span class="s3">]l@example.com`</span><span class="s2">,</span>
+    <span class="s3">`just&quot;not&quot;right@example.com`</span><span class="s2">,</span>
+    <span class="s3">`this is&quot;not</span><span class="s0">\a</span><span class="s3">llowed@example.com`</span><span class="s2">,</span>
+    <span class="s3">`this</span><span class="s0">\ </span><span class="s3">still</span><span class="s0">\&quot;</span><span class="s3">not</span><span class="s0">\\</span><span class="s3">allowed@example.com`</span><span class="s2">,</span>
+
+    <span class="s4">// random</span>
+    <span class="s3">`i_like_underscore@but_its_not_allowed_in_this_part.example.com`</span><span class="s2">,</span>
+    <span class="s3">`QA[icon]CHOCOLATE[icon]@test.com`</span><span class="s2">,</span>
+    <span class="s3">`invalid@-start.com`</span><span class="s2">,</span>
+    <span class="s3">`invalid@end.com-`</span><span class="s2">,</span>
+    <span class="s3">`a.b@c.d`</span><span class="s2">,</span>
+    <span class="s3">`invalid@[1.1.1.-1]`</span><span class="s2">,</span>
+    <span class="s3">`invalid@[68.185.127.196.55]`</span><span class="s2">,</span>
+    <span class="s3">`temp@[192.168.1]`</span><span class="s2">,</span>
+    <span class="s3">`temp@[9.18.122.]`</span><span class="s2">,</span>
+    <span class="s3">`double..point@test.com`</span><span class="s2">,</span>
+    <span class="s3">`asdad@test..com`</span><span class="s2">,</span>
+    <span class="s3">`asdad@hghg...sd...au`</span><span class="s2">,</span>
+    <span class="s3">`asdad@hghg........au`</span><span class="s2">,</span>
+    <span class="s3">`invalid@[256.2.2.48]`</span><span class="s2">,</span>
+    <span class="s3">`invalid@[256.2.2.48]`</span><span class="s2">,</span>
+    <span class="s3">`invalid@[999.465.265.1]`</span><span class="s2">,</span>
+    <span class="s3">`jkibbey4@[IPv6:82c4:19a8::70a9:2aac:557::ea69:d985:28d]`</span><span class="s2">,</span>
+    <span class="s3">`mlivesay3@[9952:143f:b4df:2179:49a1:5e82:b92e:6b6]`</span><span class="s2">,</span>
+    <span class="s3">`gbacher0@[IPv6:bc37:4d3f:5048:2e26:37cc:248e:df8e:2f7f:af]`</span><span class="s2">,</span>
+    <span class="s3">`invalid@[IPv6:5348:4ed3:5d38:67fb:e9b:acd2:c13:192.168.256.1]`</span><span class="s2">,</span>
+    <span class="s3">`test@.com`</span><span class="s2">,</span>
+    <span class="s3">`aaaaaaaaaaaaaaalongemailthatcausesregexDoSvulnerability@test.c`</span><span class="s2">,</span>
+  <span class="s2">];</span>
+  <span class="s0">const </span><span class="s1">emailSchema </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">();</span>
+
+  <span class="s1">expect</span><span class="s2">(</span>
+    <span class="s1">validEmails</span><span class="s2">.</span><span class="s1">every</span><span class="s2">((</span><span class="s1">email</span><span class="s2">) =&gt; {</span>
+      <span class="s0">return </span><span class="s1">emailSchema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">email</span><span class="s2">).</span><span class="s1">success</span><span class="s2">;</span>
+    <span class="s2">})</span>
+  <span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span>
+    <span class="s1">invalidEmails</span><span class="s2">.</span><span class="s1">every</span><span class="s2">((</span><span class="s1">email</span><span class="s2">) =&gt; {</span>
+      <span class="s0">return </span><span class="s1">emailSchema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">email</span><span class="s2">).</span><span class="s1">success </span><span class="s2">=== </span><span class="s0">false</span><span class="s2">;</span>
+    <span class="s2">})</span>
+  <span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s0">const </span><span class="s1">validBase64Strings </span><span class="s2">= [</span>
+  <span class="s3">&quot;SGVsbG8gV29ybGQ=&quot;</span><span class="s2">, </span><span class="s4">// &quot;Hello World&quot;</span>
+  <span class="s3">&quot;VGhpcyBpcyBhbiBlbmNvZGVkIHN0cmluZw==&quot;</span><span class="s2">, </span><span class="s4">// &quot;This is an encoded string&quot;</span>
+  <span class="s3">&quot;TWFueSBoYW5kcyBtYWtlIGxpZ2h0IHdvcms=&quot;</span><span class="s2">, </span><span class="s4">// &quot;Many hands make light work&quot;</span>
+  <span class="s3">&quot;UGF0aWVuY2UgaXMgdGhlIGtleSB0byBzdWNjZXNz&quot;</span><span class="s2">, </span><span class="s4">// &quot;Patience is the key to success&quot;</span>
+  <span class="s3">&quot;QmFzZTY0IGVuY29kaW5nIGlzIGZ1bg==&quot;</span><span class="s2">, </span><span class="s4">// &quot;Base64 encoding is fun&quot;</span>
+  <span class="s3">&quot;MTIzNDU2Nzg5MA==&quot;</span><span class="s2">, </span><span class="s4">// &quot;1234567890&quot;</span>
+  <span class="s3">&quot;YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=&quot;</span><span class="s2">, </span><span class="s4">// &quot;abcdefghijklmnopqrstuvwxyz&quot;</span>
+  <span class="s3">&quot;QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo=&quot;</span><span class="s2">, </span><span class="s4">// &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;</span>
+  <span class="s3">&quot;ISIkJSMmJyonKCk=&quot;</span><span class="s2">, </span><span class="s4">// &quot;!\&quot;#$%&amp;'()*&quot;</span>
+  <span class="s3">&quot;&quot;</span><span class="s2">, </span><span class="s4">// Empty string is technically valid base64</span>
+  <span class="s3">&quot;w7/Dv8O+w74K&quot;</span><span class="s2">, </span><span class="s4">// ÿÿþþ</span>
+<span class="s2">];</span>
+
+<span class="s0">for </span><span class="s2">(</span><span class="s0">const </span><span class="s1">str of validBase64Strings</span><span class="s2">) {</span>
+  <span class="s1">test</span><span class="s2">(</span><span class="s3">`base64 should accept </span><span class="s1">$</span><span class="s2">{</span><span class="s1">str</span><span class="s2">}</span><span class="s3">`</span><span class="s2">, () =&gt; {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">base64</span><span class="s2">().</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">str</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s2">});</span>
+<span class="s2">}</span>
+
+<span class="s0">const </span><span class="s1">invalidBase64Strings </span><span class="s2">= [</span>
+  <span class="s3">&quot;12345&quot;</span><span class="s2">, </span><span class="s4">// Not padded correctly, not a multiple of 4 characters</span>
+  <span class="s3">&quot;12345===&quot;</span><span class="s2">, </span><span class="s4">// Not padded correctly</span>
+  <span class="s3">&quot;SGVsbG8gV29ybGQ&quot;</span><span class="s2">, </span><span class="s4">// Missing padding</span>
+  <span class="s3">&quot;VGhpcyBpcyBhbiBlbmNvZGVkIHN0cmluZw&quot;</span><span class="s2">, </span><span class="s4">// Missing padding</span>
+  <span class="s3">&quot;!UGF0aWVuY2UgaXMgdGhlIGtleSB0byBzdWNjZXNz&quot;</span><span class="s2">, </span><span class="s4">// Invalid character '!'</span>
+  <span class="s3">&quot;?QmFzZTY0IGVuY29kaW5nIGlzIGZ1bg==&quot;</span><span class="s2">, </span><span class="s4">// Invalid character '?'</span>
+  <span class="s3">&quot;.MTIzND2Nzg5MC4=&quot;</span><span class="s2">, </span><span class="s4">// Invalid character '.'</span>
+  <span class="s3">&quot;QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo&quot;</span><span class="s2">, </span><span class="s4">// Missing padding</span>
+  <span class="s3">&quot;w7_Dv8O-w74K&quot;</span><span class="s2">, </span><span class="s4">// Has - and _ characters (is base64url)</span>
+<span class="s2">];</span>
+
+<span class="s0">for </span><span class="s2">(</span><span class="s0">const </span><span class="s1">str of invalidBase64Strings</span><span class="s2">) {</span>
+  <span class="s1">test</span><span class="s2">(</span><span class="s3">`base64 should reject </span><span class="s1">$</span><span class="s2">{</span><span class="s1">str</span><span class="s2">}</span><span class="s3">`</span><span class="s2">, () =&gt; {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">base64</span><span class="s2">().</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">str</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s2">});</span>
+<span class="s2">}</span>
+
+<span class="s0">const </span><span class="s1">validBase64URLStrings </span><span class="s2">= [</span>
+  <span class="s3">&quot;SGVsbG8gV29ybGQ&quot;</span><span class="s2">, </span><span class="s4">// &quot;Hello World&quot;</span>
+  <span class="s3">&quot;SGVsbG8gV29ybGQ=&quot;</span><span class="s2">, </span><span class="s4">// &quot;Hello World&quot; with padding</span>
+  <span class="s3">&quot;VGhpcyBpcyBhbiBlbmNvZGVkIHN0cmluZw&quot;</span><span class="s2">, </span><span class="s4">// &quot;This is an encoded string&quot;</span>
+  <span class="s3">&quot;VGhpcyBpcyBhbiBlbmNvZGVkIHN0cmluZw==&quot;</span><span class="s2">, </span><span class="s4">// &quot;This is an encoded string&quot; with padding</span>
+  <span class="s3">&quot;TWFueSBoYW5kcyBtYWtlIGxpZ2h0IHdvcms&quot;</span><span class="s2">, </span><span class="s4">// &quot;Many hands make light work&quot;</span>
+  <span class="s3">&quot;TWFueSBoYW5kcyBtYWtlIGxpZ2h0IHdvcms=&quot;</span><span class="s2">, </span><span class="s4">// &quot;Many hands make light work&quot; with padding</span>
+  <span class="s3">&quot;UGF0aWVuY2UgaXMgdGhlIGtleSB0byBzdWNjZXNz&quot;</span><span class="s2">, </span><span class="s4">// &quot;Patience is the key to success&quot;</span>
+  <span class="s3">&quot;QmFzZTY0IGVuY29kaW5nIGlzIGZ1bg&quot;</span><span class="s2">, </span><span class="s4">// &quot;Base64 encoding is fun&quot;</span>
+  <span class="s3">&quot;QmFzZTY0IGVuY29kaW5nIGlzIGZ1bg==&quot;</span><span class="s2">, </span><span class="s4">// &quot;Base64 encoding is fun&quot; with padding</span>
+  <span class="s3">&quot;MTIzNDU2Nzg5MA&quot;</span><span class="s2">, </span><span class="s4">// &quot;1234567890&quot;</span>
+  <span class="s3">&quot;MTIzNDU2Nzg5MA==&quot;</span><span class="s2">, </span><span class="s4">// &quot;1234567890&quot; with padding</span>
+  <span class="s3">&quot;YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo&quot;</span><span class="s2">, </span><span class="s4">// &quot;abcdefghijklmnopqrstuvwxyz&quot;</span>
+  <span class="s3">&quot;YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=&quot;</span><span class="s2">, </span><span class="s4">// &quot;abcdefghijklmnopqrstuvwxyz with padding&quot;</span>
+  <span class="s3">&quot;QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo&quot;</span><span class="s2">, </span><span class="s4">// &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;</span>
+  <span class="s3">&quot;QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo=&quot;</span><span class="s2">, </span><span class="s4">// &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot; with padding</span>
+  <span class="s3">&quot;ISIkJSMmJyonKCk&quot;</span><span class="s2">, </span><span class="s4">// &quot;!\&quot;#$%&amp;'()*&quot;</span>
+  <span class="s3">&quot;ISIkJSMmJyonKCk=&quot;</span><span class="s2">, </span><span class="s4">// &quot;!\&quot;#$%&amp;'()*&quot; with padding</span>
+  <span class="s3">&quot;&quot;</span><span class="s2">, </span><span class="s4">// Empty string is technically valid base64url</span>
+  <span class="s3">&quot;w7_Dv8O-w74K&quot;</span><span class="s2">, </span><span class="s4">// ÿÿþþ</span>
+  <span class="s3">&quot;123456&quot;</span><span class="s2">,</span>
+<span class="s2">];</span>
+
+<span class="s0">for </span><span class="s2">(</span><span class="s0">const </span><span class="s1">str of validBase64URLStrings</span><span class="s2">) {</span>
+  <span class="s1">test</span><span class="s2">(</span><span class="s3">`base64url should accept </span><span class="s1">$</span><span class="s2">{</span><span class="s1">str</span><span class="s2">}</span><span class="s3">`</span><span class="s2">, () =&gt; {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">base64url</span><span class="s2">().</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">str</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s2">});</span>
+<span class="s2">}</span>
+
+<span class="s0">const </span><span class="s1">invalidBase64URLStrings </span><span class="s2">= [</span>
+  <span class="s3">&quot;w7/Dv8O+w74K&quot;</span><span class="s2">, </span><span class="s4">// Has + and / characters (is base64)</span>
+  <span class="s3">&quot;12345&quot;</span><span class="s2">, </span><span class="s4">// Invalid length (not a multiple of 4 characters when adding allowed number of padding characters)</span>
+  <span class="s3">&quot;12345===&quot;</span><span class="s2">, </span><span class="s4">// Not padded correctly</span>
+  <span class="s3">&quot;!UGF0aWVuY2UgaXMgdGhlIGtleSB0byBzdWNjZXNz&quot;</span><span class="s2">, </span><span class="s4">// Invalid character '!'</span>
+  <span class="s3">&quot;?QmFzZTY0IGVuY29kaW5nIGlzIGZ1bg==&quot;</span><span class="s2">, </span><span class="s4">// Invalid character '?'</span>
+  <span class="s3">&quot;.MTIzND2Nzg5MC4=&quot;</span><span class="s2">, </span><span class="s4">// Invalid character '.'</span>
+<span class="s2">];</span>
+
+<span class="s0">for </span><span class="s2">(</span><span class="s0">const </span><span class="s1">str of invalidBase64URLStrings</span><span class="s2">) {</span>
+  <span class="s1">test</span><span class="s2">(</span><span class="s3">`base64url should reject </span><span class="s1">$</span><span class="s2">{</span><span class="s1">str</span><span class="s2">}</span><span class="s3">`</span><span class="s2">, () =&gt; {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">base64url</span><span class="s2">().</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">str</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s2">});</span>
+<span class="s2">}</span>
+
+<span class="s0">function </span><span class="s1">makeJwt</span><span class="s2">(</span><span class="s1">header</span><span class="s2">: </span><span class="s1">object</span><span class="s2">, </span><span class="s1">payload</span><span class="s2">: </span><span class="s1">object</span><span class="s2">) {</span>
+  <span class="s0">const </span><span class="s1">headerBase64 </span><span class="s2">= </span><span class="s1">Buffer</span><span class="s2">.</span><span class="s1">from</span><span class="s2">(</span><span class="s1">JSON</span><span class="s2">.</span><span class="s1">stringify</span><span class="s2">(</span><span class="s1">header</span><span class="s2">)).</span><span class="s1">toString</span><span class="s2">(</span><span class="s3">&quot;base64url&quot;</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">payloadBase64 </span><span class="s2">= </span><span class="s1">Buffer</span><span class="s2">.</span><span class="s1">from</span><span class="s2">(</span><span class="s1">JSON</span><span class="s2">.</span><span class="s1">stringify</span><span class="s2">(</span><span class="s1">payload</span><span class="s2">)).</span><span class="s1">toString</span><span class="s2">(</span><span class="s3">&quot;base64url&quot;</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">signature </span><span class="s2">= </span><span class="s3">&quot;signature&quot;</span><span class="s2">; </span><span class="s4">// Placeholder for the signature</span>
+  <span class="s0">return </span><span class="s3">`</span><span class="s1">$</span><span class="s2">{</span><span class="s1">headerBase64</span><span class="s2">}</span><span class="s3">.</span><span class="s1">$</span><span class="s2">{</span><span class="s1">payloadBase64</span><span class="s2">}</span><span class="s3">.</span><span class="s1">$</span><span class="s2">{</span><span class="s1">signature</span><span class="s2">}</span><span class="s3">`</span><span class="s2">;</span>
+<span class="s2">}</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;jwt validations&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">jwt </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">jwt</span><span class="s2">();</span>
+  <span class="s0">const </span><span class="s1">jwtWithAlg </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">jwt</span><span class="s2">({ </span><span class="s1">alg</span><span class="s2">: </span><span class="s3">&quot;HS256&quot; </span><span class="s2">});</span>
+
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;invalid&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;invalid.invalid&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;invalid.invalid.invalid&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s4">// Valid JWTs</span>
+  <span class="s0">const </span><span class="s1">d1 </span><span class="s2">= </span><span class="s1">makeJwt</span><span class="s2">({ </span><span class="s1">typ</span><span class="s2">: </span><span class="s3">&quot;JWT&quot;</span><span class="s2">, </span><span class="s1">alg</span><span class="s2">: </span><span class="s3">&quot;HS256&quot; </span><span class="s2">}, {});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">d1</span><span class="s2">)).</span><span class="s1">not</span><span class="s2">.</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwtWithAlg</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">d1</span><span class="s2">)).</span><span class="s1">not</span><span class="s2">.</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s4">// Invalid header</span>
+  <span class="s0">const </span><span class="s1">d2 </span><span class="s2">= </span><span class="s1">makeJwt</span><span class="s2">({}, {});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">d2</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s4">// Wrong algorithm</span>
+  <span class="s0">const </span><span class="s1">d3 </span><span class="s2">= </span><span class="s1">makeJwt</span><span class="s2">({ </span><span class="s1">typ</span><span class="s2">: </span><span class="s3">&quot;JWT&quot;</span><span class="s2">, </span><span class="s1">alg</span><span class="s2">: </span><span class="s3">&quot;RS256&quot; </span><span class="s2">}, {});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwtWithAlg</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">d3</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s4">// missing typ is fine</span>
+  <span class="s0">const </span><span class="s1">d4 </span><span class="s2">= </span><span class="s1">makeJwt</span><span class="s2">({ </span><span class="s1">alg</span><span class="s2">: </span><span class="s3">&quot;HS256&quot; </span><span class="s2">}, {});</span>
+  <span class="s1">jwt</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">d4</span><span class="s2">);</span>
+
+  <span class="s4">// type isn't JWT</span>
+  <span class="s0">const </span><span class="s1">d5 </span><span class="s2">= </span><span class="s1">makeJwt</span><span class="s2">({ </span><span class="s1">typ</span><span class="s2">: </span><span class="s3">&quot;SUP&quot;</span><span class="s2">, </span><span class="s1">alg</span><span class="s2">: </span><span class="s3">&quot;HS256&quot; </span><span class="s2">}, { </span><span class="s1">foo</span><span class="s2">: </span><span class="s3">&quot;bar&quot; </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">jwt</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">d5</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s4">// Custom error message</span>
+  <span class="s0">const </span><span class="s1">customMsg </span><span class="s2">= </span><span class="s3">&quot;Invalid JWT token&quot;</span><span class="s2">;</span>
+  <span class="s0">const </span><span class="s1">jwtWithMsg </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">jwt</span><span class="s2">({ </span><span class="s1">message</span><span class="s2">: </span><span class="s1">customMsg </span><span class="s2">});</span>
+  <span class="s0">try </span><span class="s2">{</span>
+    <span class="s1">jwtWithMsg</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;invalid&quot;</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">error</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">((</span><span class="s1">error </span><span class="s2">as </span><span class="s1">z</span><span class="s2">.</span><span class="s1">ZodError</span><span class="s2">).</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s1">customMsg</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;url validations&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">url </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">();</span>
+  <span class="s1">url</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;http://google.com&quot;</span><span class="s2">);</span>
+  <span class="s1">url</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;https://google.com/asdf?asdf=ljk3lk4&amp;asdf=234#asdf&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">url</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;asdf&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">url</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;https:/&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">url</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;asdfj@lkjsdf.com&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;url error overrides&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">try </span><span class="s2">{</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;https&quot;</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">err</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">((</span><span class="s1">err </span><span class="s2">as </span><span class="s1">z</span><span class="s2">.</span><span class="s1">ZodError</span><span class="s2">).</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;Invalid url&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+  <span class="s0">try </span><span class="s2">{</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">(</span><span class="s3">&quot;badurl&quot;</span><span class="s2">).</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;https&quot;</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">err</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">((</span><span class="s1">err </span><span class="s2">as </span><span class="s1">z</span><span class="s2">.</span><span class="s1">ZodError</span><span class="s2">).</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;badurl&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+  <span class="s0">try </span><span class="s2">{</span>
+    <span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">({ </span><span class="s1">message</span><span class="s2">: </span><span class="s3">&quot;badurl&quot; </span><span class="s2">}).</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;https&quot;</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">err</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">((</span><span class="s1">err </span><span class="s2">as </span><span class="s1">z</span><span class="s2">.</span><span class="s1">ZodError</span><span class="s2">).</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;badurl&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;emoji validations&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">emoji </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">emoji</span><span class="s2">();</span>
+
+  <span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;👋👋👋👋&quot;</span><span class="s2">);</span>
+  <span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;🍺👩‍🚀🫡&quot;</span><span class="s2">);</span>
+  <span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;💚💙💜💛❤️&quot;</span><span class="s2">);</span>
+  <span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;🐛🗝🐏🍡🎦🚢🏨💫🎌☘🗡😹🔒🎬➡️🍹🗂🚨⚜🕑〽️🚦🌊🍴💍🍌💰😳🌺🍃&quot;</span><span class="s2">);</span>
+  <span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;🇹🇷🤽🏿‍♂️&quot;</span><span class="s2">);</span>
+  <span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span>
+    <span class="s3">&quot;😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺️☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹️☹🙁😖😞😟😤😢😭😦😧😨😩🤯😬😰😱🥵🥶😳🤪😵😡😠🤬😷🤒🤕🤢🤮🤧😇🤠🥳🥴🥺🤥🤫🤭🧐🤓😈👿🤡👹👺💀☠️☠👻👽👾🤖💩😺😸😹😻😼😽🙀😿😾🙈🙉🙊🏻🏼🏽🏾🏿👶👶🏻👶🏼👶🏽👶🏾👶🏿🧒🧒🏻🧒🏼🧒🏽🧒🏾🧒🏿👦👦🏻👦🏼👦🏽👦🏾👦🏿👧👧🏻👧🏼👧🏽👧🏾👧🏿🧑🧑🏻🧑🏼🧑🏽🧑🏾🧑🏿👨👨🏻👨🏼👨🏽👨🏾👨🏿👩👩🏻👩🏼👩🏽👩🏾👩🏿🧓🧓🏻🧓🏼🧓🏽🧓🏾🧓🏿👴👴🏻👴🏼👴🏽👴🏾👴🏿👵👵🏻👵🏼👵🏽👵🏾👵🏿👨‍⚕️👨‍⚕👨🏻‍⚕️👨🏻‍⚕👨🏼‍⚕️👨🏼‍⚕👨🏽‍⚕️👨🏽‍⚕👨🏾‍⚕️👨🏾‍⚕👨🏿‍⚕️👨🏿‍⚕👩‍⚕️👩‍⚕👩🏻‍⚕️👩🏻‍⚕👩🏼‍⚕️👩🏼‍⚕👩🏽‍⚕️👩🏽‍⚕👩🏾‍⚕️👩🏾‍⚕👩🏿‍⚕️👩🏿‍⚕👨‍🎓👨🏻‍🎓👨🏼‍🎓👨🏽‍🎓👨🏾‍🎓👨🏿‍🎓👩‍🎓👩🏻‍🎓👩🏼‍🎓👩🏽‍🎓👩🏾‍🎓👩🏿‍🎓👨‍🏫👨🏻‍🏫👨🏼‍🏫👨🏽‍🏫👨🏾‍🏫👨🏿‍🏫👩‍🏫👩🏻‍🏫👩🏼‍🏫👩🏽‍🏫👩🏾‍🏫👩🏿‍🏫👨‍⚖️👨‍⚖👨🏻‍⚖️👨🏻‍⚖👨🏼‍⚖️👨🏼‍⚖👨🏽‍⚖️👨🏽‍⚖👨🏾‍⚖️👨🏾‍⚖👨🏿‍⚖️👨🏿‍⚖👩‍⚖️👩‍⚖👩🏻‍⚖️👩🏻‍⚖👩🏼‍⚖️👩🏼‍⚖👩🏽‍⚖️👩🏽‍⚖👩🏾‍⚖️👩🏾‍⚖👩🏿‍⚖️👩🏿‍⚖👨‍🌾👨🏻‍🌾👨🏼‍🌾👨🏽‍🌾👨🏾‍🌾👨🏿‍🌾👩‍🌾👩🏻‍🌾👩🏼‍🌾👩🏽‍🌾👩🏾‍🌾👩🏿‍🌾👨‍🍳👨🏻‍🍳👨🏼‍🍳👨🏽‍🍳👨🏾‍🍳👨🏿‍🍳👩‍🍳👩🏻‍🍳👩🏼‍🍳👩🏽‍🍳👩🏾‍🍳👩🏿‍🍳👨‍🔧👨🏻‍🔧👨🏼‍🔧👨🏽‍🔧👨🏾‍🔧👨🏿‍🔧👩‍🔧👩🏻‍🔧👩🏼‍🔧👩🏽‍🔧👩🏾‍🔧👩🏿‍🔧👨‍🏭👨🏻‍🏭👨🏼‍🏭👨🏽‍🏭👨🏾‍🏭👨🏿‍🏭👩‍🏭👩🏻‍🏭👩🏼‍🏭👩🏽‍🏭👩🏾‍🏭👩🏿‍🏭👨‍💼👨🏻‍💼👨🏼‍💼👨🏽‍💼👨🏾‍💼👨🏿‍💼👩‍💼👩🏻‍💼👩🏼‍💼👩🏽‍💼👩🏾‍💼👩🏿‍💼👨‍🔬👨🏻‍🔬👨🏼‍🔬👨🏽‍🔬👨🏾‍🔬👨🏿‍🔬👩‍🔬👩🏻‍🔬👩🏼‍🔬👩🏽‍🔬👩🏾‍🔬👩🏿‍🔬👨‍💻👨🏻‍💻👨🏼‍💻👨🏽‍💻👨🏾‍💻👨🏿‍💻👩‍💻👩🏻‍💻👩🏼‍💻👩🏽‍💻👩🏾‍💻👩🏿‍💻👨‍🎤👨🏻‍🎤👨🏼‍🎤👨🏽‍🎤👨🏾‍🎤👨🏿‍🎤👩‍🎤👩🏻‍🎤👩🏼‍🎤👩🏽‍🎤👩🏾‍🎤👩🏿‍🎤👨‍🎨👨🏻‍🎨👨🏼‍🎨👨🏽‍🎨👨🏾‍🎨👨🏿‍🎨👩‍🎨👩🏻‍🎨👩🏼‍🎨👩🏽‍🎨👩🏾‍🎨👩🏿‍🎨👨‍✈️👨‍✈👨🏻‍✈️👨🏻‍✈👨🏼‍✈️👨🏼‍✈👨🏽‍✈️👨🏽‍✈👨🏾‍✈️👨🏾‍✈👨🏿‍✈️👨🏿‍✈👩‍✈️👩‍✈👩🏻‍✈️👩🏻‍✈👩🏼‍✈️👩🏼‍✈👩🏽‍✈️👩🏽‍✈👩🏾‍✈️👩🏾‍✈👩🏿‍✈️👩🏿‍✈👨‍🚀👨🏻‍🚀👨🏼‍🚀👨🏽‍🚀👨🏾‍🚀👨🏿‍🚀👩‍🚀👩🏻‍🚀👩🏼‍🚀👩🏽‍🚀👩🏾‍🚀👩🏿‍🚀👨‍🚒👨🏻‍🚒👨🏼‍🚒👨🏽‍🚒👨🏾‍🚒👨🏿‍🚒👩‍🚒👩🏻‍🚒👩🏼‍🚒👩🏽‍🚒👩🏾‍🚒👩🏿‍🚒👮👮🏻👮🏼👮🏽👮🏾👮🏿👮‍♂️👮‍♂👮🏻‍♂️👮🏻‍♂👮🏼‍♂️👮🏼‍♂👮🏽‍♂️👮🏽‍♂👮🏾‍♂️👮🏾‍♂👮🏿‍♂️👮🏿‍♂👮‍♀️👮‍♀👮🏻‍♀️👮🏻‍♀👮🏼‍♀️👮🏼‍♀👮🏽‍♀️👮🏽‍♀👮🏾‍♀️👮🏾‍♀👮🏿‍♀️👮🏿‍♀🕵️🕵🕵🏻🕵🏼🕵🏽🕵🏾🕵🏿🕵️‍♂️🕵‍♂️🕵️‍♂🕵‍♂🕵🏻‍♂️🕵🏻‍♂🕵🏼‍♂️🕵🏼‍♂🕵🏽‍♂️🕵🏽‍♂🕵🏾‍♂️🕵🏾‍♂🕵🏿‍♂️🕵🏿‍♂🕵️‍♀️🕵‍♀️🕵️‍♀🕵‍♀🕵🏻‍♀️🕵🏻‍♀🕵🏼‍♀️🕵🏼‍♀🕵🏽‍♀️🕵🏽‍♀🕵🏾‍♀️🕵🏾‍♀🕵🏿‍♀️🕵🏿‍♀💂💂🏻💂🏼💂🏽💂🏾💂🏿💂‍♂️💂‍♂💂🏻‍♂️💂🏻‍♂💂🏼‍♂️💂🏼‍♂💂🏽‍♂️💂🏽‍♂💂🏾‍♂️💂🏾‍♂💂🏿‍♂️💂🏿‍♂💂‍♀️💂‍♀💂🏻‍♀️💂🏻‍♀💂🏼‍♀️💂🏼‍♀💂🏽‍♀️💂🏽‍♀💂🏾‍♀️💂🏾‍♀💂🏿‍♀️💂🏿‍♀👷👷🏻👷🏼👷🏽👷🏾👷🏿👷‍♂️👷‍♂👷🏻‍♂️👷🏻‍♂👷🏼‍♂️👷🏼‍♂👷🏽‍♂️👷🏽‍♂👷🏾‍♂️👷🏾‍♂👷🏿‍♂️👷🏿‍♂👷‍♀️👷‍♀👷🏻‍♀️👷🏻‍♀👷🏼‍♀️👷🏼‍♀👷🏽‍♀️👷🏽‍♀👷🏾‍♀️👷🏾‍♀👷🏿‍♀️👷🏿‍♀🤴🤴🏻🤴🏼🤴🏽🤴🏾🤴🏿👸👸🏻👸🏼👸🏽👸🏾👸🏿👳👳🏻👳🏼👳🏽👳🏾👳🏿👳‍♂️👳‍♂👳🏻‍♂️👳🏻‍♂👳🏼‍♂️👳🏼‍♂👳🏽‍♂️👳🏽‍♂👳🏾‍♂️👳🏾‍♂👳🏿‍♂️👳🏿‍♂👳‍♀️👳‍♀👳🏻‍♀️👳🏻‍♀👳🏼‍♀️👳🏼‍♀👳🏽‍♀️👳🏽‍♀👳🏾‍♀️👳🏾‍♀👳🏿‍♀️👳🏿‍♀👲👲🏻👲🏼👲🏽👲🏾👲🏿🧕🧕🏻🧕🏼🧕🏽🧕🏾🧕🏿🧔🧔🏻🧔🏼🧔🏽🧔🏾🧔🏿👱👱🏻👱🏼👱🏽👱🏾👱🏿👱‍♂️👱‍♂👱🏻‍♂️👱🏻‍♂👱🏼‍♂️👱🏼‍♂👱🏽‍♂️👱🏽‍♂👱🏾‍♂️👱🏾‍♂👱🏿‍♂️👱🏿‍♂👱‍♀️👱‍♀👱🏻‍♀️👱🏻‍♀👱🏼‍♀️👱🏼‍♀👱🏽‍♀️👱🏽‍♀👱🏾‍♀️👱🏾‍♀👱🏿‍♀️👱🏿‍♀👨‍🦰👨🏻‍🦰👨🏼‍🦰👨🏽‍🦰👨🏾‍🦰👨🏿‍🦰👩‍🦰👩🏻‍🦰👩🏼‍🦰👩🏽‍🦰👩🏾‍🦰👩🏿‍🦰👨‍🦱👨🏻‍🦱👨🏼‍🦱👨🏽‍🦱👨🏾‍🦱👨🏿‍🦱👩‍🦱👩🏻‍🦱👩🏼‍🦱👩🏽‍🦱👩🏾‍🦱👩🏿‍🦱👨‍🦲👨🏻‍🦲👨🏼‍🦲👨🏽‍🦲👨🏾‍🦲👨🏿‍🦲👩‍🦲👩🏻‍🦲👩🏼‍🦲👩🏽‍🦲👩🏾‍🦲👩🏿‍🦲👨‍🦳👨🏻‍🦳👨🏼‍🦳👨🏽‍🦳👨🏾‍🦳👨🏿‍🦳👩‍🦳👩🏻‍🦳👩🏼‍🦳👩🏽‍🦳👩🏾‍🦳👩🏿‍🦳🤵🤵🏻🤵🏼🤵🏽🤵🏾🤵🏿👰👰🏻👰🏼👰🏽👰🏾👰🏿🤰🤰🏻🤰🏼🤰🏽🤰🏾🤰🏿🤱🤱🏻🤱🏼🤱🏽🤱🏾🤱🏿👼👼🏻👼🏼👼🏽👼🏾👼🏿🎅🎅🏻🎅🏼🎅🏽🎅🏾🎅🏿🤶🤶🏻🤶🏼🤶🏽🤶🏾🤶🏿🦸🦸🏻🦸🏼🦸🏽🦸🏾🦸🏿🦸‍♀️🦸‍♀🦸🏻‍♀️🦸🏻‍♀🦸🏼‍♀️🦸🏼‍♀🦸🏽‍♀️🦸🏽‍♀🦸🏾‍♀️🦸🏾‍♀🦸🏿‍♀️🦸🏿‍♀🦸‍♂️🦸‍♂🦸🏻‍♂️🦸🏻‍♂🦸🏼‍♂️🦸🏼‍♂🦸🏽‍♂️🦸🏽‍♂🦸🏾‍♂️🦸🏾‍♂🦸🏿‍♂️🦸🏿‍♂🦹🦹🏻🦹🏼🦹🏽🦹🏾🦹🏿🦹‍♀️🦹‍♀🦹🏻‍♀️🦹🏻‍♀🦹🏼‍♀️🦹🏼‍♀🦹🏽‍♀️🦹🏽‍♀🦹🏾‍♀️🦹🏾‍♀🦹🏿‍♀️🦹🏿‍♀🦹‍♂️🦹‍♂🦹🏻‍♂️🦹🏻‍♂🦹🏼‍♂️🦹🏼‍♂🦹🏽‍♂️🦹🏽‍♂🦹🏾‍♂️🦹🏾‍♂🦹🏿‍♂️🦹🏿‍♂🧙🧙🏻🧙🏼🧙🏽🧙🏾🧙🏿🧙‍♀️🧙‍♀🧙🏻‍♀️🧙🏻‍♀🧙🏼‍♀️🧙🏼‍♀🧙🏽‍♀️🧙🏽‍♀🧙🏾‍♀️🧙🏾‍♀🧙🏿‍♀️🧙🏿‍♀🧙‍♂️🧙‍♂🧙🏻‍♂️🧙🏻‍♂🧙🏼‍♂️🧙🏼‍♂🧙🏽‍♂️🧙🏽‍♂🧙🏾‍♂️🧙🏾‍♂🧙🏿‍♂️🧙🏿‍♂🧚🧚🏻🧚🏼🧚🏽🧚🏾🧚🏿🧚‍♀️🧚‍♀🧚🏻‍♀️🧚🏻‍♀🧚🏼‍♀️🧚🏼‍♀🧚🏽‍♀️🧚🏽‍♀🧚🏾‍♀️🧚🏾‍♀🧚🏿‍♀️🧚🏿‍♀🧚‍♂️🧚‍♂🧚🏻‍♂️🧚🏻‍♂🧚🏼‍♂️🧚🏼‍♂🧚🏽‍♂️🧚🏽‍♂🧚🏾‍♂️🧚🏾‍♂🧚🏿‍♂️🧚🏿‍♂🧛🧛🏻🧛🏼🧛🏽🧛🏾🧛🏿🧛‍♀️🧛‍♀🧛🏻‍♀️🧛🏻‍♀🧛🏼‍♀️🧛🏼‍♀🧛🏽‍♀️🧛🏽‍♀🧛🏾‍♀️🧛🏾‍♀🧛🏿‍♀️🧛🏿‍♀🧛‍♂️🧛‍♂🧛🏻‍♂️🧛🏻‍♂🧛🏼‍♂️🧛🏼‍♂🧛🏽‍♂️🧛🏽‍♂🧛🏾‍♂️🧛🏾‍♂🧛🏿‍♂️🧛🏿‍♂🧜🧜🏻🧜🏼🧜🏽🧜🏾🧜🏿🧜‍♀️🧜‍♀🧜🏻‍♀️🧜🏻‍♀🧜🏼‍♀️🧜🏼‍♀🧜🏽‍♀️🧜🏽‍♀🧜🏾‍♀️🧜🏾‍♀🧜🏿‍♀️🧜🏿‍♀🧜‍♂️🧜‍♂🧜🏻‍♂️🧜🏻‍♂🧜🏼‍♂️🧜🏼‍♂🧜🏽‍♂️🧜🏽‍♂🧜🏾‍♂️🧜🏾‍♂🧜🏿‍♂️🧜🏿‍♂🧝🧝🏻🧝🏼🧝🏽🧝🏾🧝🏿🧝‍♀️🧝‍♀🧝🏻‍♀️🧝🏻‍♀🧝🏼‍♀️🧝🏼‍♀🧝🏽‍♀️🧝🏽‍♀🧝🏾‍♀️🧝🏾‍♀🧝🏿‍♀️🧝🏿‍♀🧝‍♂️🧝‍♂🧝🏻‍♂️🧝🏻‍♂🧝🏼‍♂️🧝🏼‍♂🧝🏽‍♂️🧝🏽‍♂🧝🏾‍♂️🧝🏾‍♂🧝🏿‍♂️🧝🏿‍♂🧞🧞‍♀️🧞‍♀🧞‍♂️🧞‍♂🧟🧟‍♀️🧟‍♀🧟‍♂️🧟‍♂🙍🙍🏻🙍🏼🙍🏽🙍🏾🙍🏿🙍‍♂️🙍‍♂🙍🏻‍♂️🙍🏻‍♂🙍🏼‍♂️🙍🏼‍♂🙍🏽‍♂️🙍🏽‍♂🙍🏾‍♂️🙍🏾‍♂🙍🏿‍♂️🙍🏿‍♂🙍‍♀️🙍‍♀🙍🏻‍♀️🙍🏻‍♀🙍🏼‍♀️🙍🏼‍♀🙍🏽‍♀️🙍🏽‍♀🙍🏾‍♀️🙍🏾‍♀🙍🏿‍♀️🙍🏿‍♀🙎🙎🏻🙎🏼🙎🏽🙎🏾🙎🏿🙎‍♂️🙎‍♂🙎🏻‍♂️🙎🏻‍♂🙎🏼‍♂️🙎🏼‍♂🙎🏽‍♂️🙎🏽‍♂🙎🏾‍♂️🙎🏾‍♂🙎🏿‍♂️🙎🏿‍♂🙎‍♀️🙎‍♀🙎🏻‍♀️🙎🏻‍♀🙎🏼‍♀️🙎🏼‍♀🙎🏽‍♀️🙎🏽‍♀🙎🏾‍♀️🙎🏾‍♀🙎🏿‍♀️🙎🏿‍♀🙅🙅🏻🙅🏼🙅🏽🙅🏾🙅🏿🙅‍♂️🙅‍♂🙅🏻‍♂️🙅🏻‍♂🙅🏼‍♂️🙅🏼‍♂🙅🏽‍♂️🙅🏽‍♂🙅🏾‍♂️🙅🏾‍♂🙅🏿‍♂️🙅🏿‍♂🙅‍♀️🙅‍♀🙅🏻‍♀️🙅🏻‍♀🙅🏼‍♀️🙅🏼‍♀🙅🏽‍♀️🙅🏽‍♀🙅🏾‍♀️🙅🏾‍♀🙅🏿‍♀️🙅🏿‍♀🙆🙆🏻🙆🏼🙆🏽🙆🏾🙆🏿🙆‍♂️🙆‍♂🙆🏻‍♂️🙆🏻‍♂🙆🏼‍♂️🙆🏼‍♂🙆🏽‍♂️🙆🏽‍♂🙆🏾‍♂️🙆🏾‍♂🙆🏿‍♂️🙆🏿‍♂🙆‍♀️🙆‍♀🙆🏻‍♀️🙆🏻‍♀🙆🏼‍♀️🙆🏼‍♀🙆🏽‍♀️🙆🏽‍♀🙆🏾‍♀️🙆🏾‍♀🙆🏿‍♀️🙆🏿‍♀💁💁🏻💁🏼💁🏽💁🏾💁🏿💁‍♂️💁‍♂💁🏻‍♂️💁🏻‍♂💁🏼‍♂️💁🏼‍♂💁🏽‍♂️💁🏽‍♂💁🏾‍♂️💁🏾‍♂💁🏿‍♂️💁🏿‍♂💁‍♀️💁‍♀💁🏻‍♀️💁🏻‍♀💁🏼‍♀️💁🏼‍♀💁🏽‍♀️💁🏽‍♀💁🏾‍♀️💁🏾‍♀💁🏿‍♀️💁🏿‍♀🙋🙋🏻🙋🏼🙋🏽🙋🏾🙋🏿🙋‍♂️🙋‍♂🙋🏻‍♂️🙋🏻‍♂🙋🏼‍♂️🙋🏼‍♂🙋🏽‍♂️🙋🏽‍♂🙋🏾‍♂️🙋🏾‍♂🙋🏿‍♂️🙋🏿‍♂🙋‍♀️🙋‍♀🙋🏻‍♀️🙋🏻‍♀🙋🏼‍♀️🙋🏼‍♀🙋🏽‍♀️🙋🏽‍♀🙋🏾‍♀️🙋🏾‍♀🙋🏿‍♀️🙋🏿‍♀🙇🙇🏻🙇🏼🙇🏽🙇🏾🙇🏿🙇‍♂️🙇‍♂🙇🏻‍♂️🙇🏻‍♂🙇🏼‍♂️🙇🏼‍♂🙇🏽‍♂️🙇🏽‍♂🙇🏾‍♂️🙇🏾‍♂🙇🏿‍♂️🙇🏿‍♂🙇‍♀️🙇‍♀🙇🏻‍♀️🙇🏻‍♀🙇🏼‍♀️🙇🏼‍♀🙇🏽‍♀️🙇🏽‍♀🙇🏾‍♀️🙇🏾‍♀🙇🏿‍♀️🙇🏿‍♀🤦🤦🏻🤦🏼🤦🏽🤦🏾🤦🏿🤦‍♂️🤦‍♂🤦🏻‍♂️🤦🏻‍♂🤦🏼‍♂️🤦🏼‍♂🤦🏽‍♂️🤦🏽‍♂🤦🏾‍♂️🤦🏾‍♂🤦🏿‍♂️🤦🏿‍♂🤦‍♀️🤦‍♀🤦🏻‍♀️🤦🏻‍♀🤦🏼‍♀️🤦🏼‍♀🤦🏽‍♀️🤦🏽‍♀🤦🏾‍♀️🤦🏾‍♀🤦🏿‍♀️🤦🏿‍♀🤷🤷🏻🤷🏼🤷🏽🤷🏾🤷🏿🤷‍♂️🤷‍♂🤷🏻‍♂️🤷🏻‍♂🤷🏼‍♂️🤷🏼‍♂🤷🏽‍♂️🤷🏽‍♂🤷🏾‍♂️🤷🏾‍♂🤷🏿‍♂️🤷🏿‍♂🤷‍♀️🤷‍♀🤷🏻‍♀️🤷🏻‍♀🤷🏼‍♀️🤷🏼‍♀🤷🏽‍♀️🤷🏽‍♀🤷🏾‍♀️🤷🏾‍♀🤷🏿‍♀️🤷🏿‍♀💆💆🏻💆🏼💆🏽💆🏾💆🏿💆‍♂️💆‍♂💆🏻‍♂️💆🏻‍♂💆🏼‍♂️💆🏼‍♂💆🏽‍♂️💆🏽‍♂💆🏾‍♂️💆🏾‍♂💆🏿‍♂️💆🏿‍♂💆‍♀️💆‍♀💆🏻‍♀️💆🏻‍♀💆🏼‍♀️💆🏼‍♀💆🏽‍♀️💆🏽‍♀💆🏾‍♀️💆🏾‍♀💆🏿‍♀️💆🏿‍♀💇💇🏻💇🏼💇🏽💇🏾💇🏿💇‍♂️💇‍♂💇🏻‍♂️💇🏻‍♂💇🏼‍♂️💇🏼‍♂💇🏽‍♂️💇🏽‍♂💇🏾‍♂️💇🏾‍♂💇🏿‍♂️💇🏿‍♂💇‍♀️💇‍♀💇🏻‍♀️💇🏻‍♀💇🏼‍♀️💇🏼‍♀💇🏽‍♀️💇🏽‍♀💇🏾‍♀️💇🏾‍♀💇🏿‍♀️💇🏿‍♀🚶🚶🏻🚶🏼🚶🏽🚶🏾🚶🏿🚶‍♂️🚶‍♂🚶🏻‍♂️🚶🏻‍♂🚶🏼‍♂️🚶🏼‍♂🚶🏽‍♂️🚶🏽‍♂🚶🏾‍♂️🚶🏾‍♂🚶🏿‍♂️🚶🏿‍♂🚶‍♀️🚶‍♀🚶🏻‍♀️🚶🏻‍♀🚶🏼‍♀️🚶🏼‍♀🚶🏽‍♀️🚶🏽‍♀🚶🏾‍♀️🚶🏾‍♀🚶🏿‍♀️🚶🏿‍♀🏃🏃🏻🏃🏼🏃🏽🏃🏾🏃🏿🏃‍♂️🏃‍♂🏃🏻‍♂️🏃🏻‍♂🏃🏼‍♂️🏃🏼‍♂🏃🏽‍♂️🏃🏽‍♂🏃🏾‍♂️🏃🏾‍♂🏃🏿‍♂️🏃🏿‍♂🏃‍♀️🏃‍♀🏃🏻‍♀️🏃🏻‍♀🏃🏼‍♀️🏃🏼‍♀🏃🏽‍♀️🏃🏽‍♀🏃🏾‍♀️🏃🏾‍♀🏃🏿‍♀️🏃🏿‍♀💃💃🏻💃🏼💃🏽💃🏾💃🏿🕺🕺🏻🕺🏼🕺🏽🕺🏾🕺🏿👯👯‍♂️👯‍♂👯‍♀️👯‍♀🧖🧖🏻🧖🏼🧖🏽🧖🏾🧖🏿🧖‍♀️🧖‍♀🧖🏻‍♀️🧖🏻‍♀🧖🏼‍♀️🧖🏼‍♀🧖🏽‍♀️🧖🏽‍♀🧖🏾‍♀️🧖🏾‍♀🧖🏿‍♀️🧖🏿‍♀🧖‍♂️🧖‍♂🧖🏻‍♂️🧖🏻‍♂🧖🏼‍♂️🧖🏼‍♂🧖🏽‍♂️🧖🏽‍♂🧖🏾‍♂️🧖🏾‍♂🧖🏿‍♂️🧖🏿‍♂🧗🧗🏻🧗🏼🧗🏽🧗🏾🧗🏿🧗‍♀️🧗‍♀🧗🏻‍♀️🧗🏻‍♀🧗🏼‍♀️🧗🏼‍♀🧗🏽‍♀️🧗🏽‍♀🧗🏾‍♀️🧗🏾‍♀🧗🏿‍♀️🧗🏿‍♀🧗‍♂️🧗‍♂🧗🏻‍♂️🧗🏻‍♂🧗🏼‍♂️🧗🏼‍♂🧗🏽‍♂️🧗🏽‍♂🧗🏾‍♂️🧗🏾‍♂🧗🏿‍♂️🧗🏿‍♂🧘🧘🏻🧘🏼🧘🏽🧘🏾🧘🏿🧘‍♀️🧘‍♀🧘🏻‍♀️🧘🏻‍♀🧘🏼‍♀️🧘🏼‍♀🧘🏽‍♀️🧘🏽‍♀🧘🏾‍♀️🧘🏾‍♀🧘🏿‍♀️🧘🏿‍♀🧘‍♂️🧘‍♂🧘🏻‍♂️🧘🏻‍♂🧘🏼‍♂️🧘🏼‍♂🧘🏽‍♂️🧘🏽‍♂🧘🏾‍♂️🧘🏾‍♂🧘🏿‍♂️🧘🏿‍♂🛀🛀🏻🛀🏼🛀🏽🛀🏾🛀🏿🛌🛌🏻🛌🏼🛌🏽🛌🏾🛌🏿🕴️🕴🕴🏻🕴🏼🕴🏽🕴🏾🕴🏿🗣️🗣👤👥🤺🏇🏇🏻🏇🏼🏇🏽🏇🏾🏇🏿⛷️⛷🏂🏂🏻🏂🏼🏂🏽🏂🏾🏂🏿🏌️🏌🏌🏻🏌🏼🏌🏽🏌🏾🏌🏿🏌️‍♂️🏌‍♂️🏌️‍♂🏌‍♂🏌🏻‍♂️🏌🏻‍♂🏌🏼‍♂️🏌🏼‍♂🏌🏽‍♂️🏌🏽‍♂🏌🏾‍♂️🏌🏾‍♂🏌🏿‍♂️🏌🏿‍♂🏌️‍♀️🏌‍♀️🏌️‍♀🏌‍♀🏌🏻‍♀️🏌🏻‍♀🏌🏼‍♀️🏌🏼‍♀🏌🏽‍♀️🏌🏽‍♀🏌🏾‍♀️🏌🏾‍♀🏌🏿‍♀️🏌🏿‍♀🏄🏄🏻🏄🏼🏄🏽🏄🏾🏄🏿🏄‍♂️🏄‍♂🏄🏻‍♂️🏄🏻‍♂🏄🏼‍♂️🏄🏼‍♂🏄🏽‍♂️🏄🏽‍♂🏄🏾‍♂️🏄🏾‍♂🏄🏿‍♂️🏄🏿‍♂🏄‍♀️🏄‍♀🏄🏻‍♀️🏄🏻‍♀🏄🏼‍♀️🏄🏼‍♀🏄🏽‍♀️🏄🏽‍♀🏄🏾‍♀️🏄🏾‍♀🏄🏿‍♀️🏄🏿‍♀🚣🚣🏻🚣🏼🚣🏽🚣🏾🚣🏿🚣‍♂️🚣‍♂🚣🏻‍♂️🚣🏻‍♂🚣🏼‍♂️🚣🏼‍♂🚣🏽‍♂️🚣🏽‍♂🚣🏾‍♂️🚣🏾‍♂🚣🏿‍♂️🚣🏿‍♂🚣‍♀️🚣‍♀🚣🏻‍♀️🚣🏻‍♀🚣🏼‍♀️🚣🏼‍♀🚣🏽‍♀️🚣🏽‍♀🚣🏾‍♀️🚣🏾‍♀🚣🏿‍♀️🚣🏿‍♀🏊🏊🏻🏊🏼🏊🏽🏊🏾🏊🏿🏊‍♂️🏊‍♂🏊🏻‍♂️🏊🏻‍♂🏊🏼‍♂️🏊🏼‍♂🏊🏽‍♂️🏊🏽‍♂🏊🏾‍♂️🏊🏾‍♂🏊🏿‍♂️🏊🏿‍♂🏊‍♀️🏊‍♀🏊🏻‍♀️🏊🏻‍♀🏊🏼‍♀️🏊🏼‍♀🏊🏽‍♀️🏊🏽‍♀🏊🏾‍♀️🏊🏾‍♀🏊🏿‍♀️🏊🏿‍♀⛹️⛹⛹🏻⛹🏼⛹🏽⛹🏾⛹🏿⛹️‍♂️⛹‍♂️⛹️‍♂⛹‍♂⛹🏻‍♂️⛹🏻‍♂⛹🏼‍♂️⛹🏼‍♂⛹🏽‍♂️⛹🏽‍♂⛹🏾‍♂️⛹🏾‍♂⛹🏿‍♂️⛹🏿‍♂⛹️‍♀️⛹‍♀️⛹️‍♀⛹‍♀⛹🏻‍♀️⛹🏻‍♀⛹🏼‍♀️⛹🏼‍♀⛹🏽‍♀️⛹🏽‍♀⛹🏾‍♀️⛹🏾‍♀⛹🏿‍♀️⛹🏿‍♀🏋️🏋🏋🏻🏋🏼🏋🏽🏋🏾🏋🏿🏋️‍♂️🏋‍♂️🏋️‍♂🏋‍♂🏋🏻‍♂️🏋🏻‍♂🏋🏼‍♂️🏋🏼‍♂🏋🏽‍♂️🏋🏽‍♂🏋🏾‍♂️🏋🏾‍♂🏋🏿‍♂️🏋🏿‍♂🏋️‍♀️🏋‍♀️🏋️‍♀🏋‍♀🏋🏻‍♀️🏋🏻‍♀🏋🏼‍♀️🏋🏼‍♀🏋🏽‍♀️🏋🏽‍♀🏋🏾‍♀️🏋🏾‍♀🏋🏿‍♀️🏋🏿‍♀🚴🚴🏻🚴🏼🚴🏽🚴🏾🚴🏿🚴‍♂️🚴‍♂🚴🏻‍♂️🚴🏻‍♂🚴🏼‍♂️🚴🏼‍♂🚴🏽‍♂️🚴🏽‍♂🚴🏾‍♂️🚴🏾‍♂🚴🏿‍♂️🚴🏿‍♂🚴‍♀️🚴‍♀🚴🏻‍♀️🚴🏻‍♀🚴🏼‍♀️🚴🏼‍♀🚴🏽‍♀️🚴🏽‍♀🚴🏾‍♀️🚴🏾‍♀🚴🏿‍♀️🚴🏿‍♀🚵🚵🏻🚵🏼🚵🏽🚵🏾🚵🏿🚵‍♂️🚵‍♂🚵🏻‍♂️🚵🏻‍♂🚵🏼‍♂️🚵🏼‍♂🚵🏽‍♂️🚵🏽‍♂🚵🏾‍♂️🚵🏾‍♂🚵🏿‍♂️🚵🏿‍♂🚵‍♀️🚵‍♀🚵🏻‍♀️🚵🏻‍♀🚵🏼‍♀️🚵🏼‍♀🚵🏽‍♀️🚵🏽‍♀🚵🏾‍♀️🚵🏾‍♀🚵🏿‍♀️🚵🏿‍♀🏎️🏎🏍️🏍🤸🤸🏻🤸🏼🤸🏽🤸🏾🤸🏿🤸‍♂️🤸‍♂🤸🏻‍♂️🤸🏻‍♂🤸🏼‍♂️🤸🏼‍♂🤸🏽‍♂️🤸🏽‍♂🤸🏾‍♂️🤸🏾‍♂🤸🏿‍♂️🤸🏿‍♂🤸‍♀️🤸‍♀🤸🏻‍♀️🤸🏻‍♀🤸🏼‍♀️🤸🏼‍♀🤸🏽‍♀️🤸🏽‍♀🤸🏾‍♀️🤸🏾‍♀🤸🏿‍♀️🤸🏿‍♀🤼🤼‍♂️🤼‍♂🤼‍♀️🤼‍♀🤽🤽🏻🤽🏼🤽🏽🤽🏾🤽🏿🤽‍♂️🤽‍♂🤽🏻‍♂️🤽🏻‍♂🤽🏼‍♂️🤽🏼‍♂🤽🏽‍♂️🤽🏽‍♂🤽🏾‍♂️🤽🏾‍♂🤽🏿‍♂️🤽🏿‍♂🤽‍♀️🤽‍♀🤽🏻‍♀️🤽🏻‍♀🤽🏼‍♀️🤽🏼‍♀🤽🏽‍♀️🤽🏽‍♀🤽🏾‍♀️🤽🏾‍♀🤽🏿‍♀️🤽🏿‍♀🤾🤾🏻🤾🏼🤾🏽🤾🏾🤾🏿🤾‍♂️🤾‍♂🤾🏻‍♂️🤾🏻‍♂🤾🏼‍♂️🤾🏼‍♂🤾🏽‍♂️🤾🏽‍♂🤾🏾‍♂️🤾🏾‍♂🤾🏿‍♂️🤾🏿‍♂🤾‍♀️🤾‍♀🤾🏻‍♀️🤾🏻‍♀🤾🏼‍♀️🤾🏼‍♀🤾🏽‍♀️🤾🏽‍♀🤾🏾‍♀️🤾🏾‍♀🤾🏿‍♀️🤾🏿‍♀🤹🤹🏻🤹🏼🤹🏽🤹🏾🤹🏿🤹‍♂️🤹‍♂🤹🏻‍♂️🤹🏻‍♂🤹🏼‍♂️🤹🏼‍♂🤹🏽‍♂️🤹🏽‍♂🤹🏾‍♂️🤹🏾‍♂🤹🏿‍♂️🤹🏿‍♂🤹‍♀️🤹‍♀🤹🏻‍♀️🤹🏻‍♀🤹🏼‍♀️🤹🏼‍♀🤹🏽‍♀️🤹🏽‍♀🤹🏾‍♀️🤹🏾‍♀🤹🏿‍♀️🤹🏿‍♀👫👬👭💏👩‍❤️‍💋‍👨👩‍❤‍💋‍👨👨‍❤️‍💋‍👨👨‍❤‍💋‍👨👩‍❤️‍💋‍👩👩‍❤‍💋‍👩💑👩‍❤️‍👨👩‍❤‍👨👨‍❤️‍👨👨‍❤‍👨👩‍❤️‍👩👩‍❤‍👩👪👨‍👩‍👦👨‍👩‍👧👨‍👩‍👧‍👦👨‍👩‍👦‍👦👨‍👩‍👧‍👧👨‍👨‍👦👨‍👨‍👧👨‍👨‍👧‍👦👨‍👨‍👦‍👦👨‍👨‍👧‍👧👩‍👩‍👦👩‍👩‍👧👩‍👩‍👧‍👦👩‍👩‍👦‍👦👩‍👩‍👧‍👧👨‍👦👨‍👦‍👦👨‍👧👨‍👧‍👦👨‍👧‍👧👩‍👦👩‍👦‍👦👩‍👧👩‍👧‍👦👩‍👧‍👧🤳🤳🏻🤳🏼🤳🏽🤳🏾🤳🏿💪💪🏻💪🏼💪🏽💪🏾💪🏿🦵🦵🏻🦵🏼🦵🏽🦵🏾🦵🏿🦶🦶🏻🦶🏼🦶🏽🦶🏾🦶🏿👈👈🏻👈🏼👈🏽👈🏾👈🏿👉👉🏻👉🏼👉🏽👉🏾👉🏿☝️☝☝🏻☝🏼☝🏽☝🏾☝🏿👆👆🏻👆🏼👆🏽👆🏾👆🏿🖕🖕🏻🖕🏼🖕🏽🖕🏾🖕🏿👇👇🏻👇🏼👇🏽👇🏾👇🏿✌️✌✌🏻✌🏼✌🏽✌🏾✌🏿🤞🤞🏻🤞🏼🤞🏽🤞🏾🤞🏿🖖🖖🏻🖖🏼🖖🏽🖖🏾🖖🏿🤘🤘🏻🤘🏼🤘🏽🤘🏾🤘🏿🤙🤙🏻🤙🏼🤙🏽🤙🏾🤙🏿🖐️🖐🖐🏻🖐🏼🖐🏽🖐🏾🖐🏿✋✋🏻✋🏼✋🏽✋🏾✋🏿👌👌🏻👌🏼👌🏽👌🏾👌🏿👍👍🏻👍🏼👍🏽👍🏾👍🏿👎👎🏻👎🏼👎🏽👎🏾👎🏿✊✊🏻✊🏼✊🏽✊🏾✊🏿👊👊🏻👊🏼👊🏽👊🏾👊🏿🤛🤛🏻🤛🏼🤛🏽🤛🏾🤛🏿🤜🤜🏻🤜🏼🤜🏽🤜🏾🤜🏿🤚🤚🏻🤚🏼🤚🏽🤚🏾🤚🏿👋👋🏻👋🏼👋🏽👋🏾👋🏿🤟🤟🏻🤟🏼🤟🏽🤟🏾🤟🏿✍️✍✍🏻✍🏼✍🏽✍🏾✍🏿👏👏🏻👏🏼👏🏽👏🏾👏🏿👐👐🏻👐🏼👐🏽👐🏾👐🏿🙌🙌🏻🙌🏼🙌🏽🙌🏾🙌🏿🤲🤲🏻🤲🏼🤲🏽🤲🏾🤲🏿🙏🙏🏻🙏🏼🙏🏽🙏🏾🙏🏿🤝💅💅🏻💅🏼💅🏽💅🏾💅🏿👂👂🏻👂🏼👂🏽👂🏾👂🏿👃👃🏻👃🏼👃🏽👃🏾👃🏿🦰🦱🦲🦳👣👀👁️👁👁️‍🗨️👁‍🗨️👁️‍🗨👁‍🗨🧠🦴🦷👅👄💋💘❤️❤💓💔💕💖💗💙💚💛🧡💜🖤💝💞💟❣️❣💌💤💢💣💥💦💨💫💬🗨️🗨🗯️🗯💭🕳️🕳👓🕶️🕶🥽🥼👔👕👖🧣🧤🧥🧦👗👘👙👚👛👜👝🛍️🛍🎒👞👟🥾🥿👠👡👢👑👒🎩🎓🧢⛑️⛑📿💄💍💎🐵🐒🦍🐶🐕🐩🐺🦊🦝🐱🐈🦁🐯🐅🐆🐴🐎🦄🦓🦌🐮🐂🐃🐄🐷🐖🐗🐽🐏🐑🐐🐪🐫🦙🦒🐘🦏🦛🐭🐁🐀🐹🐰🐇🐿️🐿🦔🦇🐻🐨🐼🦘🦡🐾🦃🐔🐓🐣🐤🐥🐦🐧🕊️🕊🦅🦆🦢🦉🦚🦜🐸🐊🐢🦎🐍🐲🐉🦕🦖🐳🐋🐬🐟🐠🐡🦈🐙🐚🦀🦞🦐🦑🐌🦋🐛🐜🐝🐞🦗🕷️🕷🕸️🕸🦂🦟🦠💐🌸💮🏵️🏵🌹🥀🌺🌻🌼🌷🌱🌲🌳🌴🌵🌾🌿☘️☘🍀🍁🍂🍃🍇🍈🍉🍊🍋🍌🍍🥭🍎🍏🍐🍑🍒🍓🥝🍅🥥🥑🍆🥔🥕🌽🌶️🌶🥒🥬🥦🍄🥜🌰🍞🥐🥖🥨🥯🥞🧀🍖🍗🥩🥓🍔🍟🍕🌭🥪🌮🌯🥙🥚🍳🥘🍲🥣🥗🍿🧂🥫🍱🍘🍙🍚🍛🍜🍝🍠🍢🍣🍤🍥🥮🍡🥟🥠🥡🍦🍧🍨🍩🍪🎂🍰🧁🥧🍫🍬🍭🍮🍯🍼🥛☕🍵🍶🍾🍷🍸🍹🍺🍻🥂🥃🥤🥢🍽️🍽🍴🥄🔪🏺🌍🌎🌏🌐🗺️🗺🗾🧭🏔️🏔⛰️⛰🌋🗻🏕️🏕🏖️🏖🏜️🏜🏝️🏝🏞️🏞🏟️🏟🏛️🏛🏗️🏗🧱🏘️🏘🏚️🏚🏠🏡🏢🏣🏤🏥🏦🏨🏩🏪🏫🏬🏭🏯🏰💒🗼🗽⛪🕌🕍⛩️⛩🕋⛲⛺🌁🌃🏙️🏙🌄🌅🌆🌇🌉♨️♨🌌🎠🎡🎢💈🎪🚂🚃🚄🚅🚆🚇🚈🚉🚊🚝🚞🚋🚌🚍🚎🚐🚑🚒🚓🚔🚕🚖🚗🚘🚙🚚🚛🚜🚲🛴🛹🛵🚏🛣️🛣🛤️🛤🛢️🛢⛽🚨🚥🚦🛑🚧⚓⛵🛶🚤🛳️🛳⛴️⛴🛥️🛥🚢✈️✈🛩️🛩🛫🛬💺🚁🚟🚠🚡🛰️🛰🚀🛸🛎️🛎🧳⌛⏳⌚⏰⏱️⏱⏲️⏲🕰️🕰🕛🕧🕐🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕡🕖🕢🕗🕣🕘🕤🕙🕥🕚🕦🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜🌡️🌡☀️☀🌝🌞⭐🌟🌠☁️☁⛅⛈️⛈🌤️🌤🌥️🌥🌦️🌦🌧️🌧🌨️🌨🌩️🌩🌪️🌪🌫️🌫🌬️🌬🌀🌈🌂☂️☂☔⛱️⛱⚡❄️❄☃️☃⛄☄️☄🔥💧🌊🎃🎄🎆🎇🧨✨🎈🎉🎊🎋🎍🎎🎏🎐🎑🧧🎀🎁🎗️🎗🎟️🎟🎫🎖️🎖🏆🏅🥇🥈🥉⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸️⛸🎣🎽🎿🛷🥌🎯🎱🔮🧿🎮🕹️🕹🎰🎲🧩🧸♠️♠♥️♥♦️♦♣️♣♟️♟🃏🀄🎴🎭🖼️🖼🎨🧵🧶🔇🔈🔉🔊📢📣📯🔔🔕🎼🎵🎶🎙️🎙🎚️🎚🎛️🎛🎤🎧📻🎷🎸🎹🎺🎻🥁📱📲☎️☎📞📟📠🔋🔌💻🖥️🖥🖨️🖨⌨️⌨🖱️🖱🖲️🖲💽💾💿📀🧮🎥🎞️🎞📽️📽🎬📺📷📸📹📼🔍🔎🕯️🕯💡🔦🏮📔📕📖📗📘📙📚📓📒📃📜📄📰🗞️🗞📑🔖🏷️🏷💰💴💵💶💷💸💳🧾💹💱💲✉️✉📧📨📩📤📥📦📫📪📬📭📮🗳️🗳✏️✏✒️✒🖋️🖋🖊️🖊🖌️🖌🖍️🖍📝💼📁📂🗂️🗂📅📆🗒️🗒🗓️🗓📇📈📉📊📋📌📍📎🖇️🖇📏📐✂️✂🗃️🗃🗄️🗄🗑️🗑🔒🔓🔏🔐🔑🗝️🗝🔨⛏️⛏⚒️⚒🛠️🛠🗡️🗡⚔️⚔🔫🏹🛡️🛡🔧🔩⚙️⚙🗜️🗜⚖️⚖🔗⛓️⛓🧰🧲⚗️⚗🧪🧫🧬🔬🔭📡💉💊🚪🛏️🛏🛋️🛋🚽🚿🛁🧴🧷🧹🧺🧻🧼🧽🧯🛒🚬⚰️⚰⚱️⚱🗿🏧🚮🚰♿🚹🚺🚻🚼🚾🛂🛃🛄🛅⚠️⚠🚸⛔🚫🚳🚭🚯🚱🚷📵🔞☢️☢☣️☣⬆️⬆↗️↗➡️➡↘️↘⬇️⬇↙️↙⬅️⬅↖️↖↕️↕↔️↔↩️↩↪️↪⤴️⤴⤵️⤵🔃🔄🔙🔚🔛🔜🔝🛐⚛️⚛🕉️🕉✡️✡☸️☸☯️☯✝️✝☦️☦☪️☪☮️☮🕎🔯♈♉♊♋♌♍♎♏♐♑♒♓⛎🔀🔁🔂▶️▶⏩⏭️⏭⏯️⏯◀️◀⏪⏮️⏮🔼⏫🔽⏬⏸️⏸⏹️⏹⏺️⏺⏏️⏏🎦🔅🔆📶📳📴♀️♀♂️♂⚕️⚕♾️♾♻️♻⚜️⚜🔱📛🔰⭕✅☑️☑✔️✔✖️✖❌❎➕➖➗➰➿〽️〽✳️✳✴️✴❇️❇‼️‼⁉️⁉❓❔❕❗〰️〰©️©®️®™️™#️⃣#⃣*️⃣*⃣0️⃣0⃣1️⃣1⃣2️⃣2⃣3️⃣3⃣4️⃣4⃣5️⃣5⃣6️⃣6⃣7️⃣7⃣8️⃣8⃣9️⃣9⃣🔟💯🔠🔡🔢🔣🔤🅰️🅰🆎🅱️🅱🆑🆒🆓ℹ️ℹ🆔Ⓜ️Ⓜ🆕🆖🅾️🅾🆗🅿️🅿🆘🆙🆚🈁🈂️🈂🈷️🈷🈶🈯🉐🈹🈚🈲🉑🈸🈴🈳㊗️㊗㊙️㊙🈺🈵▪️▪▫️▫◻️◻◼️◼◽◾⬛⬜🔶🔷🔸🔹🔺🔻💠🔘🔲🔳⚪⚫🔴🔵🏁🚩🎌🏴🏳️🏳🏳️‍🌈🏳‍🌈🏴‍☠️🏴‍☠🇦🇨🇦🇩🇦🇪🇦🇫🇦🇬🇦🇮🇦🇱🇦🇲🇦🇴🇦🇶🇦🇷🇦🇸🇦🇹🇦🇺🇦🇼🇦🇽🇦🇿🇧🇦🇧🇧🇧🇩🇧🇪🇧🇫🇧🇬🇧🇭🇧🇮🇧🇯🇧🇱🇧🇲🇧🇳🇧🇴🇧🇶🇧🇷🇧🇸🇧🇹🇧🇻🇧🇼🇧🇾🇧🇿🇨🇦🇨🇨🇨🇩🇨🇫🇨🇬🇨🇭🇨🇮🇨🇰🇨🇱🇨🇲🇨🇳🇨🇴🇨🇵🇨🇷🇨🇺🇨🇻🇨🇼🇨🇽🇨🇾🇨🇿🇩🇪🇩🇬🇩🇯🇩🇰🇩🇲🇩🇴🇩🇿🇪🇦🇪🇨🇪🇪🇪🇬🇪🇭🇪🇷🇪🇸🇪🇹🇪🇺🇫🇮🇫🇯🇫🇰🇫🇲🇫🇴🇫🇷🇬🇦🇬🇧🇬🇩🇬🇪🇬🇫🇬🇬🇬🇭🇬🇮🇬🇱🇬🇲🇬🇳🇬🇵🇬🇶🇬🇷🇬🇸🇬🇹🇬🇺🇬🇼🇬🇾🇭🇰🇭🇲🇭🇳🇭🇷🇭🇹🇭🇺🇮🇨🇮🇩🇮🇪🇮🇱🇮🇲🇮🇳🇮🇴🇮🇶🇮🇷🇮🇸🇮🇹🇯🇪🇯🇲🇯🇴🇯🇵🇰🇪🇰🇬🇰🇭🇰🇮🇰🇲🇰🇳🇰🇵🇰🇷🇰🇼🇰🇾🇰🇿🇱🇦🇱🇧🇱🇨🇱🇮🇱🇰🇱🇷🇱🇸🇱🇹🇱🇺🇱🇻🇱🇾🇲🇦🇲🇨🇲🇩🇲🇪🇲🇫🇲🇬🇲🇭🇲🇰🇲🇱🇲🇲🇲🇳🇲🇴🇲🇵🇲🇶🇲🇷🇲🇸🇲🇹🇲🇺🇲🇻🇲🇼🇲🇽🇲🇾🇲🇿🇳🇦🇳🇨🇳🇪🇳🇫🇳🇬🇳🇮🇳🇱🇳🇴🇳🇵🇳🇷🇳🇺🇳🇿🇴🇲🇵🇦🇵🇪🇵🇫🇵🇬🇵🇭🇵🇰🇵🇱🇵🇲🇵🇳🇵🇷🇵🇸🇵🇹🇵🇼🇵🇾🇶🇦🇷🇪🇷🇴🇷🇸🇷🇺🇷🇼🇸🇦🇸🇧🇸🇨🇸🇩🇸🇪🇸🇬🇸🇭🇸🇮🇸🇯🇸🇰🇸🇱🇸🇲🇸🇳🇸🇴🇸🇷🇸🇸🇸🇹🇸🇻🇸🇽🇸🇾🇸🇿🇹🇦🇹🇨🇹🇩🇹🇫🇹🇬🇹🇭🇹🇯🇹🇰🇹🇱🇹🇲🇹🇳🇹🇴🇹🇷🇹🇹🇹🇻🇹🇼🇹🇿🇺🇦🇺🇬🇺🇲🇺🇳🇺🇸🇺🇾🇺🇿🇻🇦🇻🇨🇻🇪🇻🇬🇻🇮🇻🇳🇻🇺🇼🇫🇼🇸🇽🇰🇾🇪🇾🇹🇿🇦🇿🇲🇿🇼🏴󠁧󠁢󠁥󠁮󠁧󠁿🏴󠁧󠁢󠁳󠁣󠁴󠁿🏴󠁧󠁢󠁷󠁬󠁳󠁿&quot;</span>
+  <span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;:-)&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;😀 is an emoji&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;😀stuff&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">emoji</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;stuff😀&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;uuid&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">uuid </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s1">uuid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;9491d710-3185-4e06-bea0-6a2f275345e0&quot;</span><span class="s2">);</span>
+  <span class="s1">uuid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;d89e7b01-7598-ed11-9d7a-0022489382fd&quot;</span><span class="s2">); </span><span class="s4">// new sequential id</span>
+  <span class="s1">uuid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00000000-0000-0000-0000-000000000000&quot;</span><span class="s2">);</span>
+  <span class="s1">uuid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;b3ce60f8-e8b9-40f5-1150-172ede56ff74&quot;</span><span class="s2">); </span><span class="s4">// Variant 0 - RFC 9562/4122: Reserved, NCS backward compatibility</span>
+  <span class="s1">uuid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;92e76bf9-28b3-4730-cd7f-cb6bc51f8c09&quot;</span><span class="s2">); </span><span class="s4">// Variant 2 - RFC 9562/4122: Reserved, Microsoft Corporation backward compatibility</span>
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">uuid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;9491d710-3185-4e06-bea0-6a2f275345e0X&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;bad uuid&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">uuid </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s1">uuid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;9491d710-3185-4e06-bea0-6a2f275345e0&quot;</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">uuid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;invalid uuid&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;nanoid&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">nanoid </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s1">nanoid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;lfNZluvAxMkf7Q8C5H-QS&quot;</span><span class="s2">);</span>
+  <span class="s1">nanoid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;mIU_4PJWikaU8fMbmkouz&quot;</span><span class="s2">);</span>
+  <span class="s1">nanoid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;Hb9ZUtUa2JDm_dD-47EGv&quot;</span><span class="s2">);</span>
+  <span class="s1">nanoid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;5Noocgv_8vQ9oPijj4ioQ&quot;</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">nanoid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;Xq90uDyhddC53KsoASYJGX&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;bad nanoid&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">nanoid </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s1">nanoid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;ySh_984wpDUu7IQRrLXAp&quot;</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">nanoid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;invalid nanoid&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;custom error&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;cuid&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">cuid </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">();</span>
+  <span class="s1">cuid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;ckopqwooh000001la8mbi2im9&quot;</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">cuid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;cifjhdsfhsd-invalid-cuid&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;Invalid cuid&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;cuid2&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">cuid2 </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">();</span>
+  <span class="s0">const </span><span class="s1">validStrings </span><span class="s2">= [</span>
+    <span class="s3">&quot;a&quot;</span><span class="s2">, </span><span class="s4">// short string</span>
+    <span class="s3">&quot;tz4a98xxat96iws9zmbrgj3a&quot;</span><span class="s2">, </span><span class="s4">// normal string</span>
+    <span class="s3">&quot;kf5vz6ssxe4zjcb409rjgo747tc5qjazgptvotk6&quot;</span><span class="s2">, </span><span class="s4">// longer than require(&quot;@paralleldrive/cuid2&quot;).bigLength</span>
+  <span class="s2">];</span>
+  <span class="s0">for </span><span class="s2">(</span><span class="s0">const </span><span class="s1">s of validStrings</span><span class="s2">) {</span>
+    <span class="s1">cuid2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">s</span><span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">const </span><span class="s1">invalidStrings </span><span class="s2">= [</span>
+    <span class="s3">&quot;&quot;</span><span class="s2">, </span><span class="s4">// empty string</span>
+    <span class="s3">&quot;tz4a98xxat96iws9zMbrgj3a&quot;</span><span class="s2">, </span><span class="s4">// include uppercase</span>
+    <span class="s3">&quot;tz4a98xxat96iws-zmbrgj3a&quot;</span><span class="s2">, </span><span class="s4">// involve symbols</span>
+  <span class="s2">];</span>
+  <span class="s0">const </span><span class="s1">results </span><span class="s2">= </span><span class="s1">invalidStrings</span><span class="s2">.</span><span class="s1">map</span><span class="s2">((</span><span class="s1">s</span><span class="s2">) =&gt; </span><span class="s1">cuid2</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">s</span><span class="s2">));</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">results</span><span class="s2">.</span><span class="s1">every</span><span class="s2">((</span><span class="s1">r</span><span class="s2">) =&gt; !</span><span class="s1">r</span><span class="s2">.</span><span class="s1">success</span><span class="s2">)).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">results</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">results</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;Invalid cuid2&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;ulid&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">ulid </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">();</span>
+  <span class="s1">ulid</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;01ARZ3NDEKTSV4RRFFQ69G5FAV&quot;</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">ulid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;invalidulid&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s0">const </span><span class="s1">tooLong </span><span class="s2">= </span><span class="s3">&quot;01ARZ3NDEKTSV4RRFFQ69G5FAVA&quot;</span><span class="s2">;</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">ulid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">tooLong</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;Invalid ulid&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+  <span class="s0">const </span><span class="s1">caseInsensitive </span><span class="s2">= </span><span class="s1">ulid</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;01arZ3nDeKTsV4RRffQ69G5FAV&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">caseInsensitive</span><span class="s2">.</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;regex&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">()</span>
+    <span class="s2">.</span><span class="s1">regex</span><span class="s2">(</span><span class="s6">/^moo+$/</span><span class="s2">)</span>
+    <span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;mooooo&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;purr&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;regexp error message&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">z</span>
+    <span class="s2">.</span><span class="s1">string</span><span class="s2">()</span>
+    <span class="s2">.</span><span class="s1">regex</span><span class="s2">(</span><span class="s6">/^moo+$/</span><span class="s2">)</span>
+    <span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;boooo&quot;</span><span class="s2">);</span>
+  <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;Invalid&quot;</span><span class="s2">);</span>
+  <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+    <span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">&quot;validation should have failed&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;purr&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;regex lastIndex reset&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">schema </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">regex</span><span class="s2">(</span><span class="s6">/^\d+$/g</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">schema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;123&quot;</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">schema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;123&quot;</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">schema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;123&quot;</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">schema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;123&quot;</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">schema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;123&quot;</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;checks getters&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">email</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">url</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cuid2</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">uuid</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">nanoid</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isEmail</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isURL</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isCUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isCUID2</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isUUID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isNANOID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isIP</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isCIDR</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ulid</span><span class="s2">().</span><span class="s1">isULID</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;min max getters&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">min</span><span class="s2">(</span><span class="s5">5</span><span class="s2">).</span><span class="s1">minLength</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s5">5</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">min</span><span class="s2">(</span><span class="s5">5</span><span class="s2">).</span><span class="s1">min</span><span class="s2">(</span><span class="s5">10</span><span class="s2">).</span><span class="s1">minLength</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s5">10</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">minLength</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">max</span><span class="s2">(</span><span class="s5">5</span><span class="s2">).</span><span class="s1">maxLength</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s5">5</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">max</span><span class="s2">(</span><span class="s5">5</span><span class="s2">).</span><span class="s1">max</span><span class="s2">(</span><span class="s5">1</span><span class="s2">).</span><span class="s1">maxLength</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s5">1</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">maxLength</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;trim&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">().</span><span class="s1">min</span><span class="s2">(</span><span class="s5">2</span><span class="s2">).</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot; 12 &quot;</span><span class="s2">)).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;12&quot;</span><span class="s2">);</span>
+
+  <span class="s4">// ordering of methods is respected</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">min</span><span class="s2">(</span><span class="s5">2</span><span class="s2">).</span><span class="s1">trim</span><span class="s2">().</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot; 1 &quot;</span><span class="s2">)).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;1&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">().</span><span class="s1">min</span><span class="s2">(</span><span class="s5">2</span><span class="s2">).</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot; 1 &quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;lowerCase&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">toLowerCase</span><span class="s2">().</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;ASDF&quot;</span><span class="s2">)).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;asdf&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">toUpperCase</span><span class="s2">().</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;asdf&quot;</span><span class="s2">)).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;ASDF&quot;</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;datetime&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">a </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({});</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">a</span><span class="s2">.</span><span class="s1">isDatetime</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+
+  <span class="s0">const </span><span class="s1">b </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">offset</span><span class="s2">: </span><span class="s0">true </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">b</span><span class="s2">.</span><span class="s1">isDatetime</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+
+  <span class="s0">const </span><span class="s1">c </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">precision</span><span class="s2">: </span><span class="s5">3 </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">c</span><span class="s2">.</span><span class="s1">isDatetime</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+
+  <span class="s0">const </span><span class="s1">d </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">offset</span><span class="s2">: </span><span class="s0">true</span><span class="s2">, </span><span class="s1">precision</span><span class="s2">: </span><span class="s5">0 </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">d</span><span class="s2">.</span><span class="s1">isDatetime</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+
+  <span class="s0">const </span><span class="s2">{ </span><span class="s1">isDatetime </span><span class="s2">} = </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">isDatetime</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;datetime parsing&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">datetime </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">();</span>
+  <span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.000Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.816Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.8162314Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52Z&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;foo&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;T18:45:12.123&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42.123+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">datetimeNoMs </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">precision</span><span class="s2">: </span><span class="s5">0 </span><span class="s2">});</span>
+  <span class="s1">datetimeNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52Z&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;tuna&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.000Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.816Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">datetime3Ms </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">precision</span><span class="s2">: </span><span class="s5">3 </span><span class="s2">});</span>
+  <span class="s1">datetime3Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.000Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetime3Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.123Z&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime3Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;tuna&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime3Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.1Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime3Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.12Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime3Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetime3Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">datetimeOffset </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">offset</span><span class="s2">: </span><span class="s0">true </span><span class="s2">});</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.000Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.816234134Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.4Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+00:00&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+03:15&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+0315&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42+0315&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+03&quot;</span><span class="s2">));</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;tuna&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">datetimeOffsetNoMs </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">offset</span><span class="s2">: </span><span class="s0">true</span><span class="s2">, </span><span class="s1">precision</span><span class="s2">: </span><span class="s5">0 </span><span class="s2">});</span>
+  <span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+00:00&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+0000&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42+0000&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;tuna&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.000Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-13T09:52:31.816Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffsetNoMs</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29.124+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">datetimeOffset4Ms </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">datetime</span><span class="s2">({ </span><span class="s1">offset</span><span class="s2">: </span><span class="s0">true</span><span class="s2">, </span><span class="s1">precision</span><span class="s2">: </span><span class="s5">4 </span><span class="s2">});</span>
+  <span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.1234Z&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29.1234+00:00&quot;</span><span class="s2">);</span>
+  <span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29.1234+0000&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29.1234+00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;tuna&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01T00:00:00.123Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29.124+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">datetimeOffset4Ms</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;date&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">a </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">date</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">a</span><span class="s2">.</span><span class="s1">isDate</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;date parsing&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">date </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">date</span><span class="s2">();</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;1970-01-01&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-01-31&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-03-31&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-04-30&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-05-31&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-06-30&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-07-31&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-08-31&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-09-30&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-10-31&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-11-30&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-12-31&quot;</span><span class="s2">);</span>
+
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-02-29&quot;</span><span class="s2">);</span>
+  <span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2400-02-29&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2022-02-29&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2100-02-29&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2200-02-29&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2300-02-29&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2500-02-29&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;foo&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;200-01-01&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;20000-01-01&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-0-01&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-011-01&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-01-0&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-01-011&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000/01/01&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;01-01-2022&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;01/01/2022&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-01-01 00:00:00Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2020-10-14T17:42:29.123Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-00-12&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-12-00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-01-32&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-13-01&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-21-01&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-02-30&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-02-31&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-04-31&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-06-31&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-09-31&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">date</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2000-11-31&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;time&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">a </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">time</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">a</span><span class="s2">.</span><span class="s1">isTime</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;time parsing&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">time </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">time</span><span class="s2">();</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00&quot;</span><span class="s2">);</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;23:00:00&quot;</span><span class="s2">);</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:59:00&quot;</span><span class="s2">);</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:59&quot;</span><span class="s2">);</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;23:59:59&quot;</span><span class="s2">);</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;09:52:31&quot;</span><span class="s2">);</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;23:59:59.9999999&quot;</span><span class="s2">);</span>
+  <span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;23:59&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;foo&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;0:00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:0:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:0&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00.000+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;24:00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:60:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:60&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;24:60:60&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;24:60&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">time2 </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">time</span><span class="s2">({ </span><span class="s1">precision</span><span class="s2">: </span><span class="s5">2 </span><span class="s2">});</span>
+  <span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00.00&quot;</span><span class="s2">);</span>
+  <span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;09:52:31.12&quot;</span><span class="s2">);</span>
+  <span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;23:59:59.99&quot;</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;foo&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00.00Z&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00.0&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00.000&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;00:00:00.00+00:00&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">time2</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;23:59&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s4">// const time3 = z.string().time({ offset: true });</span>
+  <span class="s4">// time3.parse(&quot;00:00:00Z&quot;);</span>
+  <span class="s4">// time3.parse(&quot;09:52:31Z&quot;);</span>
+  <span class="s4">// time3.parse(&quot;00:00:00+00:00&quot;);</span>
+  <span class="s4">// time3.parse(&quot;00:00:00+0000&quot;);</span>
+  <span class="s4">// time3.parse(&quot;00:00:00.000Z&quot;);</span>
+  <span class="s4">// time3.parse(&quot;00:00:00.000+00:00&quot;);</span>
+  <span class="s4">// time3.parse(&quot;00:00:00.000+0000&quot;);</span>
+  <span class="s4">// expect(() =&gt; time3.parse(&quot;&quot;)).toThrow();</span>
+  <span class="s4">// expect(() =&gt; time3.parse(&quot;foo&quot;)).toThrow();</span>
+  <span class="s4">// expect(() =&gt; time3.parse(&quot;00:00:00&quot;)).toThrow();</span>
+  <span class="s4">// expect(() =&gt; time3.parse(&quot;00:00:00.000&quot;)).toThrow();</span>
+
+  <span class="s4">// const time4 = z.string().time({ offset: true, precision: 0 });</span>
+  <span class="s4">// time4.parse(&quot;00:00:00Z&quot;);</span>
+  <span class="s4">// time4.parse(&quot;09:52:31Z&quot;);</span>
+  <span class="s4">// time4.parse(&quot;00:00:00+00:00&quot;);</span>
+  <span class="s4">// time4.parse(&quot;00:00:00+0000&quot;);</span>
+  <span class="s4">// expect(() =&gt; time4.parse(&quot;&quot;)).toThrow();</span>
+  <span class="s4">// expect(() =&gt; time4.parse(&quot;foo&quot;)).toThrow();</span>
+  <span class="s4">// expect(() =&gt; time4.parse(&quot;00:00:00.0&quot;)).toThrow();</span>
+  <span class="s4">// expect(() =&gt; time4.parse(&quot;00:00:00.000&quot;)).toThrow();</span>
+  <span class="s4">// expect(() =&gt; time4.parse(&quot;00:00:00.000+00:00&quot;)).toThrow();</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;duration&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">duration </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">duration</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">duration</span><span class="s2">.</span><span class="s1">isDuration</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+
+  <span class="s0">const </span><span class="s1">validDurations </span><span class="s2">= [</span>
+    <span class="s3">&quot;P3Y6M4DT12H30M5S&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P2Y9M3DT12H31M8.001S&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;+P3Y6M4DT12H30M5S&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;-PT0.001S&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;+PT0.001S&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;PT0,001S&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;PT12H30M5S&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;-P2M1D&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P-2M-1D&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;-P5DT10H&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P-5DT-10H&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P1Y&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P2MT30M&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;PT6H&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P5W&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P0.5Y&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P0,5Y&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;P42YT7.004M&quot;</span><span class="s2">,</span>
+  <span class="s2">];</span>
+
+  <span class="s0">const </span><span class="s1">invalidDurations </span><span class="s2">= [</span><span class="s3">&quot;foo bar&quot;</span><span class="s2">, </span><span class="s3">&quot;&quot;</span><span class="s2">, </span><span class="s3">&quot; &quot;</span><span class="s2">, </span><span class="s3">&quot;P&quot;</span><span class="s2">, </span><span class="s3">&quot;T1H&quot;</span><span class="s2">, </span><span class="s3">&quot;P0.5Y1D&quot;</span><span class="s2">, </span><span class="s3">&quot;P0,5Y6M&quot;</span><span class="s2">, </span><span class="s3">&quot;P1YT&quot;</span><span class="s2">];</span>
+
+  <span class="s0">for </span><span class="s2">(</span><span class="s0">const </span><span class="s1">val of validDurations</span><span class="s2">) {</span>
+    <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">duration</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">val</span><span class="s2">);</span>
+    <span class="s0">if </span><span class="s2">(!</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+      <span class="s0">throw </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">`Valid duration could not be parsed: </span><span class="s1">$</span><span class="s2">{</span><span class="s1">val</span><span class="s2">}</span><span class="s3">`</span><span class="s2">);</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s0">for </span><span class="s2">(</span><span class="s0">const </span><span class="s1">val of invalidDurations</span><span class="s2">) {</span>
+    <span class="s0">const </span><span class="s1">result </span><span class="s2">= </span><span class="s1">duration</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">val</span><span class="s2">);</span>
+
+    <span class="s0">if </span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">success</span><span class="s2">) {</span>
+      <span class="s0">throw </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">`Invalid duration was successful parsed: </span><span class="s1">$</span><span class="s2">{</span><span class="s1">val</span><span class="s2">}</span><span class="s3">`</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">expect</span><span class="s2">(</span><span class="s1">result</span><span class="s2">.</span><span class="s1">error</span><span class="s2">.</span><span class="s1">issues</span><span class="s2">[</span><span class="s5">0</span><span class="s2">].</span><span class="s1">message</span><span class="s2">).</span><span class="s1">toEqual</span><span class="s2">(</span><span class="s3">&quot;Invalid duration&quot;</span><span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;IP validation&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">ip </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">ip</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s3">&quot;122.122.122.122&quot;</span><span class="s2">).</span><span class="s1">success</span><span class="s2">).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+
+  <span class="s0">const </span><span class="s1">ipv4 </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">({ </span><span class="s1">version</span><span class="s2">: </span><span class="s3">&quot;v4&quot; </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">ipv4</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;6097:adfa:6f0b:220d:db08:5021:6191:7990&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">ipv6 </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">({ </span><span class="s1">version</span><span class="s2">: </span><span class="s3">&quot;v6&quot; </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">ipv6</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;254.164.77.1&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">validIPs </span><span class="s2">= [</span>
+    <span class="s3">&quot;1e5e:e6c8:daac:514b:114b:e360:d8c0:682c&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;9d4:c956:420f:5788:4339:9b3b:2418:75c3&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;474f:4c83::4e40:a47:ff95:0cda&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;d329:0:25b4:db47:a9d1:0:4926:0000&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;e48:10fb:1499:3e28:e4b6:dea5:4692:912c&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;114.71.82.94&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;0.0.0.0&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;37.85.236.115&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:4888:50:ff00:500:d::&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:4888:50:ff00:0500:000d:000:0000&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:4888:50:ff00:0500:000d:0000:0000&quot;</span><span class="s2">,</span>
+  <span class="s2">];</span>
+
+  <span class="s0">const </span><span class="s1">invalidIPs </span><span class="s2">= [</span>
+    <span class="s3">&quot;d329:1be4:25b4:db47:a9d1:dc71:4926:992c:14af&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;d5e7:7214:2b78::3906:85e6:53cc:709:32ba&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;8f69::c757:395e:976e::3441&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;54cb::473f:d516:0.255.256.22&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;54cb::473f:d516:192.168.1&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;256.0.4.4&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;-1.0.555.4&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;0.0.0.0.0&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;1.1.1&quot;</span><span class="s2">,</span>
+  <span class="s2">];</span>
+  <span class="s4">// no parameters check IPv4 or IPv6</span>
+  <span class="s0">const </span><span class="s1">ipSchema </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">ip</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">validIPs</span><span class="s2">.</span><span class="s1">every</span><span class="s2">((</span><span class="s1">ip</span><span class="s2">) =&gt; </span><span class="s1">ipSchema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">ip</span><span class="s2">).</span><span class="s1">success</span><span class="s2">)).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">invalidIPs</span><span class="s2">.</span><span class="s1">every</span><span class="s2">((</span><span class="s1">ip</span><span class="s2">) =&gt; </span><span class="s1">ipSchema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">ip</span><span class="s2">).</span><span class="s1">success </span><span class="s2">=== </span><span class="s0">false</span><span class="s2">)).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+
+<span class="s1">test</span><span class="s2">(</span><span class="s3">&quot;CIDR validation&quot;</span><span class="s2">, () =&gt; {</span>
+  <span class="s0">const </span><span class="s1">ipv4Cidr </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">({ </span><span class="s1">version</span><span class="s2">: </span><span class="s3">&quot;v4&quot; </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">ipv4Cidr</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;2001:0db8:85a3::8a2e:0370:7334/64&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">ipv6Cidr </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">({ </span><span class="s1">version</span><span class="s2">: </span><span class="s3">&quot;v6&quot; </span><span class="s2">});</span>
+  <span class="s1">expect</span><span class="s2">(() =&gt; </span><span class="s1">ipv6Cidr</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s3">&quot;192.168.0.1/24&quot;</span><span class="s2">)).</span><span class="s1">toThrow</span><span class="s2">();</span>
+
+  <span class="s0">const </span><span class="s1">validCidrs </span><span class="s2">= [</span>
+    <span class="s3">&quot;192.168.0.0/24&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;10.0.0.0/8&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;203.0.113.0/24&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;192.0.2.0/24&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;127.0.0.0/8&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;172.16.0.0/12&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;192.168.1.0/24&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;fc00::/7&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;fd00::/8&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:db8::/32&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2607:f0d0:1002:51::4/64&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:0db8:85a3:0000:0000:8a2e:0370:7334/128&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:0db8:1234:0000::/64&quot;</span><span class="s2">,</span>
+  <span class="s2">];</span>
+
+  <span class="s0">const </span><span class="s1">invalidCidrs </span><span class="s2">= [</span>
+    <span class="s3">&quot;192.168.1.1/33&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;10.0.0.1/-1&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;192.168.1.1/24/24&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;192.168.1.0/abc&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:db8::1/129&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:db8::1/-1&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:db8::1/64/64&quot;</span><span class="s2">,</span>
+    <span class="s3">&quot;2001:db8::1/abc&quot;</span><span class="s2">,</span>
+  <span class="s2">];</span>
+
+  <span class="s4">// no parameters check IPv4 or IPv6</span>
+  <span class="s0">const </span><span class="s1">cidrSchema </span><span class="s2">= </span><span class="s1">z</span><span class="s2">.</span><span class="s1">string</span><span class="s2">().</span><span class="s1">cidr</span><span class="s2">();</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">validCidrs</span><span class="s2">.</span><span class="s1">every</span><span class="s2">((</span><span class="s1">ip</span><span class="s2">) =&gt; </span><span class="s1">cidrSchema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">ip</span><span class="s2">).</span><span class="s1">success</span><span class="s2">)).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+  <span class="s1">expect</span><span class="s2">(</span><span class="s1">invalidCidrs</span><span class="s2">.</span><span class="s1">every</span><span class="s2">((</span><span class="s1">ip</span><span class="s2">) =&gt; </span><span class="s1">cidrSchema</span><span class="s2">.</span><span class="s1">safeParse</span><span class="s2">(</span><span class="s1">ip</span><span class="s2">).</span><span class="s1">success </span><span class="s2">=== </span><span class="s0">false</span><span class="s2">)).</span><span class="s1">toBe</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+<span class="s2">});</span>
+</pre>
+</body>
+</html>

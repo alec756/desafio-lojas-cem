@@ -1,0 +1,236 @@
+<html>
+<head>
+<title>sasl.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #6aab73;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #7a7e85;}
+.s5 { color: #2aacb8;}
+.s6 { color: #5f826b; font-style: italic;}
+.s7 { color: #42c3d4;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+sasl.js</font>
+</center></td></tr></table>
+<pre><span class="s0">'use strict'</span>
+<span class="s2">const </span><span class="s1">crypto </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'./utils'</span><span class="s3">)</span>
+<span class="s2">const </span><span class="s3">{ </span><span class="s1">signatureAlgorithmHashFromCertificate </span><span class="s3">} = </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'./cert-signatures'</span><span class="s3">)</span>
+
+<span class="s2">function </span><span class="s1">startSession</span><span class="s3">(</span><span class="s1">mechanisms</span><span class="s3">, </span><span class="s1">stream</span><span class="s3">) {</span>
+  <span class="s2">const </span><span class="s1">candidates </span><span class="s3">= [</span><span class="s0">'SCRAM-SHA-256'</span><span class="s3">]</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">stream</span><span class="s3">) </span><span class="s1">candidates</span><span class="s3">.</span><span class="s1">unshift</span><span class="s3">(</span><span class="s0">'SCRAM-SHA-256-PLUS'</span><span class="s3">) </span><span class="s4">// higher-priority, so placed first</span>
+
+  <span class="s2">const </span><span class="s1">mechanism </span><span class="s3">= </span><span class="s1">candidates</span><span class="s3">.</span><span class="s1">find</span><span class="s3">((</span><span class="s1">candidate</span><span class="s3">) =&gt; </span><span class="s1">mechanisms</span><span class="s3">.</span><span class="s1">includes</span><span class="s3">(</span><span class="s1">candidate</span><span class="s3">))</span>
+
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">mechanism</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: Only mechanism(s) ' </span><span class="s3">+ </span><span class="s1">candidates</span><span class="s3">.</span><span class="s1">join</span><span class="s3">(</span><span class="s0">' and '</span><span class="s3">) + </span><span class="s0">' are supported'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">mechanism </span><span class="s3">=== </span><span class="s0">'SCRAM-SHA-256-PLUS' </span><span class="s3">&amp;&amp; </span><span class="s2">typeof </span><span class="s1">stream</span><span class="s3">.</span><span class="s1">getPeerCertificate </span><span class="s3">!== </span><span class="s0">'function'</span><span class="s3">) {</span>
+    <span class="s4">// this should never happen if we are really talking to a Postgres server</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: Mechanism SCRAM-SHA-256-PLUS requires a certificate'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">clientNonce </span><span class="s3">= </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">randomBytes</span><span class="s3">(</span><span class="s5">18</span><span class="s3">).</span><span class="s1">toString</span><span class="s3">(</span><span class="s0">'base64'</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">gs2Header </span><span class="s3">= </span><span class="s1">mechanism </span><span class="s3">=== </span><span class="s0">'SCRAM-SHA-256-PLUS' </span><span class="s3">? </span><span class="s0">'p=tls-server-end-point' </span><span class="s3">: </span><span class="s1">stream </span><span class="s3">? </span><span class="s0">'y' </span><span class="s3">: </span><span class="s0">'n'</span>
+
+  <span class="s2">return </span><span class="s3">{</span>
+    <span class="s1">mechanism</span><span class="s3">,</span>
+    <span class="s1">clientNonce</span><span class="s3">,</span>
+    <span class="s1">response</span><span class="s3">: </span><span class="s1">gs2Header </span><span class="s3">+ </span><span class="s0">',,n=*,r=' </span><span class="s3">+ </span><span class="s1">clientNonce</span><span class="s3">,</span>
+    <span class="s1">message</span><span class="s3">: </span><span class="s0">'SASLInitialResponse'</span><span class="s3">,</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s1">async </span><span class="s2">function </span><span class="s1">continueSession</span><span class="s3">(</span><span class="s1">session</span><span class="s3">, </span><span class="s1">password</span><span class="s3">, </span><span class="s1">serverData</span><span class="s3">, </span><span class="s1">stream</span><span class="s3">) {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">session</span><span class="s3">.</span><span class="s1">message </span><span class="s3">!== </span><span class="s0">'SASLInitialResponse'</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: Last message was not SASLInitialResponse'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">password </span><span class="s3">!== </span><span class="s0">'string'</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">password </span><span class="s3">=== </span><span class="s0">''</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a non-empty string'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">serverData </span><span class="s3">!== </span><span class="s0">'string'</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: serverData must be a string'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">sv </span><span class="s3">= </span><span class="s1">parseServerFirstMessage</span><span class="s3">(</span><span class="s1">serverData</span><span class="s3">)</span>
+
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">sv</span><span class="s3">.</span><span class="s1">nonce</span><span class="s3">.</span><span class="s1">startsWith</span><span class="s3">(</span><span class="s1">session</span><span class="s3">.</span><span class="s1">clientNonce</span><span class="s3">)) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce does not start with client nonce'</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(</span><span class="s1">sv</span><span class="s3">.</span><span class="s1">nonce</span><span class="s3">.</span><span class="s1">length </span><span class="s3">=== </span><span class="s1">session</span><span class="s3">.</span><span class="s1">clientNonce</span><span class="s3">.</span><span class="s1">length</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: server nonce is too short'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">clientFirstMessageBare </span><span class="s3">= </span><span class="s0">'n=*,r=' </span><span class="s3">+ </span><span class="s1">session</span><span class="s3">.</span><span class="s1">clientNonce</span>
+  <span class="s2">const </span><span class="s1">serverFirstMessage </span><span class="s3">= </span><span class="s0">'r=' </span><span class="s3">+ </span><span class="s1">sv</span><span class="s3">.</span><span class="s1">nonce </span><span class="s3">+ </span><span class="s0">',s=' </span><span class="s3">+ </span><span class="s1">sv</span><span class="s3">.</span><span class="s1">salt </span><span class="s3">+ </span><span class="s0">',i=' </span><span class="s3">+ </span><span class="s1">sv</span><span class="s3">.</span><span class="s1">iteration</span>
+
+  <span class="s4">// without channel binding:</span>
+  <span class="s2">let </span><span class="s1">channelBinding </span><span class="s3">= </span><span class="s1">stream </span><span class="s3">? </span><span class="s0">'eSws' </span><span class="s3">: </span><span class="s0">'biws' </span><span class="s4">// 'y,,' or 'n,,', base64-encoded</span>
+
+  <span class="s4">// override if channel binding is in use:</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">session</span><span class="s3">.</span><span class="s1">mechanism </span><span class="s3">=== </span><span class="s0">'SCRAM-SHA-256-PLUS'</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">peerCert </span><span class="s3">= </span><span class="s1">stream</span><span class="s3">.</span><span class="s1">getPeerCertificate</span><span class="s3">().</span><span class="s1">raw</span>
+    <span class="s2">let </span><span class="s1">hashName </span><span class="s3">= </span><span class="s1">signatureAlgorithmHashFromCertificate</span><span class="s3">(</span><span class="s1">peerCert</span><span class="s3">)</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">hashName </span><span class="s3">=== </span><span class="s0">'MD5' </span><span class="s3">|| </span><span class="s1">hashName </span><span class="s3">=== </span><span class="s0">'SHA-1'</span><span class="s3">) </span><span class="s1">hashName </span><span class="s3">= </span><span class="s0">'SHA-256'</span>
+    <span class="s2">const </span><span class="s1">certHash </span><span class="s3">= </span><span class="s2">await </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">hashByName</span><span class="s3">(</span><span class="s1">hashName</span><span class="s3">, </span><span class="s1">peerCert</span><span class="s3">)</span>
+    <span class="s2">const </span><span class="s1">bindingData </span><span class="s3">= </span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">concat</span><span class="s3">([</span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">from</span><span class="s3">(</span><span class="s0">'p=tls-server-end-point,,'</span><span class="s3">), </span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">from</span><span class="s3">(</span><span class="s1">certHash</span><span class="s3">)])</span>
+    <span class="s1">channelBinding </span><span class="s3">= </span><span class="s1">bindingData</span><span class="s3">.</span><span class="s1">toString</span><span class="s3">(</span><span class="s0">'base64'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">clientFinalMessageWithoutProof </span><span class="s3">= </span><span class="s0">'c=' </span><span class="s3">+ </span><span class="s1">channelBinding </span><span class="s3">+ </span><span class="s0">',r=' </span><span class="s3">+ </span><span class="s1">sv</span><span class="s3">.</span><span class="s1">nonce</span>
+  <span class="s2">const </span><span class="s1">authMessage </span><span class="s3">= </span><span class="s1">clientFirstMessageBare </span><span class="s3">+ </span><span class="s0">',' </span><span class="s3">+ </span><span class="s1">serverFirstMessage </span><span class="s3">+ </span><span class="s0">',' </span><span class="s3">+ </span><span class="s1">clientFinalMessageWithoutProof</span>
+
+  <span class="s2">const </span><span class="s1">saltBytes </span><span class="s3">= </span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">from</span><span class="s3">(</span><span class="s1">sv</span><span class="s3">.</span><span class="s1">salt</span><span class="s3">, </span><span class="s0">'base64'</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">saltedPassword </span><span class="s3">= </span><span class="s2">await </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">deriveKey</span><span class="s3">(</span><span class="s1">password</span><span class="s3">, </span><span class="s1">saltBytes</span><span class="s3">, </span><span class="s1">sv</span><span class="s3">.</span><span class="s1">iteration</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">clientKey </span><span class="s3">= </span><span class="s2">await </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">hmacSha256</span><span class="s3">(</span><span class="s1">saltedPassword</span><span class="s3">, </span><span class="s0">'Client Key'</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">storedKey </span><span class="s3">= </span><span class="s2">await </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">sha256</span><span class="s3">(</span><span class="s1">clientKey</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">clientSignature </span><span class="s3">= </span><span class="s2">await </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">hmacSha256</span><span class="s3">(</span><span class="s1">storedKey</span><span class="s3">, </span><span class="s1">authMessage</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">clientProof </span><span class="s3">= </span><span class="s1">xorBuffers</span><span class="s3">(</span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">from</span><span class="s3">(</span><span class="s1">clientKey</span><span class="s3">), </span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">from</span><span class="s3">(</span><span class="s1">clientSignature</span><span class="s3">)).</span><span class="s1">toString</span><span class="s3">(</span><span class="s0">'base64'</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">serverKey </span><span class="s3">= </span><span class="s2">await </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">hmacSha256</span><span class="s3">(</span><span class="s1">saltedPassword</span><span class="s3">, </span><span class="s0">'Server Key'</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">serverSignatureBytes </span><span class="s3">= </span><span class="s2">await </span><span class="s1">crypto</span><span class="s3">.</span><span class="s1">hmacSha256</span><span class="s3">(</span><span class="s1">serverKey</span><span class="s3">, </span><span class="s1">authMessage</span><span class="s3">)</span>
+
+  <span class="s1">session</span><span class="s3">.</span><span class="s1">message </span><span class="s3">= </span><span class="s0">'SASLResponse'</span>
+  <span class="s1">session</span><span class="s3">.</span><span class="s1">serverSignature </span><span class="s3">= </span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">from</span><span class="s3">(</span><span class="s1">serverSignatureBytes</span><span class="s3">).</span><span class="s1">toString</span><span class="s3">(</span><span class="s0">'base64'</span><span class="s3">)</span>
+  <span class="s1">session</span><span class="s3">.</span><span class="s1">response </span><span class="s3">= </span><span class="s1">clientFinalMessageWithoutProof </span><span class="s3">+ </span><span class="s0">',p=' </span><span class="s3">+ </span><span class="s1">clientProof</span>
+<span class="s3">}</span>
+
+<span class="s2">function </span><span class="s1">finalizeSession</span><span class="s3">(</span><span class="s1">session</span><span class="s3">, </span><span class="s1">serverData</span><span class="s3">) {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">session</span><span class="s3">.</span><span class="s1">message </span><span class="s3">!== </span><span class="s0">'SASLResponse'</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: Last message was not SASLResponse'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">serverData </span><span class="s3">!== </span><span class="s0">'string'</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FINAL-MESSAGE: serverData must be a string'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s3">{ </span><span class="s1">serverSignature </span><span class="s3">} = </span><span class="s1">parseServerFinalMessage</span><span class="s3">(</span><span class="s1">serverData</span><span class="s3">)</span>
+
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">serverSignature </span><span class="s3">!== </span><span class="s1">session</span><span class="s3">.</span><span class="s1">serverSignature</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature does not match'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s6">/**</span>
+ <span class="s6">* printable       = %x21-2B / %x2D-7E</span>
+ <span class="s6">*                   ;; Printable ASCII except &quot;,&quot;.</span>
+ <span class="s6">*                   ;; Note that any &quot;printable&quot; is also</span>
+ <span class="s6">*                   ;; a valid &quot;value&quot;.</span>
+ <span class="s6">*/</span>
+<span class="s2">function </span><span class="s1">isPrintableChars</span><span class="s3">(</span><span class="s1">text</span><span class="s3">) {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">text </span><span class="s3">!== </span><span class="s0">'string'</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">TypeError</span><span class="s3">(</span><span class="s0">'SASL: text must be a string'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">return </span><span class="s1">text</span>
+    <span class="s3">.</span><span class="s1">split</span><span class="s3">(</span><span class="s0">''</span><span class="s3">)</span>
+    <span class="s3">.</span><span class="s1">map</span><span class="s3">((</span><span class="s1">_</span><span class="s3">, </span><span class="s1">i</span><span class="s3">) =&gt; </span><span class="s1">text</span><span class="s3">.</span><span class="s1">charCodeAt</span><span class="s3">(</span><span class="s1">i</span><span class="s3">))</span>
+    <span class="s3">.</span><span class="s1">every</span><span class="s3">((</span><span class="s1">c</span><span class="s3">) =&gt; (</span><span class="s1">c </span><span class="s3">&gt;= </span><span class="s5">0x21 </span><span class="s3">&amp;&amp; </span><span class="s1">c </span><span class="s3">&lt;= </span><span class="s5">0x2b</span><span class="s3">) || (</span><span class="s1">c </span><span class="s3">&gt;= </span><span class="s5">0x2d </span><span class="s3">&amp;&amp; </span><span class="s1">c </span><span class="s3">&lt;= </span><span class="s5">0x7e</span><span class="s3">))</span>
+<span class="s3">}</span>
+
+<span class="s6">/**</span>
+ <span class="s6">* base64-char     = ALPHA / DIGIT / &quot;/&quot; / &quot;+&quot;</span>
+ <span class="s6">*</span>
+ <span class="s6">* base64-4        = 4base64-char</span>
+ <span class="s6">*</span>
+ <span class="s6">* base64-3        = 3base64-char &quot;=&quot;</span>
+ <span class="s6">*</span>
+ <span class="s6">* base64-2        = 2base64-char &quot;==&quot;</span>
+ <span class="s6">*</span>
+ <span class="s6">* base64          = *base64-4 [base64-3 / base64-2]</span>
+ <span class="s6">*/</span>
+<span class="s2">function </span><span class="s1">isBase64</span><span class="s3">(</span><span class="s1">text</span><span class="s3">) {</span>
+  <span class="s2">return </span><span class="s7">/^(?:[a-zA-Z0-9+/]{4})*(?:[a-zA-Z0-9+/]{2}==|[a-zA-Z0-9+/]{3}=)?$/</span><span class="s3">.</span><span class="s1">test</span><span class="s3">(</span><span class="s1">text</span><span class="s3">)</span>
+<span class="s3">}</span>
+
+<span class="s2">function </span><span class="s1">parseAttributePairs</span><span class="s3">(</span><span class="s1">text</span><span class="s3">) {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">text </span><span class="s3">!== </span><span class="s0">'string'</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">TypeError</span><span class="s3">(</span><span class="s0">'SASL: attribute pairs text must be a string'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s2">return new </span><span class="s1">Map</span><span class="s3">(</span>
+    <span class="s1">text</span><span class="s3">.</span><span class="s1">split</span><span class="s3">(</span><span class="s0">','</span><span class="s3">).</span><span class="s1">map</span><span class="s3">((</span><span class="s1">attrValue</span><span class="s3">) =&gt; {</span>
+      <span class="s2">if </span><span class="s3">(!</span><span class="s7">/^.=/</span><span class="s3">.</span><span class="s1">test</span><span class="s3">(</span><span class="s1">attrValue</span><span class="s3">)) {</span>
+        <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: Invalid attribute pair entry'</span><span class="s3">)</span>
+      <span class="s3">}</span>
+      <span class="s2">const </span><span class="s1">name </span><span class="s3">= </span><span class="s1">attrValue</span><span class="s3">[</span><span class="s5">0</span><span class="s3">]</span>
+      <span class="s2">const </span><span class="s1">value </span><span class="s3">= </span><span class="s1">attrValue</span><span class="s3">.</span><span class="s1">substring</span><span class="s3">(</span><span class="s5">2</span><span class="s3">)</span>
+      <span class="s2">return </span><span class="s3">[</span><span class="s1">name</span><span class="s3">, </span><span class="s1">value</span><span class="s3">]</span>
+    <span class="s3">})</span>
+  <span class="s3">)</span>
+<span class="s3">}</span>
+
+<span class="s2">function </span><span class="s1">parseServerFirstMessage</span><span class="s3">(</span><span class="s1">data</span><span class="s3">) {</span>
+  <span class="s2">const </span><span class="s1">attrPairs </span><span class="s3">= </span><span class="s1">parseAttributePairs</span><span class="s3">(</span><span class="s1">data</span><span class="s3">)</span>
+
+  <span class="s2">const </span><span class="s1">nonce </span><span class="s3">= </span><span class="s1">attrPairs</span><span class="s3">.</span><span class="s1">get</span><span class="s3">(</span><span class="s0">'r'</span><span class="s3">)</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">nonce</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce missing'</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(!</span><span class="s1">isPrintableChars</span><span class="s3">(</span><span class="s1">nonce</span><span class="s3">)) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: nonce must only contain printable characters'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">const </span><span class="s1">salt </span><span class="s3">= </span><span class="s1">attrPairs</span><span class="s3">.</span><span class="s1">get</span><span class="s3">(</span><span class="s0">'s'</span><span class="s3">)</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">salt</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: salt missing'</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(!</span><span class="s1">isBase64</span><span class="s3">(</span><span class="s1">salt</span><span class="s3">)) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: salt must be base64'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">const </span><span class="s1">iterationText </span><span class="s3">= </span><span class="s1">attrPairs</span><span class="s3">.</span><span class="s1">get</span><span class="s3">(</span><span class="s0">'i'</span><span class="s3">)</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">iterationText</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: iteration missing'</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(!</span><span class="s7">/^[1-9][0-9]*$/</span><span class="s3">.</span><span class="s1">test</span><span class="s3">(</span><span class="s1">iterationText</span><span class="s3">)) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FIRST-MESSAGE: invalid iteration count'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">const </span><span class="s1">iteration </span><span class="s3">= </span><span class="s1">parseInt</span><span class="s3">(</span><span class="s1">iterationText</span><span class="s3">, </span><span class="s5">10</span><span class="s3">)</span>
+
+  <span class="s2">return </span><span class="s3">{</span>
+    <span class="s1">nonce</span><span class="s3">,</span>
+    <span class="s1">salt</span><span class="s3">,</span>
+    <span class="s1">iteration</span><span class="s3">,</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s2">function </span><span class="s1">parseServerFinalMessage</span><span class="s3">(</span><span class="s1">serverData</span><span class="s3">) {</span>
+  <span class="s2">const </span><span class="s1">attrPairs </span><span class="s3">= </span><span class="s1">parseAttributePairs</span><span class="s3">(</span><span class="s1">serverData</span><span class="s3">)</span>
+  <span class="s2">const </span><span class="s1">serverSignature </span><span class="s3">= </span><span class="s1">attrPairs</span><span class="s3">.</span><span class="s1">get</span><span class="s3">(</span><span class="s0">'v'</span><span class="s3">)</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">serverSignature</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing'</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(!</span><span class="s1">isBase64</span><span class="s3">(</span><span class="s1">serverSignature</span><span class="s3">)) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature must be base64'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">return </span><span class="s3">{</span>
+    <span class="s1">serverSignature</span><span class="s3">,</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s2">function </span><span class="s1">xorBuffers</span><span class="s3">(</span><span class="s1">a</span><span class="s3">, </span><span class="s1">b</span><span class="s3">) {</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">isBuffer</span><span class="s3">(</span><span class="s1">a</span><span class="s3">)) {</span>
+    <span class="s2">throw new </span><span class="s1">TypeError</span><span class="s3">(</span><span class="s0">'first argument must be a Buffer'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">isBuffer</span><span class="s3">(</span><span class="s1">b</span><span class="s3">)) {</span>
+    <span class="s2">throw new </span><span class="s1">TypeError</span><span class="s3">(</span><span class="s0">'second argument must be a Buffer'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">a</span><span class="s3">.</span><span class="s1">length </span><span class="s3">!== </span><span class="s1">b</span><span class="s3">.</span><span class="s1">length</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'Buffer lengths must match'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">a</span><span class="s3">.</span><span class="s1">length </span><span class="s3">=== </span><span class="s5">0</span><span class="s3">) {</span>
+    <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'Buffers cannot be empty'</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">return </span><span class="s1">Buffer</span><span class="s3">.</span><span class="s1">from</span><span class="s3">(</span><span class="s1">a</span><span class="s3">.</span><span class="s1">map</span><span class="s3">((</span><span class="s1">_</span><span class="s3">, </span><span class="s1">i</span><span class="s3">) =&gt; </span><span class="s1">a</span><span class="s3">[</span><span class="s1">i</span><span class="s3">] ^ </span><span class="s1">b</span><span class="s3">[</span><span class="s1">i</span><span class="s3">]))</span>
+<span class="s3">}</span>
+
+<span class="s1">module</span><span class="s3">.</span><span class="s1">exports </span><span class="s3">= {</span>
+  <span class="s1">startSession</span><span class="s3">,</span>
+  <span class="s1">continueSession</span><span class="s3">,</span>
+  <span class="s1">finalizeSession</span><span class="s3">,</span>
+<span class="s3">}</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<html>
+<head>
+<title>connection-parameters.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #6aab73;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #7a7e85;}
+.s5 { color: #42c3d4;}
+.s6 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+connection-parameters.js</font>
+</center></td></tr></table>
+<pre><span class="s0">'use strict'</span>
+
+<span class="s2">const </span><span class="s1">dns </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'dns'</span><span class="s3">)</span>
+
+<span class="s2">const </span><span class="s1">defaults </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'./defaults'</span><span class="s3">)</span>
+
+<span class="s2">const </span><span class="s1">parse </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'pg-connection-string'</span><span class="s3">).</span><span class="s1">parse </span><span class="s4">// parses a connection string</span>
+
+<span class="s2">const </span><span class="s1">val </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">key</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s1">envVar</span><span class="s3">) {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">config</span><span class="s3">[</span><span class="s1">key</span><span class="s3">]) {</span>
+    <span class="s2">return </span><span class="s1">config</span><span class="s3">[</span><span class="s1">key</span><span class="s3">]</span>
+  <span class="s3">}</span>
+
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">envVar </span><span class="s3">=== </span><span class="s1">undefined</span><span class="s3">) {</span>
+    <span class="s1">envVar </span><span class="s3">= </span><span class="s1">process</span><span class="s3">.</span><span class="s1">env</span><span class="s3">[</span><span class="s0">'PG' </span><span class="s3">+ </span><span class="s1">key</span><span class="s3">.</span><span class="s1">toUpperCase</span><span class="s3">()]</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(</span><span class="s1">envVar </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s4">// do nothing ... use false</span>
+  <span class="s3">} </span><span class="s2">else </span><span class="s3">{</span>
+    <span class="s1">envVar </span><span class="s3">= </span><span class="s1">process</span><span class="s3">.</span><span class="s1">env</span><span class="s3">[</span><span class="s1">envVar</span><span class="s3">]</span>
+  <span class="s3">}</span>
+
+  <span class="s2">return </span><span class="s1">envVar </span><span class="s3">|| </span><span class="s1">defaults</span><span class="s3">[</span><span class="s1">key</span><span class="s3">]</span>
+<span class="s3">}</span>
+
+<span class="s2">const </span><span class="s1">readSSLConfigFromEnvironment </span><span class="s3">= </span><span class="s2">function </span><span class="s3">() {</span>
+  <span class="s2">switch </span><span class="s3">(</span><span class="s1">process</span><span class="s3">.</span><span class="s1">env</span><span class="s3">.</span><span class="s1">PGSSLMODE</span><span class="s3">) {</span>
+    <span class="s2">case </span><span class="s0">'disable'</span><span class="s3">:</span>
+      <span class="s2">return false</span>
+    <span class="s2">case </span><span class="s0">'prefer'</span><span class="s3">:</span>
+    <span class="s2">case </span><span class="s0">'require'</span><span class="s3">:</span>
+    <span class="s2">case </span><span class="s0">'verify-ca'</span><span class="s3">:</span>
+    <span class="s2">case </span><span class="s0">'verify-full'</span><span class="s3">:</span>
+      <span class="s2">return true</span>
+    <span class="s2">case </span><span class="s0">'no-verify'</span><span class="s3">:</span>
+      <span class="s2">return </span><span class="s3">{ </span><span class="s1">rejectUnauthorized</span><span class="s3">: </span><span class="s2">false </span><span class="s3">}</span>
+  <span class="s3">}</span>
+  <span class="s2">return </span><span class="s1">defaults</span><span class="s3">.</span><span class="s1">ssl</span>
+<span class="s3">}</span>
+
+<span class="s4">// Convert arg to a string, surround in single quotes, and escape single quotes and backslashes</span>
+<span class="s2">const </span><span class="s1">quoteParamValue </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">value</span><span class="s3">) {</span>
+  <span class="s2">return </span><span class="s0">&quot;'&quot; </span><span class="s3">+ (</span><span class="s0">'' </span><span class="s3">+ </span><span class="s1">value</span><span class="s3">).</span><span class="s1">replace</span><span class="s3">(</span><span class="s5">/\\/g</span><span class="s3">, </span><span class="s0">'</span><span class="s2">\\\\</span><span class="s0">'</span><span class="s3">).</span><span class="s1">replace</span><span class="s3">(</span><span class="s5">/'/g</span><span class="s3">, </span><span class="s0">&quot;</span><span class="s2">\\</span><span class="s0">'&quot;</span><span class="s3">) + </span><span class="s0">&quot;'&quot;</span>
+<span class="s3">}</span>
+
+<span class="s2">const </span><span class="s1">add </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s1">paramName</span><span class="s3">) {</span>
+  <span class="s2">const </span><span class="s1">value </span><span class="s3">= </span><span class="s1">config</span><span class="s3">[</span><span class="s1">paramName</span><span class="s3">]</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">value </span><span class="s3">!== </span><span class="s1">undefined </span><span class="s3">&amp;&amp; </span><span class="s1">value </span><span class="s3">!== </span><span class="s2">null</span><span class="s3">) {</span>
+    <span class="s1">params</span><span class="s3">.</span><span class="s1">push</span><span class="s3">(</span><span class="s1">paramName </span><span class="s3">+ </span><span class="s0">'=' </span><span class="s3">+ </span><span class="s1">quoteParamValue</span><span class="s3">(</span><span class="s1">value</span><span class="s3">))</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s2">class </span><span class="s1">ConnectionParameters </span><span class="s3">{</span>
+  <span class="s1">constructor</span><span class="s3">(</span><span class="s1">config</span><span class="s3">) {</span>
+    <span class="s4">// if a string is passed, it is a raw connection string so we parse it into a config</span>
+    <span class="s1">config </span><span class="s3">= </span><span class="s2">typeof </span><span class="s1">config </span><span class="s3">=== </span><span class="s0">'string' </span><span class="s3">? </span><span class="s1">parse</span><span class="s3">(</span><span class="s1">config</span><span class="s3">) : </span><span class="s1">config </span><span class="s3">|| {}</span>
+
+    <span class="s4">// if the config has a connectionString defined, parse IT into the config we use</span>
+    <span class="s4">// this will override other default values with what is stored in connectionString</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">connectionString</span><span class="s3">) {</span>
+      <span class="s1">config </span><span class="s3">= </span><span class="s1">Object</span><span class="s3">.</span><span class="s1">assign</span><span class="s3">({}, </span><span class="s1">config</span><span class="s3">, </span><span class="s1">parse</span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">connectionString</span><span class="s3">))</span>
+    <span class="s3">}</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">user </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'user'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">database </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'database'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">)</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">database </span><span class="s3">=== </span><span class="s1">undefined</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">database </span><span class="s3">= </span><span class="s2">this</span><span class="s3">.</span><span class="s1">user</span>
+    <span class="s3">}</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">port </span><span class="s3">= </span><span class="s1">parseInt</span><span class="s3">(</span><span class="s1">val</span><span class="s3">(</span><span class="s0">'port'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">), </span><span class="s6">10</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">host </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'host'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">)</span>
+
+    <span class="s4">// &quot;hiding&quot; the password so it doesn't show up in stack traces</span>
+    <span class="s4">// or if the client is console.logged</span>
+    <span class="s1">Object</span><span class="s3">.</span><span class="s1">defineProperty</span><span class="s3">(</span><span class="s2">this</span><span class="s3">, </span><span class="s0">'password'</span><span class="s3">, {</span>
+      <span class="s1">configurable</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+      <span class="s1">enumerable</span><span class="s3">: </span><span class="s2">false</span><span class="s3">,</span>
+      <span class="s1">writable</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+      <span class="s1">value</span><span class="s3">: </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'password'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">),</span>
+    <span class="s3">})</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">binary </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'binary'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">options </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'options'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">)</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">= </span><span class="s2">typeof </span><span class="s1">config</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">=== </span><span class="s0">'undefined' </span><span class="s3">? </span><span class="s1">readSSLConfigFromEnvironment</span><span class="s3">() : </span><span class="s1">config</span><span class="s3">.</span><span class="s1">ssl</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">=== </span><span class="s0">'string'</span><span class="s3">) {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">=== </span><span class="s0">'true'</span><span class="s3">) {</span>
+        <span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">= </span><span class="s2">true</span>
+      <span class="s3">}</span>
+    <span class="s3">}</span>
+    <span class="s4">// support passing in ssl=no-verify via connection string</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">=== </span><span class="s0">'no-verify'</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">= { </span><span class="s1">rejectUnauthorized</span><span class="s3">: </span><span class="s2">false </span><span class="s3">}</span>
+    <span class="s3">}</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">&amp;&amp; </span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl</span><span class="s3">.</span><span class="s1">key</span><span class="s3">) {</span>
+      <span class="s1">Object</span><span class="s3">.</span><span class="s1">defineProperty</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl</span><span class="s3">, </span><span class="s0">'key'</span><span class="s3">, {</span>
+        <span class="s1">enumerable</span><span class="s3">: </span><span class="s2">false</span><span class="s3">,</span>
+      <span class="s3">})</span>
+    <span class="s3">}</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">client_encoding </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'client_encoding'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">replication </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'replication'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">)</span>
+    <span class="s4">// a domain socket begins with '/'</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">isDomainSocket </span><span class="s3">= !(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">host </span><span class="s3">|| </span><span class="s0">''</span><span class="s3">).</span><span class="s1">indexOf</span><span class="s3">(</span><span class="s0">'/'</span><span class="s3">)</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">application_name </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'application_name'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s0">'PGAPPNAME'</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">fallback_application_name </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'fallback_application_name'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s2">false</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">statement_timeout </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'statement_timeout'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s2">false</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">lock_timeout </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'lock_timeout'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s2">false</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">idle_in_transaction_session_timeout </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'idle_in_transaction_session_timeout'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s2">false</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">query_timeout </span><span class="s3">= </span><span class="s1">val</span><span class="s3">(</span><span class="s0">'query_timeout'</span><span class="s3">, </span><span class="s1">config</span><span class="s3">, </span><span class="s2">false</span><span class="s3">)</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">connectionTimeoutMillis </span><span class="s3">=== </span><span class="s1">undefined</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">connect_timeout </span><span class="s3">= </span><span class="s1">process</span><span class="s3">.</span><span class="s1">env</span><span class="s3">.</span><span class="s1">PGCONNECT_TIMEOUT </span><span class="s3">|| </span><span class="s6">0</span>
+    <span class="s3">} </span><span class="s2">else </span><span class="s3">{</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">connect_timeout </span><span class="s3">= </span><span class="s1">Math</span><span class="s3">.</span><span class="s1">floor</span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">connectionTimeoutMillis </span><span class="s3">/ </span><span class="s6">1000</span><span class="s3">)</span>
+    <span class="s3">}</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">keepAlive </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">keepalives </span><span class="s3">= </span><span class="s6">0</span>
+    <span class="s3">} </span><span class="s2">else if </span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">keepAlive </span><span class="s3">=== </span><span class="s2">true</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">keepalives </span><span class="s3">= </span><span class="s6">1</span>
+    <span class="s3">}</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">config</span><span class="s3">.</span><span class="s1">keepAliveInitialDelayMillis </span><span class="s3">=== </span><span class="s0">'number'</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">keepalives_idle </span><span class="s3">= </span><span class="s1">Math</span><span class="s3">.</span><span class="s1">floor</span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">keepAliveInitialDelayMillis </span><span class="s3">/ </span><span class="s6">1000</span><span class="s3">)</span>
+    <span class="s3">}</span>
+  <span class="s3">}</span>
+
+  <span class="s1">getLibpqConnectionString</span><span class="s3">(</span><span class="s1">cb</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">params </span><span class="s3">= []</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s2">this</span><span class="s3">, </span><span class="s0">'user'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s2">this</span><span class="s3">, </span><span class="s0">'password'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s2">this</span><span class="s3">, </span><span class="s0">'port'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s2">this</span><span class="s3">, </span><span class="s0">'application_name'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s2">this</span><span class="s3">, </span><span class="s0">'fallback_application_name'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s2">this</span><span class="s3">, </span><span class="s0">'connect_timeout'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s2">this</span><span class="s3">, </span><span class="s0">'options'</span><span class="s3">)</span>
+
+    <span class="s2">const </span><span class="s1">ssl </span><span class="s3">= </span><span class="s2">typeof this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">=== </span><span class="s0">'object' </span><span class="s3">? </span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">: </span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">? { </span><span class="s1">sslmode</span><span class="s3">: </span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">} : {}</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s1">ssl</span><span class="s3">, </span><span class="s0">'sslmode'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s1">ssl</span><span class="s3">, </span><span class="s0">'sslca'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s1">ssl</span><span class="s3">, </span><span class="s0">'sslkey'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s1">ssl</span><span class="s3">, </span><span class="s0">'sslcert'</span><span class="s3">)</span>
+    <span class="s1">add</span><span class="s3">(</span><span class="s1">params</span><span class="s3">, </span><span class="s1">ssl</span><span class="s3">, </span><span class="s0">'sslrootcert'</span><span class="s3">)</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">database</span><span class="s3">) {</span>
+      <span class="s1">params</span><span class="s3">.</span><span class="s1">push</span><span class="s3">(</span><span class="s0">'dbname=' </span><span class="s3">+ </span><span class="s1">quoteParamValue</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">database</span><span class="s3">))</span>
+    <span class="s3">}</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">replication</span><span class="s3">) {</span>
+      <span class="s1">params</span><span class="s3">.</span><span class="s1">push</span><span class="s3">(</span><span class="s0">'replication=' </span><span class="s3">+ </span><span class="s1">quoteParamValue</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">replication</span><span class="s3">))</span>
+    <span class="s3">}</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">host</span><span class="s3">) {</span>
+      <span class="s1">params</span><span class="s3">.</span><span class="s1">push</span><span class="s3">(</span><span class="s0">'host=' </span><span class="s3">+ </span><span class="s1">quoteParamValue</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">host</span><span class="s3">))</span>
+    <span class="s3">}</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">isDomainSocket</span><span class="s3">) {</span>
+      <span class="s2">return </span><span class="s1">cb</span><span class="s3">(</span><span class="s2">null</span><span class="s3">, </span><span class="s1">params</span><span class="s3">.</span><span class="s1">join</span><span class="s3">(</span><span class="s0">' '</span><span class="s3">))</span>
+    <span class="s3">}</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">client_encoding</span><span class="s3">) {</span>
+      <span class="s1">params</span><span class="s3">.</span><span class="s1">push</span><span class="s3">(</span><span class="s0">'client_encoding=' </span><span class="s3">+ </span><span class="s1">quoteParamValue</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">client_encoding</span><span class="s3">))</span>
+    <span class="s3">}</span>
+    <span class="s1">dns</span><span class="s3">.</span><span class="s1">lookup</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">host</span><span class="s3">, </span><span class="s2">function </span><span class="s3">(</span><span class="s1">err</span><span class="s3">, </span><span class="s1">address</span><span class="s3">) {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) </span><span class="s2">return </span><span class="s1">cb</span><span class="s3">(</span><span class="s1">err</span><span class="s3">, </span><span class="s2">null</span><span class="s3">)</span>
+      <span class="s1">params</span><span class="s3">.</span><span class="s1">push</span><span class="s3">(</span><span class="s0">'hostaddr=' </span><span class="s3">+ </span><span class="s1">quoteParamValue</span><span class="s3">(</span><span class="s1">address</span><span class="s3">))</span>
+      <span class="s2">return </span><span class="s1">cb</span><span class="s3">(</span><span class="s2">null</span><span class="s3">, </span><span class="s1">params</span><span class="s3">.</span><span class="s1">join</span><span class="s3">(</span><span class="s0">' '</span><span class="s3">))</span>
+    <span class="s3">})</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s1">module</span><span class="s3">.</span><span class="s1">exports </span><span class="s3">= </span><span class="s1">ConnectionParameters</span>
+</pre>
+</body>
+</html>

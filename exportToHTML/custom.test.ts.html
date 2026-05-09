@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>custom.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+custom.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;passing validations&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">example1 </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">&lt;</span><span class="s1">number</span><span class="s3">&gt;((</span><span class="s1">x</span><span class="s3">) =&gt; </span><span class="s2">typeof </span><span class="s1">x </span><span class="s3">=== </span><span class="s4">&quot;number&quot;</span><span class="s3">);</span>
+  <span class="s1">example1</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(() =&gt; </span><span class="s1">example1</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({})).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;string params&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">example1 </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">&lt;</span><span class="s1">number</span><span class="s3">&gt;((</span><span class="s1">x</span><span class="s3">) =&gt; </span><span class="s2">typeof </span><span class="s1">x </span><span class="s3">!== </span><span class="s4">&quot;number&quot;</span><span class="s3">, </span><span class="s4">&quot;customerr&quot;</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">example1</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s0">// @ts-ignore</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">JSON</span><span class="s3">.</span><span class="s1">stringify</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">).</span><span class="s1">includes</span><span class="s3">(</span><span class="s4">&quot;customerr&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;async validations&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">example1 </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">&lt;</span><span class="s1">number</span><span class="s3">&gt;(</span><span class="s1">async </span><span class="s3">(</span><span class="s1">x</span><span class="s3">) =&gt; {</span>
+    <span class="s2">return typeof </span><span class="s1">x </span><span class="s3">=== </span><span class="s4">&quot;number&quot;</span><span class="s3">;</span>
+  <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">r1 </span><span class="s3">= </span><span class="s2">await </span><span class="s1">example1</span><span class="s3">.</span><span class="s1">safeParseAsync</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">r1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">r1</span><span class="s3">.</span><span class="s1">data</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">r2 </span><span class="s3">= </span><span class="s2">await </span><span class="s1">example1</span><span class="s3">.</span><span class="s1">safeParseAsync</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">r2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">r2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">!.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

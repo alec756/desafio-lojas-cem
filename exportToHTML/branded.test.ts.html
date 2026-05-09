@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>branded.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+branded.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">util </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;branded types&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">mySchema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">brand</span><span class="s3">&lt;</span><span class="s4">&quot;superschema&quot;</span><span class="s3">&gt;();</span>
+
+  <span class="s0">// simple branding</span>
+  <span class="s1">type MySchema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">mySchema</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">MySchema</span><span class="s3">, { </span><span class="s1">name</span><span class="s3">: </span><span class="s1">string </span><span class="s3">} &amp; { [</span><span class="s1">z</span><span class="s3">.</span><span class="s1">BRAND</span><span class="s3">]: { </span><span class="s1">superschema</span><span class="s3">: </span><span class="s2">true </span><span class="s3">} }&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">doStuff </span><span class="s3">= (</span><span class="s1">arg</span><span class="s3">: </span><span class="s1">MySchema</span><span class="s3">) =&gt; </span><span class="s1">arg</span><span class="s3">;</span>
+  <span class="s1">doStuff</span><span class="s3">(</span><span class="s1">mySchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;hello there&quot; </span><span class="s3">}));</span>
+
+  <span class="s0">// inheritance</span>
+  <span class="s2">const </span><span class="s1">extendedSchema </span><span class="s3">= </span><span class="s1">mySchema</span><span class="s3">.</span><span class="s1">brand</span><span class="s3">&lt;</span><span class="s4">&quot;subschema&quot;</span><span class="s3">&gt;();</span>
+  <span class="s1">type ExtendedSchema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">extendedSchema</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">ExtendedSchema</span><span class="s3">, { </span><span class="s1">name</span><span class="s3">: </span><span class="s1">string </span><span class="s3">} &amp; </span><span class="s1">z</span><span class="s3">.</span><span class="s1">BRAND</span><span class="s3">&lt;</span><span class="s4">&quot;superschema&quot;</span><span class="s3">&gt; &amp; </span><span class="s1">z</span><span class="s3">.</span><span class="s1">BRAND</span><span class="s3">&lt;</span><span class="s4">&quot;subschema&quot;</span><span class="s3">&gt;&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s1">doStuff</span><span class="s3">(</span><span class="s1">extendedSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;hello again&quot; </span><span class="s3">}));</span>
+
+  <span class="s0">// number branding</span>
+  <span class="s2">const </span><span class="s1">numberSchema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">().</span><span class="s1">brand</span><span class="s3">&lt;</span><span class="s5">42</span><span class="s3">&gt;();</span>
+  <span class="s1">type NumberSchema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">numberSchema</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">NumberSchema</span><span class="s3">, </span><span class="s1">number </span><span class="s3">&amp; { [</span><span class="s1">z</span><span class="s3">.</span><span class="s1">BRAND</span><span class="s3">]: { </span><span class="s5">42</span><span class="s3">: </span><span class="s2">true </span><span class="s3">} }&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s0">// symbol branding</span>
+  <span class="s2">const </span><span class="s1">MyBrand</span><span class="s3">: </span><span class="s1">unique symbol </span><span class="s3">= </span><span class="s1">Symbol</span><span class="s3">(</span><span class="s4">&quot;hello&quot;</span><span class="s3">);</span>
+  <span class="s1">type MyBrand </span><span class="s3">= </span><span class="s2">typeof </span><span class="s1">MyBrand</span><span class="s3">;</span>
+  <span class="s2">const </span><span class="s1">symbolBrand </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">().</span><span class="s1">brand</span><span class="s3">&lt;</span><span class="s4">&quot;sup&quot;</span><span class="s3">&gt;().</span><span class="s1">brand</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">MyBrand</span><span class="s3">&gt;();</span>
+  <span class="s1">type SymbolBrand </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">symbolBrand</span><span class="s3">&gt;;</span>
+  <span class="s0">// number &amp; { [z.BRAND]: { sup: true, [MyBrand]: true } }</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">SymbolBrand</span><span class="s3">, </span><span class="s1">number </span><span class="s3">&amp; </span><span class="s1">z</span><span class="s3">.</span><span class="s1">BRAND</span><span class="s3">&lt;</span><span class="s4">&quot;sup&quot;</span><span class="s3">&gt; &amp; </span><span class="s1">z</span><span class="s3">.</span><span class="s1">BRAND</span><span class="s3">&lt;</span><span class="s1">MyBrand</span><span class="s3">&gt;&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s0">// keeping brands out of input types</span>
+  <span class="s2">const </span><span class="s1">age </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">().</span><span class="s1">brand</span><span class="s3">&lt;</span><span class="s4">&quot;age&quot;</span><span class="s3">&gt;();</span>
+
+  <span class="s1">type Age </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">age</span><span class="s3">&gt;;</span>
+  <span class="s1">type AgeInput </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">input</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">age</span><span class="s3">&gt;;</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">AgeInput</span><span class="s3">, </span><span class="s1">Age</span><span class="s3">&gt;(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">number</span><span class="s3">, </span><span class="s1">AgeInput</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">number </span><span class="s3">&amp; </span><span class="s1">z</span><span class="s3">.</span><span class="s1">BRAND</span><span class="s3">&lt;</span><span class="s4">&quot;age&quot;</span><span class="s3">&gt;, </span><span class="s1">Age</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s0">// @ts-expect-error</span>
+  <span class="s1">doStuff</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;hello there!&quot; </span><span class="s3">});</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

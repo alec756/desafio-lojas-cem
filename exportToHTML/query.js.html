@@ -1,0 +1,187 @@
+<html>
+<head>
+<title>query.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #6aab73;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #7a7e85;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+query.js</font>
+</center></td></tr></table>
+<pre><span class="s0">'use strict'</span>
+
+<span class="s2">const </span><span class="s1">EventEmitter </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'events'</span><span class="s3">).</span><span class="s1">EventEmitter</span>
+<span class="s2">const </span><span class="s1">util </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'util'</span><span class="s3">)</span>
+<span class="s2">const </span><span class="s1">utils </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'../utils'</span><span class="s3">)</span>
+
+<span class="s2">const </span><span class="s1">NativeQuery </span><span class="s3">= (</span><span class="s1">module</span><span class="s3">.</span><span class="s1">exports </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">config</span><span class="s3">, </span><span class="s1">values</span><span class="s3">, </span><span class="s1">callback</span><span class="s3">) {</span>
+  <span class="s1">EventEmitter</span><span class="s3">.</span><span class="s1">call</span><span class="s3">(</span><span class="s2">this</span><span class="s3">)</span>
+  <span class="s1">config </span><span class="s3">= </span><span class="s1">utils</span><span class="s3">.</span><span class="s1">normalizeQueryConfig</span><span class="s3">(</span><span class="s1">config</span><span class="s3">, </span><span class="s1">values</span><span class="s3">, </span><span class="s1">callback</span><span class="s3">)</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">text </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">text</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">values </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">values</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">name </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">name</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">queryMode </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">queryMode</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">callback </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">callback</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">state </span><span class="s3">= </span><span class="s0">'new'</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">_arrayMode </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">rowMode </span><span class="s3">=== </span><span class="s0">'array'</span>
+
+  <span class="s4">// if the 'row' event is listened for</span>
+  <span class="s4">// then emit them as they come in</span>
+  <span class="s4">// without setting singleRowMode to true</span>
+  <span class="s4">// this has almost no meaning because libpq</span>
+  <span class="s4">// reads all rows into memory before returning any</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">_emitRowEvents </span><span class="s3">= </span><span class="s2">false</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">on</span><span class="s3">(</span>
+    <span class="s0">'newListener'</span><span class="s3">,</span>
+    <span class="s2">function </span><span class="s3">(</span><span class="s1">event</span><span class="s3">) {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">event </span><span class="s3">=== </span><span class="s0">'row'</span><span class="s3">) </span><span class="s2">this</span><span class="s3">.</span><span class="s1">_emitRowEvents </span><span class="s3">= </span><span class="s2">true</span>
+    <span class="s3">}.</span><span class="s1">bind</span><span class="s3">(</span><span class="s2">this</span><span class="s3">)</span>
+  <span class="s3">)</span>
+<span class="s3">})</span>
+
+<span class="s1">util</span><span class="s3">.</span><span class="s1">inherits</span><span class="s3">(</span><span class="s1">NativeQuery</span><span class="s3">, </span><span class="s1">EventEmitter</span><span class="s3">)</span>
+
+<span class="s2">const </span><span class="s1">errorFieldMap </span><span class="s3">= {</span>
+  <span class="s1">sqlState</span><span class="s3">: </span><span class="s0">'code'</span><span class="s3">,</span>
+  <span class="s1">statementPosition</span><span class="s3">: </span><span class="s0">'position'</span><span class="s3">,</span>
+  <span class="s1">messagePrimary</span><span class="s3">: </span><span class="s0">'message'</span><span class="s3">,</span>
+  <span class="s1">context</span><span class="s3">: </span><span class="s0">'where'</span><span class="s3">,</span>
+  <span class="s1">schemaName</span><span class="s3">: </span><span class="s0">'schema'</span><span class="s3">,</span>
+  <span class="s1">tableName</span><span class="s3">: </span><span class="s0">'table'</span><span class="s3">,</span>
+  <span class="s1">columnName</span><span class="s3">: </span><span class="s0">'column'</span><span class="s3">,</span>
+  <span class="s1">dataTypeName</span><span class="s3">: </span><span class="s0">'dataType'</span><span class="s3">,</span>
+  <span class="s1">constraintName</span><span class="s3">: </span><span class="s0">'constraint'</span><span class="s3">,</span>
+  <span class="s1">sourceFile</span><span class="s3">: </span><span class="s0">'file'</span><span class="s3">,</span>
+  <span class="s1">sourceLine</span><span class="s3">: </span><span class="s0">'line'</span><span class="s3">,</span>
+  <span class="s1">sourceFunction</span><span class="s3">: </span><span class="s0">'routine'</span><span class="s3">,</span>
+<span class="s3">}</span>
+
+<span class="s1">NativeQuery</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">handleError </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+  <span class="s4">// copy pq error fields into the error object</span>
+  <span class="s2">const </span><span class="s1">fields </span><span class="s3">= </span><span class="s2">this</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">pq</span><span class="s3">.</span><span class="s1">resultErrorFields</span><span class="s3">()</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">fields</span><span class="s3">) {</span>
+    <span class="s2">for </span><span class="s3">(</span><span class="s2">const </span><span class="s1">key </span><span class="s2">in </span><span class="s1">fields</span><span class="s3">) {</span>
+      <span class="s2">const </span><span class="s1">normalizedFieldName </span><span class="s3">= </span><span class="s1">errorFieldMap</span><span class="s3">[</span><span class="s1">key</span><span class="s3">] || </span><span class="s1">key</span>
+      <span class="s1">err</span><span class="s3">[</span><span class="s1">normalizedFieldName</span><span class="s3">] = </span><span class="s1">fields</span><span class="s3">[</span><span class="s1">key</span><span class="s3">]</span>
+    <span class="s3">}</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">callback</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">callback</span><span class="s3">(</span><span class="s1">err</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else </span><span class="s3">{</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s1">err</span><span class="s3">)</span>
+  <span class="s3">}</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">state </span><span class="s3">= </span><span class="s0">'error'</span>
+<span class="s3">}</span>
+
+<span class="s1">NativeQuery</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">then </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">onSuccess</span><span class="s3">, </span><span class="s1">onFailure</span><span class="s3">) {</span>
+  <span class="s2">return this</span><span class="s3">.</span><span class="s1">_getPromise</span><span class="s3">().</span><span class="s1">then</span><span class="s3">(</span><span class="s1">onSuccess</span><span class="s3">, </span><span class="s1">onFailure</span><span class="s3">)</span>
+<span class="s3">}</span>
+
+<span class="s1">NativeQuery</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">catch </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">callback</span><span class="s3">) {</span>
+  <span class="s2">return this</span><span class="s3">.</span><span class="s1">_getPromise</span><span class="s3">().</span><span class="s1">catch</span><span class="s3">(</span><span class="s1">callback</span><span class="s3">)</span>
+<span class="s3">}</span>
+
+<span class="s1">NativeQuery</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">_getPromise </span><span class="s3">= </span><span class="s2">function </span><span class="s3">() {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">_promise</span><span class="s3">) </span><span class="s2">return this</span><span class="s3">.</span><span class="s1">_promise</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">_promise </span><span class="s3">= </span><span class="s2">new </span><span class="s1">Promise</span><span class="s3">(</span>
+    <span class="s2">function </span><span class="s3">(</span><span class="s1">resolve</span><span class="s3">, </span><span class="s1">reject</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">_once</span><span class="s3">(</span><span class="s0">'end'</span><span class="s3">, </span><span class="s1">resolve</span><span class="s3">)</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">_once</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s1">reject</span><span class="s3">)</span>
+    <span class="s3">}.</span><span class="s1">bind</span><span class="s3">(</span><span class="s2">this</span><span class="s3">)</span>
+  <span class="s3">)</span>
+  <span class="s2">return this</span><span class="s3">.</span><span class="s1">_promise</span>
+<span class="s3">}</span>
+
+<span class="s1">NativeQuery</span><span class="s3">.</span><span class="s1">prototype</span><span class="s3">.</span><span class="s1">submit </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">client</span><span class="s3">) {</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">state </span><span class="s3">= </span><span class="s0">'running'</span>
+  <span class="s2">const </span><span class="s1">self </span><span class="s3">= </span><span class="s2">this</span>
+  <span class="s2">this</span><span class="s3">.</span><span class="s1">native </span><span class="s3">= </span><span class="s1">client</span><span class="s3">.</span><span class="s1">native</span>
+  <span class="s1">client</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">arrayMode </span><span class="s3">= </span><span class="s2">this</span><span class="s3">.</span><span class="s1">_arrayMode</span>
+
+  <span class="s2">let </span><span class="s1">after </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">err</span><span class="s3">, </span><span class="s1">rows</span><span class="s3">, </span><span class="s1">results</span><span class="s3">) {</span>
+    <span class="s1">client</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">arrayMode </span><span class="s3">= </span><span class="s2">false</span>
+    <span class="s1">setImmediate</span><span class="s3">(</span><span class="s2">function </span><span class="s3">() {</span>
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'_done'</span><span class="s3">)</span>
+    <span class="s3">})</span>
+
+    <span class="s4">// handle possible query error</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+      <span class="s2">return </span><span class="s1">self</span><span class="s3">.</span><span class="s1">handleError</span><span class="s3">(</span><span class="s1">err</span><span class="s3">)</span>
+    <span class="s3">}</span>
+
+    <span class="s4">// emit row events for each row in the result</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">self</span><span class="s3">.</span><span class="s1">_emitRowEvents</span><span class="s3">) {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">results</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">1</span><span class="s3">) {</span>
+        <span class="s1">rows</span><span class="s3">.</span><span class="s1">forEach</span><span class="s3">((</span><span class="s1">rowOfRows</span><span class="s3">, </span><span class="s1">i</span><span class="s3">) =&gt; {</span>
+          <span class="s1">rowOfRows</span><span class="s3">.</span><span class="s1">forEach</span><span class="s3">((</span><span class="s1">row</span><span class="s3">) =&gt; {</span>
+            <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'row'</span><span class="s3">, </span><span class="s1">row</span><span class="s3">, </span><span class="s1">results</span><span class="s3">[</span><span class="s1">i</span><span class="s3">])</span>
+          <span class="s3">})</span>
+        <span class="s3">})</span>
+      <span class="s3">} </span><span class="s2">else </span><span class="s3">{</span>
+        <span class="s1">rows</span><span class="s3">.</span><span class="s1">forEach</span><span class="s3">(</span><span class="s2">function </span><span class="s3">(</span><span class="s1">row</span><span class="s3">) {</span>
+          <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'row'</span><span class="s3">, </span><span class="s1">row</span><span class="s3">, </span><span class="s1">results</span><span class="s3">)</span>
+        <span class="s3">})</span>
+      <span class="s3">}</span>
+    <span class="s3">}</span>
+
+    <span class="s4">// handle successful result</span>
+    <span class="s1">self</span><span class="s3">.</span><span class="s1">state </span><span class="s3">= </span><span class="s0">'end'</span>
+    <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'end'</span><span class="s3">, </span><span class="s1">results</span><span class="s3">)</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">self</span><span class="s3">.</span><span class="s1">callback</span><span class="s3">) {</span>
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">callback</span><span class="s3">(</span><span class="s2">null</span><span class="s3">, </span><span class="s1">results</span><span class="s3">)</span>
+    <span class="s3">}</span>
+  <span class="s3">}</span>
+
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">process</span><span class="s3">.</span><span class="s1">domain</span><span class="s3">) {</span>
+    <span class="s1">after </span><span class="s3">= </span><span class="s1">process</span><span class="s3">.</span><span class="s1">domain</span><span class="s3">.</span><span class="s1">bind</span><span class="s3">(</span><span class="s1">after</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s4">// named query</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">) {</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">63</span><span class="s3">) {</span>
+      <span class="s1">console</span><span class="s3">.</span><span class="s1">error</span><span class="s3">(</span><span class="s0">'Warning! Postgres only supports 63 characters for query names.'</span><span class="s3">)</span>
+      <span class="s1">console</span><span class="s3">.</span><span class="s1">error</span><span class="s3">(</span><span class="s0">'You supplied %s (%s)'</span><span class="s3">, </span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">, </span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">.</span><span class="s1">length</span><span class="s3">)</span>
+      <span class="s1">console</span><span class="s3">.</span><span class="s1">error</span><span class="s3">(</span><span class="s0">'This can cause conflicts and silent errors executing queries'</span><span class="s3">)</span>
+    <span class="s3">}</span>
+    <span class="s2">const </span><span class="s1">values </span><span class="s3">= (</span><span class="s2">this</span><span class="s3">.</span><span class="s1">values </span><span class="s3">|| []).</span><span class="s1">map</span><span class="s3">(</span><span class="s1">utils</span><span class="s3">.</span><span class="s1">prepareValue</span><span class="s3">)</span>
+
+    <span class="s4">// check if the client has already executed this named query</span>
+    <span class="s4">// if so...just execute it again - skip the planning phase</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">client</span><span class="s3">.</span><span class="s1">namedQueries</span><span class="s3">[</span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">]) {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">text </span><span class="s3">&amp;&amp; </span><span class="s1">client</span><span class="s3">.</span><span class="s1">namedQueries</span><span class="s3">[</span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">] !== </span><span class="s2">this</span><span class="s3">.</span><span class="s1">text</span><span class="s3">) {</span>
+        <span class="s2">const </span><span class="s1">err </span><span class="s3">= </span><span class="s2">new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">`Prepared statements must be unique - '</span><span class="s1">$</span><span class="s3">{</span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">}</span><span class="s0">' was used for a different statement`</span><span class="s3">)</span>
+        <span class="s2">return </span><span class="s1">after</span><span class="s3">(</span><span class="s1">err</span><span class="s3">)</span>
+      <span class="s3">}</span>
+      <span class="s2">return </span><span class="s1">client</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">execute</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">, </span><span class="s1">values</span><span class="s3">, </span><span class="s1">after</span><span class="s3">)</span>
+    <span class="s3">}</span>
+    <span class="s4">// plan the named query the first time, then execute it</span>
+    <span class="s2">return </span><span class="s1">client</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">prepare</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">name</span><span class="s3">, </span><span class="s2">this</span><span class="s3">.</span><span class="s1">text</span><span class="s3">, </span><span class="s1">values</span><span class="s3">.</span><span class="s1">length</span><span class="s3">, </span><span class="s2">function </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) </span><span class="s2">return </span><span class="s1">after</span><span class="s3">(</span><span class="s1">err</span><span class="s3">)</span>
+      <span class="s1">client</span><span class="s3">.</span><span class="s1">namedQueries</span><span class="s3">[</span><span class="s1">self</span><span class="s3">.</span><span class="s1">name</span><span class="s3">] = </span><span class="s1">self</span><span class="s3">.</span><span class="s1">text</span>
+      <span class="s2">return </span><span class="s1">self</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">execute</span><span class="s3">(</span><span class="s1">self</span><span class="s3">.</span><span class="s1">name</span><span class="s3">, </span><span class="s1">values</span><span class="s3">, </span><span class="s1">after</span><span class="s3">)</span>
+    <span class="s3">})</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">values</span><span class="s3">) {</span>
+    <span class="s2">if </span><span class="s3">(!</span><span class="s1">Array</span><span class="s3">.</span><span class="s1">isArray</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">values</span><span class="s3">)) {</span>
+      <span class="s2">const </span><span class="s1">err </span><span class="s3">= </span><span class="s2">new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'Query values must be an array'</span><span class="s3">)</span>
+      <span class="s2">return </span><span class="s1">after</span><span class="s3">(</span><span class="s1">err</span><span class="s3">)</span>
+    <span class="s3">}</span>
+    <span class="s2">const </span><span class="s1">vals </span><span class="s3">= </span><span class="s2">this</span><span class="s3">.</span><span class="s1">values</span><span class="s3">.</span><span class="s1">map</span><span class="s3">(</span><span class="s1">utils</span><span class="s3">.</span><span class="s1">prepareValue</span><span class="s3">)</span>
+    <span class="s1">client</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">query</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">text</span><span class="s3">, </span><span class="s1">vals</span><span class="s3">, </span><span class="s1">after</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">queryMode </span><span class="s3">=== </span><span class="s0">'extended'</span><span class="s3">) {</span>
+    <span class="s1">client</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">query</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">text</span><span class="s3">, [], </span><span class="s1">after</span><span class="s3">)</span>
+  <span class="s3">} </span><span class="s2">else </span><span class="s3">{</span>
+    <span class="s1">client</span><span class="s3">.</span><span class="s1">native</span><span class="s3">.</span><span class="s1">query</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">text</span><span class="s3">, </span><span class="s1">after</span><span class="s3">)</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+</pre>
+</body>
+</html>

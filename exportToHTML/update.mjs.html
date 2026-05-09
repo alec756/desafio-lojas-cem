@@ -1,0 +1,94 @@
+<html>
+<head>
+<title>update.mjs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #7a7e85;}
+.s5 { color: #5f826b; font-style: italic;}
+.s6 { color: #67a37c; font-style: italic;}
+.s7 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+update.mjs</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">resolveModulePath </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;exsolve&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s2">{ </span><span class="s1">mkdir</span><span class="s2">, </span><span class="s1">readFile</span><span class="s2">, </span><span class="s1">writeFile </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;node:fs/promises&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s2">{ </span><span class="s1">join</span><span class="s2">, </span><span class="s1">normalize </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;pathe&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s2">{ </span><span class="s1">dirname</span><span class="s2">, </span><span class="s1">extname </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;node:path&quot;</span><span class="s2">;</span>
+<span class="s4">//#region src/loader.ts</span>
+<span class="s0">const </span><span class="s1">SUPPORTED_EXTENSIONS </span><span class="s2">= </span><span class="s1">Object</span><span class="s2">.</span><span class="s1">freeze</span><span class="s2">([</span>
+	<span class="s3">&quot;.js&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.ts&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.mjs&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.cjs&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.mts&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.cts&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.json&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.jsonc&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.json5&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.yaml&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.yml&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.toml&quot;</span>
+<span class="s2">]);</span>
+<span class="s4">//#endregion</span>
+<span class="s4">//#region src/update.ts</span>
+<span class="s0">const </span><span class="s1">UPDATABLE_EXTS </span><span class="s2">= [</span>
+	<span class="s3">&quot;.js&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.ts&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.mjs&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.cjs&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.mts&quot;</span><span class="s2">,</span>
+	<span class="s3">&quot;.cts&quot;</span>
+<span class="s2">];</span>
+<span class="s5">/**</span>
+<span class="s5">* </span><span class="s6">@experimental </span><span class="s5">Update a config file or create a new one.</span>
+<span class="s5">*/</span>
+<span class="s1">async </span><span class="s0">function </span><span class="s1">updateConfig</span><span class="s2">(</span><span class="s1">opts</span><span class="s2">) {</span>
+	<span class="s0">const </span><span class="s2">{ </span><span class="s1">parseModule </span><span class="s2">} = </span><span class="s0">await import</span><span class="s2">(</span><span class="s3">&quot;magicast&quot;</span><span class="s2">);</span>
+	<span class="s0">let </span><span class="s1">configFile </span><span class="s2">= </span><span class="s1">tryResolve</span><span class="s2">(</span><span class="s3">`./</span><span class="s1">$</span><span class="s2">{</span><span class="s1">opts</span><span class="s2">.</span><span class="s1">configFile</span><span class="s2">}</span><span class="s3">`</span><span class="s2">, </span><span class="s1">opts</span><span class="s2">.</span><span class="s1">cwd</span><span class="s2">, </span><span class="s1">SUPPORTED_EXTENSIONS</span><span class="s2">) || </span><span class="s1">tryResolve</span><span class="s2">(</span><span class="s3">`./.config/</span><span class="s1">$</span><span class="s2">{</span><span class="s1">opts</span><span class="s2">.</span><span class="s1">configFile</span><span class="s2">}</span><span class="s3">`</span><span class="s2">, </span><span class="s1">opts</span><span class="s2">.</span><span class="s1">cwd</span><span class="s2">, </span><span class="s1">SUPPORTED_EXTENSIONS</span><span class="s2">) || </span><span class="s1">tryResolve</span><span class="s2">(</span><span class="s3">`./.config/</span><span class="s1">$</span><span class="s2">{</span><span class="s1">opts</span><span class="s2">.</span><span class="s1">configFile</span><span class="s2">.</span><span class="s1">split</span><span class="s2">(</span><span class="s3">&quot;.&quot;</span><span class="s2">)[</span><span class="s7">0</span><span class="s2">]}</span><span class="s3">`</span><span class="s2">, </span><span class="s1">opts</span><span class="s2">.</span><span class="s1">cwd</span><span class="s2">, </span><span class="s1">SUPPORTED_EXTENSIONS</span><span class="s2">);</span>
+	<span class="s0">let </span><span class="s1">created </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+	<span class="s0">if </span><span class="s2">(!</span><span class="s1">configFile</span><span class="s2">) {</span>
+		<span class="s1">configFile </span><span class="s2">= </span><span class="s1">join</span><span class="s2">(</span><span class="s1">opts</span><span class="s2">.</span><span class="s1">cwd</span><span class="s2">, </span><span class="s1">opts</span><span class="s2">.</span><span class="s1">configFile </span><span class="s2">+ (</span><span class="s1">opts</span><span class="s2">.</span><span class="s1">createExtension </span><span class="s2">|| </span><span class="s3">&quot;.ts&quot;</span><span class="s2">));</span>
+		<span class="s0">const </span><span class="s1">createResult </span><span class="s2">= </span><span class="s0">await </span><span class="s1">opts</span><span class="s2">.</span><span class="s1">onCreate</span><span class="s2">?.({ </span><span class="s1">configFile </span><span class="s2">}) ?? </span><span class="s0">true</span><span class="s2">;</span>
+		<span class="s0">if </span><span class="s2">(!</span><span class="s1">createResult</span><span class="s2">) </span><span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">&quot;Config file creation aborted.&quot;</span><span class="s2">);</span>
+		<span class="s0">const </span><span class="s1">content </span><span class="s2">= </span><span class="s0">typeof </span><span class="s1">createResult </span><span class="s2">=== </span><span class="s3">&quot;string&quot; </span><span class="s2">? </span><span class="s1">createResult </span><span class="s2">: </span><span class="s3">`export default {}</span><span class="s0">\n</span><span class="s3">`</span><span class="s2">;</span>
+		<span class="s0">await </span><span class="s1">mkdir</span><span class="s2">(</span><span class="s1">dirname</span><span class="s2">(</span><span class="s1">configFile</span><span class="s2">), { </span><span class="s1">recursive</span><span class="s2">: </span><span class="s0">true </span><span class="s2">});</span>
+		<span class="s0">await </span><span class="s1">writeFile</span><span class="s2">(</span><span class="s1">configFile</span><span class="s2">, </span><span class="s1">content</span><span class="s2">, </span><span class="s3">&quot;utf8&quot;</span><span class="s2">);</span>
+		<span class="s1">created </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+	<span class="s2">}</span>
+	<span class="s0">const </span><span class="s1">ext </span><span class="s2">= </span><span class="s1">extname</span><span class="s2">(</span><span class="s1">configFile</span><span class="s2">);</span>
+	<span class="s0">if </span><span class="s2">(!</span><span class="s1">UPDATABLE_EXTS</span><span class="s2">.</span><span class="s1">includes</span><span class="s2">(</span><span class="s1">ext</span><span class="s2">)) </span><span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">`Unsupported config file extension: </span><span class="s1">$</span><span class="s2">{</span><span class="s1">ext</span><span class="s2">} </span><span class="s3">(</span><span class="s1">$</span><span class="s2">{</span><span class="s1">configFile</span><span class="s2">}</span><span class="s3">) (supported: </span><span class="s1">$</span><span class="s2">{</span><span class="s1">UPDATABLE_EXTS</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span><span class="s3">&quot;, &quot;</span><span class="s2">)}</span><span class="s3">)`</span><span class="s2">);</span>
+	<span class="s0">const </span><span class="s1">_module </span><span class="s2">= </span><span class="s1">parseModule</span><span class="s2">(</span><span class="s0">await </span><span class="s1">readFile</span><span class="s2">(</span><span class="s1">configFile</span><span class="s2">, </span><span class="s3">&quot;utf8&quot;</span><span class="s2">), </span><span class="s1">opts</span><span class="s2">.</span><span class="s1">magicast</span><span class="s2">);</span>
+	<span class="s0">const </span><span class="s1">defaultExport </span><span class="s2">= </span><span class="s1">_module</span><span class="s2">.</span><span class="s1">exports</span><span class="s2">.</span><span class="s1">default</span><span class="s2">;</span>
+	<span class="s0">if </span><span class="s2">(!</span><span class="s1">defaultExport</span><span class="s2">) </span><span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">&quot;Default export is missing in the config file!&quot;</span><span class="s2">);</span>
+	<span class="s0">const </span><span class="s1">configObj </span><span class="s2">= </span><span class="s1">defaultExport</span><span class="s2">.</span><span class="s1">$type </span><span class="s2">=== </span><span class="s3">&quot;function-call&quot; </span><span class="s2">? </span><span class="s1">defaultExport</span><span class="s2">.</span><span class="s1">$args</span><span class="s2">[</span><span class="s7">0</span><span class="s2">] : </span><span class="s1">defaultExport</span><span class="s2">;</span>
+	<span class="s0">await </span><span class="s1">opts</span><span class="s2">.</span><span class="s1">onUpdate</span><span class="s2">?.(</span><span class="s1">configObj</span><span class="s2">);</span>
+	<span class="s0">await </span><span class="s1">writeFile</span><span class="s2">(</span><span class="s1">configFile</span><span class="s2">, </span><span class="s1">_module</span><span class="s2">.</span><span class="s1">generate</span><span class="s2">().</span><span class="s1">code</span><span class="s2">);</span>
+	<span class="s0">return </span><span class="s2">{</span>
+		<span class="s1">configFile</span><span class="s2">,</span>
+		<span class="s1">created</span>
+	<span class="s2">};</span>
+<span class="s2">}</span>
+<span class="s0">function </span><span class="s1">tryResolve</span><span class="s2">(</span><span class="s1">path</span><span class="s2">, </span><span class="s1">cwd</span><span class="s2">, </span><span class="s1">extensions</span><span class="s2">) {</span>
+	<span class="s0">const </span><span class="s1">res </span><span class="s2">= </span><span class="s1">resolveModulePath</span><span class="s2">(</span><span class="s1">path</span><span class="s2">, {</span>
+		<span class="s0">try</span><span class="s2">: </span><span class="s0">true</span><span class="s2">,</span>
+		<span class="s1">from</span><span class="s2">: </span><span class="s1">join</span><span class="s2">(</span><span class="s1">cwd</span><span class="s2">, </span><span class="s3">&quot;/&quot;</span><span class="s2">),</span>
+		<span class="s1">extensions</span><span class="s2">,</span>
+		<span class="s1">suffixes</span><span class="s2">: [</span><span class="s3">&quot;&quot;</span><span class="s2">, </span><span class="s3">&quot;/index&quot;</span><span class="s2">],</span>
+		<span class="s1">cache</span><span class="s2">: </span><span class="s0">false</span>
+	<span class="s2">});</span>
+	<span class="s0">return </span><span class="s1">res </span><span class="s2">? </span><span class="s1">normalize</span><span class="s2">(</span><span class="s1">res</span><span class="s2">) : </span><span class="s0">void </span><span class="s7">0</span><span class="s2">;</span>
+<span class="s2">}</span>
+<span class="s4">//#endregion</span>
+<span class="s0">export </span><span class="s2">{ </span><span class="s1">updateConfig </span><span class="s2">};</span>
+</pre>
+</body>
+</html>

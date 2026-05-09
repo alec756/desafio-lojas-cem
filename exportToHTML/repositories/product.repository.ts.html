@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>product.repository.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+product.repository.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">prisma </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;../lib/prisma&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s2">{ </span><span class="s1">Prisma</span><span class="s2">, </span><span class="s1">Product </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;@prisma/client&quot;</span><span class="s2">;</span>
+
+<span class="s0">export class </span><span class="s1">ProductRepository </span><span class="s2">{</span>
+    <span class="s1">async create</span><span class="s2">(</span><span class="s1">data</span><span class="s2">: </span><span class="s1">Prisma</span><span class="s2">.</span><span class="s1">ProductCreateInput</span><span class="s2">): </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; {</span>
+        <span class="s0">return await </span><span class="s1">prisma</span><span class="s2">.</span><span class="s1">product</span><span class="s2">.</span><span class="s1">create</span><span class="s2">({ </span><span class="s1">data </span><span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async findAll</span><span class="s2">(): </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">[]&gt; {</span>
+        <span class="s0">return await </span><span class="s1">prisma</span><span class="s2">.</span><span class="s1">product</span><span class="s2">.</span><span class="s1">findMany</span><span class="s2">({</span>
+            <span class="s1">orderBy</span><span class="s2">: { </span><span class="s1">created_at</span><span class="s2">: </span><span class="s3">'desc' </span><span class="s2">},</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async findById</span><span class="s2">(</span><span class="s1">id</span><span class="s2">: </span><span class="s1">string</span><span class="s2">): </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s1">Product </span><span class="s2">| </span><span class="s0">null</span><span class="s2">&gt; {</span>
+        <span class="s0">return await </span><span class="s1">prisma</span><span class="s2">.</span><span class="s1">product</span><span class="s2">.</span><span class="s1">findUnique</span><span class="s2">({ </span><span class="s1">where</span><span class="s2">: { </span><span class="s1">id </span><span class="s2">} });</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async update</span><span class="s2">(</span><span class="s1">id</span><span class="s2">: </span><span class="s1">string</span><span class="s2">, </span><span class="s1">data</span><span class="s2">: </span><span class="s1">Prisma</span><span class="s2">.</span><span class="s1">ProductUpdateInput</span><span class="s2">): </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; {</span>
+        <span class="s0">return await </span><span class="s1">prisma</span><span class="s2">.</span><span class="s1">product</span><span class="s2">.</span><span class="s1">update</span><span class="s2">({ </span><span class="s1">where</span><span class="s2">: { </span><span class="s1">id </span><span class="s2">}, </span><span class="s1">data </span><span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async </span><span class="s0">delete</span><span class="s2">(</span><span class="s1">id</span><span class="s2">: </span><span class="s1">string</span><span class="s2">): </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s0">void</span><span class="s2">&gt; {</span>
+        <span class="s0">await </span><span class="s1">prisma</span><span class="s2">.</span><span class="s1">product</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">({ </span><span class="s1">where</span><span class="s2">: { </span><span class="s1">id </span><span class="s2">} });</span>
+    <span class="s2">}</span>
+<span class="s2">}</span></pre>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>regexes.d.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #5f826b; font-style: italic;}
+.s1 { color: #67a37c; font-style: italic;}
+.s2 { color: #bcbec4;}
+.s3 { color: #cf8e6d;}
+.s4 { color: #bcbec4;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+regexes.d.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">/**</span>
+ <span class="s0">* </span><span class="s1">@deprecated </span><span class="s0">CUID v1 is deprecated by its authors due to information leakage</span>
+ <span class="s0">* (timestamps embedded in the id). Use {</span><span class="s1">@link </span><span class="s0">cuid2} instead.</span>
+ <span class="s0">* See https://github.com/paralleldrive/cuid.</span>
+ <span class="s0">*/</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">cuid</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">cuid2</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">ulid</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">xid</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">ksuid</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">nanoid</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** ISO 8601-1 duration regex. Does not support the 8601-2 extensions like negative durations or fractional/negative components. */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">duration</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** Implements ISO 8601-2 extensions like explicit +- prefixes, mixing weeks with other units, and fractional/negative components. */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">extendedDuration</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** A regex for any UUID-like identifier: 8-4-4-4-12 hex pattern */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">guid</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** Returns a regex for validating an RFC 9562/4122 UUID.</span>
+ <span class="s0">*</span>
+ <span class="s0">* </span><span class="s1">@param </span><span class="s0">version Optionally specify a version 1-8. If no version is specified, all versions are supported. */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">uuid</span><span class="s4">: (</span><span class="s2">version</span><span class="s4">?: </span><span class="s2">number </span><span class="s4">| </span><span class="s2">undefined</span><span class="s4">) =&gt; </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">uuid4</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">uuid6</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">uuid7</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** Practical email validation */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">email</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** Equivalent to the HTML5 input[type=email] validation implemented by browsers. Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">html5Email</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** The classic emailregex.com regex for RFC 5322-compliant emails */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">rfc5322Email</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s0">/** A loose regex that allows Unicode characters, enforces length limits, and that's about it. */</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">unicodeEmail</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">idnEmail</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">browserEmail</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">function </span><span class="s2">emoji</span><span class="s4">(): </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">ipv4</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">ipv6</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">mac</span><span class="s4">: (</span><span class="s2">delimiter</span><span class="s4">?: </span><span class="s2">string</span><span class="s4">) =&gt; </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">cidrv4</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">cidrv6</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">base64</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">base64url</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">hostname</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">domain</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">httpProtocol</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">e164</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">date</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">function </span><span class="s2">time</span><span class="s4">(</span><span class="s2">args</span><span class="s4">: {</span>
+    <span class="s2">precision</span><span class="s4">?: </span><span class="s2">number </span><span class="s4">| </span><span class="s3">null</span><span class="s4">;</span>
+<span class="s4">}): </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">function </span><span class="s2">datetime</span><span class="s4">(</span><span class="s2">args</span><span class="s4">: {</span>
+    <span class="s2">precision</span><span class="s4">?: </span><span class="s2">number </span><span class="s4">| </span><span class="s3">null</span><span class="s4">;</span>
+    <span class="s2">offset</span><span class="s4">?: </span><span class="s2">boolean</span><span class="s4">;</span>
+    <span class="s2">local</span><span class="s4">?: </span><span class="s2">boolean</span><span class="s4">;</span>
+<span class="s4">}): </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">string</span><span class="s4">: (</span><span class="s2">params</span><span class="s4">?: {</span>
+    <span class="s2">minimum</span><span class="s4">?: </span><span class="s2">number </span><span class="s4">| </span><span class="s2">undefined</span><span class="s4">;</span>
+    <span class="s2">maximum</span><span class="s4">?: </span><span class="s2">number </span><span class="s4">| </span><span class="s2">undefined</span><span class="s4">;</span>
+<span class="s4">}) =&gt; </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">bigint</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">integer</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">number</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">boolean</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s2">declare </span><span class="s3">const </span><span class="s2">_null</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s4">{ </span><span class="s2">_null </span><span class="s4">as </span><span class="s3">null </span><span class="s4">};</span>
+<span class="s2">declare </span><span class="s3">const </span><span class="s2">_undefined</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s4">{ </span><span class="s2">_undefined </span><span class="s4">as </span><span class="s2">undefined </span><span class="s4">};</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">lowercase</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">uppercase</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">hex</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">md5_hex</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">md5_base64</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">md5_base64url</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha1_hex</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha1_base64</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha1_base64url</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha256_hex</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha256_base64</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha256_base64url</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha384_hex</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha384_base64</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha384_base64url</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha512_hex</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha512_base64</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+<span class="s3">export </span><span class="s2">declare </span><span class="s3">const </span><span class="s2">sha512_base64url</span><span class="s4">: </span><span class="s2">RegExp</span><span class="s4">;</span>
+</pre>
+</body>
+</html>

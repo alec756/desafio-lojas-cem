@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>server.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #6aab73;}
+.s3 { color: #bcbec4;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+server.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">fastify from </span><span class="s2">'fastify'</span><span class="s3">;</span>
+<span class="s0">import </span><span class="s3">{ </span><span class="s1">ProductController </span><span class="s3">} </span><span class="s1">from </span><span class="s2">'./controllers/product.controller'</span><span class="s3">;</span>
+
+<span class="s0">const </span><span class="s1">app </span><span class="s3">= </span><span class="s1">fastify</span><span class="s3">();</span>
+<span class="s0">const </span><span class="s1">productController </span><span class="s3">= </span><span class="s0">new </span><span class="s1">ProductController</span><span class="s3">();</span>
+
+<span class="s1">app</span><span class="s3">.</span><span class="s1">post</span><span class="s3">(</span><span class="s2">'/products'</span><span class="s3">, (</span><span class="s1">request</span><span class="s3">, </span><span class="s1">reply</span><span class="s3">) =&gt; </span><span class="s1">productController</span><span class="s3">.</span><span class="s1">create</span><span class="s3">(</span><span class="s1">request</span><span class="s3">, </span><span class="s1">reply</span><span class="s3">));</span>
+<span class="s1">app</span><span class="s3">.</span><span class="s1">get</span><span class="s3">(</span><span class="s2">'/products'</span><span class="s3">, (</span><span class="s1">request</span><span class="s3">, </span><span class="s1">reply</span><span class="s3">) =&gt; </span><span class="s1">productController</span><span class="s3">.</span><span class="s1">index</span><span class="s3">(</span><span class="s1">request</span><span class="s3">, </span><span class="s1">reply</span><span class="s3">));</span>
+
+<span class="s1">app</span><span class="s3">.</span><span class="s1">listen</span><span class="s3">({ </span><span class="s1">port</span><span class="s3">: </span><span class="s4">3333 </span><span class="s3">}).</span><span class="s1">then</span><span class="s3">(() =&gt; {</span>
+    <span class="s1">console</span><span class="s3">.</span><span class="s1">log</span><span class="s3">(</span><span class="s2">'🚀 Server running on http://localhost:3333'</span><span class="s3">);</span>
+<span class="s3">});</span></pre>
+</body>
+</html>

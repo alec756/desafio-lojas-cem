@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>product.routes.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+product.routes.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">Router </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;express&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s2">{ </span><span class="s1">ProductController </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;./controllers/product.controller&quot;</span><span class="s2">;</span>
+
+<span class="s0">const </span><span class="s1">router </span><span class="s2">= </span><span class="s1">Router</span><span class="s2">();</span>
+<span class="s0">const </span><span class="s1">productController </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ProductController</span><span class="s2">();</span>
+
+<span class="s1">router</span><span class="s2">.</span><span class="s1">post</span><span class="s2">(</span><span class="s3">&quot;/products&quot;</span><span class="s2">, (</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">) =&gt; </span><span class="s1">productController</span><span class="s2">.</span><span class="s1">create</span><span class="s2">(</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">));</span>
+<span class="s1">router</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s3">&quot;/products&quot;</span><span class="s2">, (</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">) =&gt; </span><span class="s1">productController</span><span class="s2">.</span><span class="s1">index</span><span class="s2">(</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">));</span>
+<span class="s1">router</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s3">&quot;/products/:id&quot;</span><span class="s2">, (</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">) =&gt; </span><span class="s1">productController</span><span class="s2">.</span><span class="s1">show</span><span class="s2">(</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">));</span>
+<span class="s1">router</span><span class="s2">.</span><span class="s1">put</span><span class="s2">(</span><span class="s3">&quot;/products/:id&quot;</span><span class="s2">, (</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">) =&gt; </span><span class="s1">productController</span><span class="s2">.</span><span class="s1">update</span><span class="s2">(</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">));</span>
+<span class="s1">router</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s3">&quot;/products/:id&quot;</span><span class="s2">, (</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">) =&gt; </span><span class="s1">productController</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s1">req</span><span class="s2">, </span><span class="s1">res</span><span class="s2">));</span>
+
+<span class="s0">export </span><span class="s2">{ </span><span class="s1">router </span><span class="s2">};</span></pre>
+</body>
+</html>

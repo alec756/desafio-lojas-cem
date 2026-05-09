@@ -1,0 +1,573 @@
+<html>
+<head>
+<title>error.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+error.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">ZodError</span><span class="s3">, </span><span class="s1">ZodIssueCode </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../ZodError.js&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">ZodParsedType </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;error creation&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">err1 </span><span class="s3">= </span><span class="s1">ZodError</span><span class="s3">.</span><span class="s1">create</span><span class="s3">([]);</span>
+  <span class="s1">err1</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+    <span class="s1">code</span><span class="s3">: </span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">invalid_type</span><span class="s3">,</span>
+    <span class="s1">expected</span><span class="s3">: </span><span class="s1">ZodParsedType</span><span class="s3">.</span><span class="s1">object</span><span class="s3">,</span>
+    <span class="s1">received</span><span class="s3">: </span><span class="s1">ZodParsedType</span><span class="s3">.</span><span class="s1">string</span><span class="s3">,</span>
+    <span class="s1">path</span><span class="s3">: [],</span>
+    <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;&quot;</span><span class="s3">,</span>
+    <span class="s1">fatal</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">err1</span><span class="s3">.</span><span class="s1">isEmpty</span><span class="s3">;</span>
+
+  <span class="s2">const </span><span class="s1">err2 </span><span class="s3">= </span><span class="s1">ZodError</span><span class="s3">.</span><span class="s1">create</span><span class="s3">(</span><span class="s1">err1</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">err3 </span><span class="s3">= </span><span class="s2">new </span><span class="s1">ZodError</span><span class="s3">([]);</span>
+  <span class="s1">err3</span><span class="s3">.</span><span class="s1">addIssues</span><span class="s3">(</span><span class="s1">err1</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">);</span>
+  <span class="s1">err3</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">(</span><span class="s1">err1</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">]);</span>
+  <span class="s1">err1</span><span class="s3">.</span><span class="s1">message</span><span class="s3">;</span>
+  <span class="s1">err2</span><span class="s3">.</span><span class="s1">message</span><span class="s3">;</span>
+  <span class="s1">err3</span><span class="s3">.</span><span class="s1">message</span><span class="s3">;</span>
+<span class="s3">});</span>
+
+<span class="s2">const </span><span class="s1">errorMap</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodErrorMap </span><span class="s3">= (</span><span class="s1">error</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">) =&gt; {</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">code </span><span class="s3">=== </span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">invalid_type</span><span class="s3">) {</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">expected </span><span class="s3">=== </span><span class="s4">&quot;string&quot;</span><span class="s3">) {</span>
+      <span class="s2">return </span><span class="s3">{ </span><span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;bad type!&quot; </span><span class="s3">};</span>
+    <span class="s3">}</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">code </span><span class="s3">=== </span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">) {</span>
+    <span class="s2">return </span><span class="s3">{ </span><span class="s1">message</span><span class="s3">: </span><span class="s4">`less-than-</span><span class="s1">$</span><span class="s3">{</span><span class="s1">error</span><span class="s3">.</span><span class="s1">params</span><span class="s3">?.</span><span class="s1">minimum</span><span class="s3">}</span><span class="s4">` </span><span class="s3">};</span>
+  <span class="s3">}</span>
+  <span class="s2">return </span><span class="s3">{ </span><span class="s1">message</span><span class="s3">: </span><span class="s1">ctx</span><span class="s3">.</span><span class="s1">defaultError </span><span class="s3">};</span>
+<span class="s3">};</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;type error with custom error map&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">234</span><span class="s3">, { </span><span class="s1">errorMap </span><span class="s3">});</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">invalid_type</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">`bad type!`</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;refinement fail with params&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val </span><span class="s3">&gt;= </span><span class="s5">3</span><span class="s3">, {</span>
+        <span class="s1">params</span><span class="s3">: { </span><span class="s1">minimum</span><span class="s3">: </span><span class="s5">3 </span><span class="s3">},</span>
+      <span class="s3">})</span>
+      <span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">2</span><span class="s3">, { </span><span class="s1">errorMap </span><span class="s3">});</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">`less-than-3`</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;custom error with custom errormap&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">12</span><span class="s3">, {</span>
+        <span class="s1">params</span><span class="s3">: { </span><span class="s1">minimum</span><span class="s3">: </span><span class="s5">13 </span><span class="s3">},</span>
+        <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;override&quot;</span><span class="s3">,</span>
+      <span class="s3">})</span>
+      <span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">, { </span><span class="s1">errorMap </span><span class="s3">});</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;override&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;default error message&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">x</span><span class="s3">) =&gt; </span><span class="s1">x </span><span class="s3">&gt; </span><span class="s5">3</span><span class="s3">)</span>
+      <span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;override error in refine&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">x</span><span class="s3">) =&gt; </span><span class="s1">x </span><span class="s3">&gt; </span><span class="s5">3</span><span class="s3">, </span><span class="s4">&quot;override&quot;</span><span class="s3">)</span>
+      <span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;override&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;override error in refinement&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">x</span><span class="s3">) =&gt; </span><span class="s1">x </span><span class="s3">&gt; </span><span class="s5">3</span><span class="s3">, {</span>
+        <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;override&quot;</span><span class="s3">,</span>
+      <span class="s3">})</span>
+      <span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;override&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;array minimum&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">min</span><span class="s3">(</span><span class="s5">3</span><span class="s3">, </span><span class="s4">&quot;tooshort&quot;</span><span class="s3">).</span><span class="s1">parse</span><span class="s3">([</span><span class="s4">&quot;asdf&quot;</span><span class="s3">, </span><span class="s4">&quot;qwer&quot;</span><span class="s3">]);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">too_small</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;tooshort&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">min</span><span class="s3">(</span><span class="s5">3</span><span class="s3">).</span><span class="s1">parse</span><span class="s3">([</span><span class="s4">&quot;asdf&quot;</span><span class="s3">, </span><span class="s4">&quot;qwer&quot;</span><span class="s3">]);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">too_small</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">`Array must contain at least 3 element(s)`</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s0">// implement test for semi-smart union logic that checks for type error on either left or right</span>
+<span class="s0">// test(&quot;union smart errors&quot;, () =&gt; {</span>
+<span class="s0">//   // expect.assertions(2);</span>
+
+<span class="s0">//   const p1 = z</span>
+<span class="s0">//     .union([z.string(), z.number().refine((x) =&gt; x &gt; 0)])</span>
+<span class="s0">//     .safeParse(-3.2);</span>
+
+<span class="s0">//   if (p1.success === true) throw new Error();</span>
+<span class="s0">//   expect(p1.success).toBe(false);</span>
+<span class="s0">//   expect(p1.error.issues[0].code).toEqual(ZodIssueCode.custom);</span>
+
+<span class="s0">//   const p2 = z.union([z.string(), z.number()]).safeParse(false);</span>
+<span class="s0">//   // .catch(err =&gt; expect(err.issues[0].code).toEqual(ZodIssueCode.invalid_union));</span>
+<span class="s0">//   if (p2.success === true) throw new Error();</span>
+<span class="s0">//   expect(p2.success).toBe(false);</span>
+<span class="s0">//   expect(p2.error.issues[0].code).toEqual(ZodIssueCode.invalid_union);</span>
+<span class="s0">// });</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;custom path in custom error map&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">items</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">data</span><span class="s3">) =&gt; </span><span class="s1">data</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">3</span><span class="s3">, {</span>
+      <span class="s1">path</span><span class="s3">: [</span><span class="s4">&quot;items-too-few&quot;</span><span class="s3">],</span>
+    <span class="s3">}),</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">errorMap</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodErrorMap </span><span class="s3">= (</span><span class="s1">error</span><span class="s3">) =&gt; {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">path</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+    <span class="s2">return </span><span class="s3">{ </span><span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;doesnt matter&quot; </span><span class="s3">};</span>
+  <span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({ </span><span class="s1">items</span><span class="s3">: [</span><span class="s4">&quot;first&quot;</span><span class="s3">] }, { </span><span class="s1">errorMap </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">path</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;items&quot;</span><span class="s3">, </span><span class="s4">&quot;items-too-few&quot;</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;error metadata from value&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">dynamicRefine </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">refine</span><span class="s3">(</span>
+    <span class="s3">(</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val </span><span class="s3">=== </span><span class="s1">val</span><span class="s3">.</span><span class="s1">toUpperCase</span><span class="s3">(),</span>
+    <span class="s3">(</span><span class="s1">val</span><span class="s3">) =&gt; ({ </span><span class="s1">params</span><span class="s3">: { </span><span class="s1">val </span><span class="s3">} })</span>
+  <span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">dynamicRefine</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">sub </span><span class="s3">= </span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">];</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;custom&quot;</span><span class="s3">);</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">sub</span><span class="s3">.</span><span class="s1">code </span><span class="s3">=== </span><span class="s4">&quot;custom&quot;</span><span class="s3">) {</span>
+      <span class="s1">expect</span><span class="s3">(</span><span class="s1">sub</span><span class="s3">.</span><span class="s1">params</span><span class="s3">!.</span><span class="s1">val</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+    <span class="s3">}</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s0">// test(&quot;don't call refine after validation failed&quot;, () =&gt; {</span>
+<span class="s0">//   const asdf = z</span>
+<span class="s0">//     .union([</span>
+<span class="s0">//       z.number(),</span>
+<span class="s0">//       z.string().transform(z.number(), (val) =&gt; {</span>
+<span class="s0">//         return parseFloat(val);</span>
+<span class="s0">//       }),</span>
+<span class="s0">//     ])</span>
+<span class="s0">//     .refine((v) =&gt; v &gt;= 1);</span>
+
+<span class="s0">//   expect(() =&gt; asdf.safeParse(&quot;foo&quot;)).not.toThrow();</span>
+<span class="s0">// });</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;root level formatting&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">email</span><span class="s3">();</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;asdfsdf&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">format</span><span class="s3">().</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid email&quot;</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;custom path&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">password</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+      <span class="s1">confirm</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">confirm </span><span class="s3">=== </span><span class="s1">val</span><span class="s3">.</span><span class="s1">password</span><span class="s3">, { </span><span class="s1">path</span><span class="s3">: [</span><span class="s4">&quot;confirm&quot;</span><span class="s3">] });</span>
+
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({</span>
+    <span class="s1">password</span><span class="s3">: </span><span class="s4">&quot;peanuts&quot;</span><span class="s3">,</span>
+    <span class="s1">confirm</span><span class="s3">: </span><span class="s4">&quot;qeanuts&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s0">// nested errors</span>
+    <span class="s2">const </span><span class="s1">error </span><span class="s3">= </span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">format</span><span class="s3">();</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">password</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">confirm</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;custom path&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">password</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">min</span><span class="s3">(</span><span class="s5">6</span><span class="s3">),</span>
+      <span class="s1">confirm</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">min</span><span class="s3">(</span><span class="s5">6</span><span class="s3">),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">confirm </span><span class="s3">=== </span><span class="s1">val</span><span class="s3">.</span><span class="s1">password</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({</span>
+    <span class="s1">password</span><span class="s3">: </span><span class="s4">&quot;qwer&quot;</span><span class="s3">,</span>
+    <span class="s1">confirm</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">3</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+  <span class="s1">inner</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">name</span><span class="s3">: </span><span class="s1">z</span>
+      <span class="s3">.</span><span class="s1">string</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">5</span><span class="s3">)</span>
+      <span class="s3">.</span><span class="s1">array</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&lt;= </span><span class="s5">1</span><span class="s3">),</span>
+  <span class="s3">}),</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;no abort early on refinements&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">invalidItem </span><span class="s3">= {</span>
+    <span class="s1">inner</span><span class="s3">: { </span><span class="s1">name</span><span class="s3">: [</span><span class="s4">&quot;aasd&quot;</span><span class="s3">, </span><span class="s4">&quot;asdfasdfasfd&quot;</span><span class="s3">] },</span>
+  <span class="s3">};</span>
+
+  <span class="s2">const </span><span class="s1">result1 </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">invalidItem</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;formatting&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">invalidItem </span><span class="s3">= {</span>
+    <span class="s1">inner</span><span class="s3">: { </span><span class="s1">name</span><span class="s3">: [</span><span class="s4">&quot;aasd&quot;</span><span class="s3">, </span><span class="s4">&quot;asdfasdfasfd&quot;</span><span class="s3">] },</span>
+  <span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">invalidArray </span><span class="s3">= {</span>
+    <span class="s1">inner</span><span class="s3">: { </span><span class="s1">name</span><span class="s3">: [</span><span class="s4">&quot;asdfasdf&quot;</span><span class="s3">, </span><span class="s4">&quot;asdfasdfasfd&quot;</span><span class="s3">] },</span>
+  <span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">result1 </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">invalidItem</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">result2 </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">invalidArray</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">error </span><span class="s3">= </span><span class="s1">result1</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">format</span><span class="s3">();</span>
+
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s0">// expect(error.inner?.name?._errors).toEqual([&quot;Invalid input&quot;]);</span>
+    <span class="s0">// expect(error.inner?.name?.[0]._errors).toEqual([&quot;Invalid input&quot;]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.[</span><span class="s5">1</span><span class="s3">]).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+  <span class="s3">}</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">type FormattedError </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">inferFormattedError</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">schema</span><span class="s3">&gt;;</span>
+    <span class="s2">const </span><span class="s1">error</span><span class="s3">: </span><span class="s1">FormattedError </span><span class="s3">= </span><span class="s1">result2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">format</span><span class="s3">();</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.[</span><span class="s5">0</span><span class="s3">]).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.[</span><span class="s5">1</span><span class="s3">]).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.[</span><span class="s5">2</span><span class="s3">]).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+  <span class="s3">}</span>
+
+  <span class="s0">// test custom mapper</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">type FormattedError </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">inferFormattedError</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">schema</span><span class="s3">, </span><span class="s1">number</span><span class="s3">&gt;;</span>
+    <span class="s2">const </span><span class="s1">error</span><span class="s3">: </span><span class="s1">FormattedError </span><span class="s3">= </span><span class="s1">result2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">format</span><span class="s3">(() =&gt; </span><span class="s5">5</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">inner</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s5">5</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;formatting with nullable and optional fields&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">nameSchema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">5</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">nullableObject</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">nameSchema </span><span class="s3">}).</span><span class="s1">nullable</span><span class="s3">(),</span>
+    <span class="s1">nullableArray</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">nameSchema</span><span class="s3">).</span><span class="s1">nullable</span><span class="s3">(),</span>
+    <span class="s1">nullableTuple</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">tuple</span><span class="s3">([</span><span class="s1">nameSchema</span><span class="s3">, </span><span class="s1">nameSchema</span><span class="s3">, </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()]).</span><span class="s1">nullable</span><span class="s3">(),</span>
+    <span class="s1">optionalObject</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">nameSchema </span><span class="s3">}).</span><span class="s1">optional</span><span class="s3">(),</span>
+    <span class="s1">optionalArray</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">nameSchema</span><span class="s3">).</span><span class="s1">optional</span><span class="s3">(),</span>
+    <span class="s1">optionalTuple</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">tuple</span><span class="s3">([</span><span class="s1">nameSchema</span><span class="s3">, </span><span class="s1">nameSchema</span><span class="s3">, </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()]).</span><span class="s1">optional</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">invalidItem </span><span class="s3">= {</span>
+    <span class="s1">nullableObject</span><span class="s3">: { </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;abcd&quot; </span><span class="s3">},</span>
+    <span class="s1">nullableArray</span><span class="s3">: [</span><span class="s4">&quot;abcd&quot;</span><span class="s3">],</span>
+    <span class="s1">nullableTuple</span><span class="s3">: [</span><span class="s4">&quot;abcd&quot;</span><span class="s3">, </span><span class="s4">&quot;abcd&quot;</span><span class="s3">, </span><span class="s5">1</span><span class="s3">],</span>
+    <span class="s1">optionalObject</span><span class="s3">: { </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;abcd&quot; </span><span class="s3">},</span>
+    <span class="s1">optionalArray</span><span class="s3">: [</span><span class="s4">&quot;abcd&quot;</span><span class="s3">],</span>
+    <span class="s1">optionalTuple</span><span class="s3">: [</span><span class="s4">&quot;abcd&quot;</span><span class="s3">, </span><span class="s4">&quot;abcd&quot;</span><span class="s3">, </span><span class="s5">1</span><span class="s3">],</span>
+  <span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">invalidItem</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">type FormattedError </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">inferFormattedError</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">schema</span><span class="s3">&gt;;</span>
+    <span class="s2">const </span><span class="s1">error</span><span class="s3">: </span><span class="s1">FormattedError </span><span class="s3">= </span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">format</span><span class="s3">();</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">nullableObject</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">nullableObject</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">nullableArray</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">nullableArray</span><span class="s3">?.[</span><span class="s5">0</span><span class="s3">]?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">nullableTuple</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">nullableTuple</span><span class="s3">?.[</span><span class="s5">0</span><span class="s3">]?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">nullableTuple</span><span class="s3">?.[</span><span class="s5">1</span><span class="s3">]?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">optionalObject</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">optionalObject</span><span class="s3">?.</span><span class="s1">name</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">optionalArray</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">optionalArray</span><span class="s3">?.[</span><span class="s5">0</span><span class="s3">]?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">optionalTuple</span><span class="s3">?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">optionalTuple</span><span class="s3">?.[</span><span class="s5">0</span><span class="s3">]?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">error</span><span class="s3">.</span><span class="s1">optionalTuple</span><span class="s3">?.[</span><span class="s5">1</span><span class="s3">]?.</span><span class="s1">_errors</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;Invalid input&quot;</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s2">const </span><span class="s1">stringWithCustomError </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">({</span>
+  <span class="s1">errorMap</span><span class="s3">: (</span><span class="s1">issue</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">) =&gt; ({</span>
+    <span class="s1">message</span><span class="s3">: </span><span class="s1">issue</span><span class="s3">.</span><span class="s1">code </span><span class="s3">=== </span><span class="s4">&quot;invalid_type&quot; </span><span class="s3">? (</span><span class="s1">ctx</span><span class="s3">.</span><span class="s1">data </span><span class="s3">? </span><span class="s4">&quot;Invalid name&quot; </span><span class="s3">: </span><span class="s4">&quot;Name is required&quot;</span><span class="s3">) : </span><span class="s1">ctx</span><span class="s3">.</span><span class="s1">defaultError</span><span class="s3">,</span>
+  <span class="s3">}),</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;schema-bound error map&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">stringWithCustomError</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Invalid name&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">result2 </span><span class="s3">= </span><span class="s1">stringWithCustomError</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Name is required&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+
+  <span class="s0">// support contextual override</span>
+  <span class="s2">const </span><span class="s1">result3 </span><span class="s3">= </span><span class="s1">stringWithCustomError</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">, {</span>
+    <span class="s1">errorMap</span><span class="s3">: () =&gt; ({ </span><span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;OVERRIDE&quot; </span><span class="s3">}),</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result3</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result3</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result3</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;OVERRIDE&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;overrideErrorMap&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s0">// support overrideErrorMap</span>
+  <span class="s1">z</span><span class="s3">.</span><span class="s1">setErrorMap</span><span class="s3">(() =&gt; ({ </span><span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;OVERRIDE&quot; </span><span class="s3">}));</span>
+  <span class="s2">const </span><span class="s1">result4 </span><span class="s3">= </span><span class="s1">stringWithCustomError</span><span class="s3">.</span><span class="s1">min</span><span class="s3">(</span><span class="s5">10</span><span class="s3">).</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;tooshort&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result4</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result4</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result4</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;OVERRIDE&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+  <span class="s1">z</span><span class="s3">.</span><span class="s1">setErrorMap</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">defaultErrorMap</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;invalid and required&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">str </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">({</span>
+    <span class="s1">invalid_type_error</span><span class="s3">: </span><span class="s4">&quot;Invalid name&quot;</span><span class="s3">,</span>
+    <span class="s1">required_error</span><span class="s3">: </span><span class="s4">&quot;Name is required&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">result1 </span><span class="s3">= </span><span class="s1">str</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s5">1234</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Invalid name&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+  <span class="s2">const </span><span class="s1">result2 </span><span class="s3">= </span><span class="s1">str</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Name is required&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;Fallback to default required error&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">str </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">({</span>
+    <span class="s1">invalid_type_error</span><span class="s3">: </span><span class="s4">&quot;Invalid name&quot;</span><span class="s3">,</span>
+    <span class="s0">// required_error: &quot;Name is required&quot;,</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result2 </span><span class="s3">= </span><span class="s1">str</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Required&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;invalid and required and errorMap&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s3">(() =&gt; {</span>
+    <span class="s2">return </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">({</span>
+      <span class="s1">invalid_type_error</span><span class="s3">: </span><span class="s4">&quot;Invalid name&quot;</span><span class="s3">,</span>
+      <span class="s1">required_error</span><span class="s3">: </span><span class="s4">&quot;Name is required&quot;</span><span class="s3">,</span>
+      <span class="s1">errorMap</span><span class="s3">: () =&gt; ({ </span><span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;OVERRIDE&quot; </span><span class="s3">}),</span>
+    <span class="s3">});</span>
+  <span class="s3">}).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;strict error message&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">errorMsg </span><span class="s3">= </span><span class="s4">&quot;Invalid object&quot;</span><span class="s3">;</span>
+  <span class="s2">const </span><span class="s1">obj </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">x</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() }).</span><span class="s1">strict</span><span class="s3">(</span><span class="s1">errorMsg</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">obj</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({ </span><span class="s1">x</span><span class="s3">: </span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s1">y</span><span class="s3">: </span><span class="s4">&quot;b&quot; </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">errorMsg</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;enum error message, invalid enum elementstring&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">enum</span><span class="s3">([</span><span class="s4">&quot;Tuna&quot;</span><span class="s3">, </span><span class="s4">&quot;Trout&quot;</span><span class="s3">]).</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">&quot;Salmon&quot;</span><span class="s3">);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Invalid enum value. Expected 'Tuna' | 'Trout', received 'Salmon'&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;enum error message, invalid type&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">enum</span><span class="s3">([</span><span class="s4">&quot;Tuna&quot;</span><span class="s3">, </span><span class="s4">&quot;Trout&quot;</span><span class="s3">]).</span><span class="s1">parse</span><span class="s3">(</span><span class="s5">12</span><span class="s3">);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Expected 'Tuna' | 'Trout', received number&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;nativeEnum default error message&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">enum </span><span class="s1">Fish </span><span class="s3">{</span>
+    <span class="s1">Tuna </span><span class="s3">= </span><span class="s4">&quot;Tuna&quot;</span><span class="s3">,</span>
+    <span class="s1">Trout </span><span class="s3">= </span><span class="s4">&quot;Trout&quot;</span><span class="s3">,</span>
+  <span class="s3">}</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">nativeEnum</span><span class="s3">(</span><span class="s1">Fish</span><span class="s3">).</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">&quot;Salmon&quot;</span><span class="s3">);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;Invalid enum value. Expected 'Tuna' | 'Trout', received 'Salmon'&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;literal default error message&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">literal</span><span class="s3">(</span><span class="s4">&quot;Tuna&quot;</span><span class="s3">).</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">&quot;Trout&quot;</span><span class="s3">);</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">`Invalid literal value, expected &quot;Tuna&quot;`</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;literal bigint default error message&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">try </span><span class="s3">{</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">literal</span><span class="s3">(</span><span class="s1">BigInt</span><span class="s3">(</span><span class="s5">12</span><span class="s3">)).</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">BigInt</span><span class="s3">(</span><span class="s5">13</span><span class="s3">));</span>
+  <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">zerr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodError </span><span class="s3">= </span><span class="s1">err </span><span class="s3">as </span><span class="s1">any</span><span class="s3">;</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">zerr</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">`Invalid literal value, expected &quot;12&quot;`</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;enum with message returns the custom error message&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">enum</span><span class="s3">([</span><span class="s4">&quot;apple&quot;</span><span class="s3">, </span><span class="s4">&quot;banana&quot;</span><span class="s3">], {</span>
+    <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;the value provided is invalid&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result1 </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;berries&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result1</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;the value provided is invalid&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">result2 </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;the value provided is invalid&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">result3 </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;banana&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result3</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">result4 </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">null</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result4</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result4</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result4</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;the value provided is invalid&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;when the message is falsy, it is used as is provided&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">max</span><span class="s3">(</span><span class="s5">1</span><span class="s3">, { </span><span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;&quot; </span><span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s0">// test(&quot;dont short circuit on continuable errors&quot;, () =&gt; {</span>
+<span class="s0">//   const user = z</span>
+<span class="s0">//     .object({</span>
+<span class="s0">//       password: z.string().min(6),</span>
+<span class="s0">//       confirm: z.string(),</span>
+<span class="s0">//     })</span>
+<span class="s0">//     .refine((data) =&gt; data.password === data.confirm, {</span>
+<span class="s0">//       message: &quot;Passwords don't match&quot;,</span>
+<span class="s0">//       path: [&quot;confirm&quot;],</span>
+<span class="s0">//     });</span>
+<span class="s0">//   const result = user.safeParse({ password: &quot;asdf&quot;, confirm: &quot;qwer&quot; });</span>
+<span class="s0">//   if (!result.success) {</span>
+<span class="s0">//     expect(result.error.issues.length).toEqual(2);</span>
+<span class="s0">//   }</span>
+<span class="s0">// });</span>
+</pre>
+</body>
+</html>

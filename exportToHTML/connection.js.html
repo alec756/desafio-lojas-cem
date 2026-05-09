@@ -1,0 +1,243 @@
+<html>
+<head>
+<title>connection.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #6aab73;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #7a7e85;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+connection.js</font>
+</center></td></tr></table>
+<pre><span class="s0">'use strict'</span>
+
+<span class="s2">const </span><span class="s1">EventEmitter </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'events'</span><span class="s3">).</span><span class="s1">EventEmitter</span>
+
+<span class="s2">const </span><span class="s3">{ </span><span class="s1">parse</span><span class="s3">, </span><span class="s1">serialize </span><span class="s3">} = </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'pg-protocol'</span><span class="s3">)</span>
+<span class="s2">const </span><span class="s3">{ </span><span class="s1">getStream</span><span class="s3">, </span><span class="s1">getSecureStream </span><span class="s3">} = </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'./stream'</span><span class="s3">)</span>
+
+<span class="s2">const </span><span class="s1">flushBuffer </span><span class="s3">= </span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">flush</span><span class="s3">()</span>
+<span class="s2">const </span><span class="s1">syncBuffer </span><span class="s3">= </span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">sync</span><span class="s3">()</span>
+<span class="s2">const </span><span class="s1">endBuffer </span><span class="s3">= </span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">end</span><span class="s3">()</span>
+
+<span class="s4">// TODO(bmc) support binary mode at some point</span>
+<span class="s2">class </span><span class="s1">Connection </span><span class="s2">extends </span><span class="s1">EventEmitter </span><span class="s3">{</span>
+  <span class="s1">constructor</span><span class="s3">(</span><span class="s1">config</span><span class="s3">) {</span>
+    <span class="s2">super</span><span class="s3">()</span>
+    <span class="s1">config </span><span class="s3">= </span><span class="s1">config </span><span class="s3">|| {}</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">stream </span><span class="s3">|| </span><span class="s1">getStream</span><span class="s3">(</span><span class="s1">config</span><span class="s3">.</span><span class="s1">ssl</span><span class="s3">)</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof this</span><span class="s3">.</span><span class="s1">stream </span><span class="s3">=== </span><span class="s0">'function'</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">stream </span><span class="s3">= </span><span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">(</span><span class="s1">config</span><span class="s3">)</span>
+    <span class="s3">}</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_keepAlive </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">keepAlive</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_keepAliveInitialDelayMillis </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">keepAliveInitialDelayMillis</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">parsedStatements </span><span class="s3">= {}</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">= </span><span class="s1">config</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">|| </span><span class="s2">false</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_ending </span><span class="s3">= </span><span class="s2">false</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_emitMessage </span><span class="s3">= </span><span class="s2">false</span>
+    <span class="s2">const </span><span class="s1">self </span><span class="s3">= </span><span class="s2">this</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">on</span><span class="s3">(</span><span class="s0">'newListener'</span><span class="s3">, </span><span class="s2">function </span><span class="s3">(</span><span class="s1">eventName</span><span class="s3">) {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">eventName </span><span class="s3">=== </span><span class="s0">'message'</span><span class="s3">) {</span>
+        <span class="s1">self</span><span class="s3">.</span><span class="s1">_emitMessage </span><span class="s3">= </span><span class="s2">true</span>
+      <span class="s3">}</span>
+    <span class="s3">})</span>
+  <span class="s3">}</span>
+
+  <span class="s1">connect</span><span class="s3">(</span><span class="s1">port</span><span class="s3">, </span><span class="s1">host</span><span class="s3">) {</span>
+    <span class="s2">const </span><span class="s1">self </span><span class="s3">= </span><span class="s2">this</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_connecting </span><span class="s3">= </span><span class="s2">true</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">setNoDelay</span><span class="s3">(</span><span class="s2">true</span><span class="s3">)</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">connect</span><span class="s3">(</span><span class="s1">port</span><span class="s3">, </span><span class="s1">host</span><span class="s3">)</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">once</span><span class="s3">(</span><span class="s0">'connect'</span><span class="s3">, </span><span class="s2">function </span><span class="s3">() {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">self</span><span class="s3">.</span><span class="s1">_keepAlive</span><span class="s3">) {</span>
+        <span class="s1">self</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">setKeepAlive</span><span class="s3">(</span><span class="s2">true</span><span class="s3">, </span><span class="s1">self</span><span class="s3">.</span><span class="s1">_keepAliveInitialDelayMillis</span><span class="s3">)</span>
+      <span class="s3">}</span>
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'connect'</span><span class="s3">)</span>
+    <span class="s3">})</span>
+
+    <span class="s2">const </span><span class="s1">reportStreamError </span><span class="s3">= </span><span class="s2">function </span><span class="s3">(</span><span class="s1">error</span><span class="s3">) {</span>
+      <span class="s4">// errors about disconnections should be ignored during disconnect</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">self</span><span class="s3">.</span><span class="s1">_ending </span><span class="s3">&amp;&amp; (</span><span class="s1">error</span><span class="s3">.</span><span class="s1">code </span><span class="s3">=== </span><span class="s0">'ECONNRESET' </span><span class="s3">|| </span><span class="s1">error</span><span class="s3">.</span><span class="s1">code </span><span class="s3">=== </span><span class="s0">'EPIPE'</span><span class="s3">)) {</span>
+        <span class="s2">return</span>
+      <span class="s3">}</span>
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s1">error</span><span class="s3">)</span>
+    <span class="s3">}</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">on</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s1">reportStreamError</span><span class="s3">)</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">on</span><span class="s3">(</span><span class="s0">'close'</span><span class="s3">, </span><span class="s2">function </span><span class="s3">() {</span>
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'end'</span><span class="s3">)</span>
+    <span class="s3">})</span>
+
+    <span class="s2">if </span><span class="s3">(!</span><span class="s2">this</span><span class="s3">.</span><span class="s1">ssl</span><span class="s3">) {</span>
+      <span class="s2">return this</span><span class="s3">.</span><span class="s1">attachListeners</span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">)</span>
+    <span class="s3">}</span>
+
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">once</span><span class="s3">(</span><span class="s0">'data'</span><span class="s3">, </span><span class="s2">function </span><span class="s3">(</span><span class="s1">buffer</span><span class="s3">) {</span>
+      <span class="s2">const </span><span class="s1">responseCode </span><span class="s3">= </span><span class="s1">buffer</span><span class="s3">.</span><span class="s1">toString</span><span class="s3">(</span><span class="s0">'utf8'</span><span class="s3">)</span>
+      <span class="s2">switch </span><span class="s3">(</span><span class="s1">responseCode</span><span class="s3">) {</span>
+        <span class="s2">case </span><span class="s0">'S'</span><span class="s3">: </span><span class="s4">// Server supports SSL connections, continue with a secure connection</span>
+          <span class="s2">break</span>
+        <span class="s2">case </span><span class="s0">'N'</span><span class="s3">: </span><span class="s4">// Server does not support SSL connections</span>
+          <span class="s1">self</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">end</span><span class="s3">()</span>
+          <span class="s2">return </span><span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s2">new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'The server does not support SSL connections'</span><span class="s3">))</span>
+        <span class="s2">default</span><span class="s3">:</span>
+          <span class="s4">// Any other response byte, including 'E' (ErrorResponse) indicating a server error</span>
+          <span class="s1">self</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">end</span><span class="s3">()</span>
+          <span class="s2">return </span><span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s2">new </span><span class="s1">Error</span><span class="s3">(</span><span class="s0">'There was an error establishing an SSL connection'</span><span class="s3">))</span>
+      <span class="s3">}</span>
+      <span class="s2">const </span><span class="s1">options </span><span class="s3">= {</span>
+        <span class="s1">socket</span><span class="s3">: </span><span class="s1">self</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">,</span>
+      <span class="s3">}</span>
+
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">self</span><span class="s3">.</span><span class="s1">ssl </span><span class="s3">!== </span><span class="s2">true</span><span class="s3">) {</span>
+        <span class="s1">Object</span><span class="s3">.</span><span class="s1">assign</span><span class="s3">(</span><span class="s1">options</span><span class="s3">, </span><span class="s1">self</span><span class="s3">.</span><span class="s1">ssl</span><span class="s3">)</span>
+
+        <span class="s2">if </span><span class="s3">(</span><span class="s0">'key' </span><span class="s2">in </span><span class="s1">self</span><span class="s3">.</span><span class="s1">ssl</span><span class="s3">) {</span>
+          <span class="s1">options</span><span class="s3">.</span><span class="s1">key </span><span class="s3">= </span><span class="s1">self</span><span class="s3">.</span><span class="s1">ssl</span><span class="s3">.</span><span class="s1">key</span>
+        <span class="s3">}</span>
+      <span class="s3">}</span>
+
+      <span class="s2">const </span><span class="s1">net </span><span class="s3">= </span><span class="s1">require</span><span class="s3">(</span><span class="s0">'net'</span><span class="s3">)</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">net</span><span class="s3">.</span><span class="s1">isIP </span><span class="s3">&amp;&amp; </span><span class="s1">net</span><span class="s3">.</span><span class="s1">isIP</span><span class="s3">(</span><span class="s1">host</span><span class="s3">) === </span><span class="s5">0</span><span class="s3">) {</span>
+        <span class="s1">options</span><span class="s3">.</span><span class="s1">servername </span><span class="s3">= </span><span class="s1">host</span>
+      <span class="s3">}</span>
+      <span class="s2">try </span><span class="s3">{</span>
+        <span class="s1">self</span><span class="s3">.</span><span class="s1">stream </span><span class="s3">= </span><span class="s1">getSecureStream</span><span class="s3">(</span><span class="s1">options</span><span class="s3">)</span>
+      <span class="s3">} </span><span class="s2">catch </span><span class="s3">(</span><span class="s1">err</span><span class="s3">) {</span>
+        <span class="s2">return </span><span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s1">err</span><span class="s3">)</span>
+      <span class="s3">}</span>
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">attachListeners</span><span class="s3">(</span><span class="s1">self</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">)</span>
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">on</span><span class="s3">(</span><span class="s0">'error'</span><span class="s3">, </span><span class="s1">reportStreamError</span><span class="s3">)</span>
+
+      <span class="s1">self</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'sslconnect'</span><span class="s3">)</span>
+    <span class="s3">})</span>
+  <span class="s3">}</span>
+
+  <span class="s1">attachListeners</span><span class="s3">(</span><span class="s1">stream</span><span class="s3">) {</span>
+    <span class="s1">parse</span><span class="s3">(</span><span class="s1">stream</span><span class="s3">, (</span><span class="s1">msg</span><span class="s3">) =&gt; {</span>
+      <span class="s2">const </span><span class="s1">eventName </span><span class="s3">= </span><span class="s1">msg</span><span class="s3">.</span><span class="s1">name </span><span class="s3">=== </span><span class="s0">'error' </span><span class="s3">? </span><span class="s0">'errorMessage' </span><span class="s3">: </span><span class="s1">msg</span><span class="s3">.</span><span class="s1">name</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">_emitMessage</span><span class="s3">) {</span>
+        <span class="s2">this</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s0">'message'</span><span class="s3">, </span><span class="s1">msg</span><span class="s3">)</span>
+      <span class="s3">}</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">emit</span><span class="s3">(</span><span class="s1">eventName</span><span class="s3">, </span><span class="s1">msg</span><span class="s3">)</span>
+    <span class="s3">})</span>
+  <span class="s3">}</span>
+
+  <span class="s1">requestSsl</span><span class="s3">() {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">write</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">requestSsl</span><span class="s3">())</span>
+  <span class="s3">}</span>
+
+  <span class="s1">startup</span><span class="s3">(</span><span class="s1">config</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">write</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">startup</span><span class="s3">(</span><span class="s1">config</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">cancel</span><span class="s3">(</span><span class="s1">processID</span><span class="s3">, </span><span class="s1">secretKey</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">cancel</span><span class="s3">(</span><span class="s1">processID</span><span class="s3">, </span><span class="s1">secretKey</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">password</span><span class="s3">(</span><span class="s1">password</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">password</span><span class="s3">(</span><span class="s1">password</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">sendSASLInitialResponseMessage</span><span class="s3">(</span><span class="s1">mechanism</span><span class="s3">, </span><span class="s1">initialResponse</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">sendSASLInitialResponseMessage</span><span class="s3">(</span><span class="s1">mechanism</span><span class="s3">, </span><span class="s1">initialResponse</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">sendSCRAMClientFinalMessage</span><span class="s3">(</span><span class="s1">additionalData</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">sendSCRAMClientFinalMessage</span><span class="s3">(</span><span class="s1">additionalData</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">_send</span><span class="s3">(</span><span class="s1">buffer</span><span class="s3">) {</span>
+    <span class="s2">if </span><span class="s3">(!</span><span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">writable</span><span class="s3">) {</span>
+      <span class="s2">return false</span>
+    <span class="s3">}</span>
+    <span class="s2">return this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">write</span><span class="s3">(</span><span class="s1">buffer</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s1">query</span><span class="s3">(</span><span class="s1">text</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">query</span><span class="s3">(</span><span class="s1">text</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s4">// send parse message</span>
+  <span class="s1">parse</span><span class="s3">(</span><span class="s1">query</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">query</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s4">// send bind message</span>
+  <span class="s1">bind</span><span class="s3">(</span><span class="s1">config</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">bind</span><span class="s3">(</span><span class="s1">config</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s4">// send execute message</span>
+  <span class="s1">execute</span><span class="s3">(</span><span class="s1">config</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">execute</span><span class="s3">(</span><span class="s1">config</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">flush</span><span class="s3">() {</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">writable</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">write</span><span class="s3">(</span><span class="s1">flushBuffer</span><span class="s3">)</span>
+    <span class="s3">}</span>
+  <span class="s3">}</span>
+
+  <span class="s1">sync</span><span class="s3">() {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_ending </span><span class="s3">= </span><span class="s2">true</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">syncBuffer</span><span class="s3">)</span>
+  <span class="s3">}</span>
+
+  <span class="s1">ref</span><span class="s3">() {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">ref</span><span class="s3">()</span>
+  <span class="s3">}</span>
+
+  <span class="s1">unref</span><span class="s3">() {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">unref</span><span class="s3">()</span>
+  <span class="s3">}</span>
+
+  <span class="s1">end</span><span class="s3">() {</span>
+    <span class="s4">// 0x58 = 'X'</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_ending </span><span class="s3">= </span><span class="s2">true</span>
+    <span class="s2">if </span><span class="s3">(!</span><span class="s2">this</span><span class="s3">.</span><span class="s1">_connecting </span><span class="s3">|| !</span><span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">writable</span><span class="s3">) {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">end</span><span class="s3">()</span>
+      <span class="s2">return</span>
+    <span class="s3">}</span>
+    <span class="s2">return this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">write</span><span class="s3">(</span><span class="s1">endBuffer</span><span class="s3">, () =&gt; {</span>
+      <span class="s2">this</span><span class="s3">.</span><span class="s1">stream</span><span class="s3">.</span><span class="s1">end</span><span class="s3">()</span>
+    <span class="s3">})</span>
+  <span class="s3">}</span>
+
+  <span class="s1">close</span><span class="s3">(</span><span class="s1">msg</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">close</span><span class="s3">(</span><span class="s1">msg</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">describe</span><span class="s3">(</span><span class="s1">msg</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">describe</span><span class="s3">(</span><span class="s1">msg</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">sendCopyFromChunk</span><span class="s3">(</span><span class="s1">chunk</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">copyData</span><span class="s3">(</span><span class="s1">chunk</span><span class="s3">))</span>
+  <span class="s3">}</span>
+
+  <span class="s1">endCopyFrom</span><span class="s3">() {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">copyDone</span><span class="s3">())</span>
+  <span class="s3">}</span>
+
+  <span class="s1">sendCopyFail</span><span class="s3">(</span><span class="s1">msg</span><span class="s3">) {</span>
+    <span class="s2">this</span><span class="s3">.</span><span class="s1">_send</span><span class="s3">(</span><span class="s1">serialize</span><span class="s3">.</span><span class="s1">copyFail</span><span class="s3">(</span><span class="s1">msg</span><span class="s3">))</span>
+  <span class="s3">}</span>
+<span class="s3">}</span>
+
+<span class="s1">module</span><span class="s3">.</span><span class="s1">exports </span><span class="s3">= </span><span class="s1">Connection</span>
+</pre>
+</body>
+</html>

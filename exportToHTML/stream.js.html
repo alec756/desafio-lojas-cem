@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>stream.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #67a37c; font-style: italic;}
+.s5 { color: #6aab73;}
+.s6 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+stream.js</font>
+</center></td></tr></table>
+<pre><span class="s0">const </span><span class="s2">{ </span><span class="s1">getStream</span><span class="s2">, </span><span class="s1">getSecureStream </span><span class="s2">} = </span><span class="s1">getStreamFuncs</span><span class="s2">()</span>
+
+<span class="s1">module</span><span class="s2">.</span><span class="s1">exports </span><span class="s2">= {</span>
+  <span class="s3">/**</span>
+   <span class="s3">* Get a socket stream compatible with the current runtime environment.</span>
+   <span class="s3">* </span><span class="s4">@returns </span><span class="s3">{Duplex}</span>
+   <span class="s3">*/</span>
+  <span class="s1">getStream</span><span class="s2">,</span>
+  <span class="s3">/**</span>
+   <span class="s3">* Get a TLS secured socket, compatible with the current environment,</span>
+   <span class="s3">* using the socket and other settings given in `options`.</span>
+   <span class="s3">* </span><span class="s4">@returns </span><span class="s3">{Duplex}</span>
+   <span class="s3">*/</span>
+  <span class="s1">getSecureStream</span><span class="s2">,</span>
+<span class="s2">}</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* The stream functions that work in Node.js</span>
+ <span class="s3">*/</span>
+<span class="s0">function </span><span class="s1">getNodejsStreamFuncs</span><span class="s2">() {</span>
+  <span class="s0">function </span><span class="s1">getStream</span><span class="s2">(</span><span class="s1">ssl</span><span class="s2">) {</span>
+    <span class="s0">const </span><span class="s1">net </span><span class="s2">= </span><span class="s1">require</span><span class="s2">(</span><span class="s5">'net'</span><span class="s2">)</span>
+    <span class="s0">return new </span><span class="s1">net</span><span class="s2">.</span><span class="s1">Socket</span><span class="s2">()</span>
+  <span class="s2">}</span>
+
+  <span class="s0">function </span><span class="s1">getSecureStream</span><span class="s2">(</span><span class="s1">options</span><span class="s2">) {</span>
+    <span class="s0">const </span><span class="s1">tls </span><span class="s2">= </span><span class="s1">require</span><span class="s2">(</span><span class="s5">'tls'</span><span class="s2">)</span>
+    <span class="s0">return </span><span class="s1">tls</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span><span class="s1">options</span><span class="s2">)</span>
+  <span class="s2">}</span>
+  <span class="s0">return </span><span class="s2">{</span>
+    <span class="s1">getStream</span><span class="s2">,</span>
+    <span class="s1">getSecureStream</span><span class="s2">,</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* The stream functions that work in Cloudflare Workers</span>
+ <span class="s3">*/</span>
+<span class="s0">function </span><span class="s1">getCloudflareStreamFuncs</span><span class="s2">() {</span>
+  <span class="s0">function </span><span class="s1">getStream</span><span class="s2">(</span><span class="s1">ssl</span><span class="s2">) {</span>
+    <span class="s0">const </span><span class="s2">{ </span><span class="s1">CloudflareSocket </span><span class="s2">} = </span><span class="s1">require</span><span class="s2">(</span><span class="s5">'pg-cloudflare'</span><span class="s2">)</span>
+    <span class="s0">return new </span><span class="s1">CloudflareSocket</span><span class="s2">(</span><span class="s1">ssl</span><span class="s2">)</span>
+  <span class="s2">}</span>
+
+  <span class="s0">function </span><span class="s1">getSecureStream</span><span class="s2">(</span><span class="s1">options</span><span class="s2">) {</span>
+    <span class="s1">options</span><span class="s2">.</span><span class="s1">socket</span><span class="s2">.</span><span class="s1">startTls</span><span class="s2">(</span><span class="s1">options</span><span class="s2">)</span>
+    <span class="s0">return </span><span class="s1">options</span><span class="s2">.</span><span class="s1">socket</span>
+  <span class="s2">}</span>
+  <span class="s0">return </span><span class="s2">{</span>
+    <span class="s1">getStream</span><span class="s2">,</span>
+    <span class="s1">getSecureStream</span><span class="s2">,</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Are we running in a Cloudflare Worker?</span>
+ <span class="s3">*</span>
+ <span class="s3">* </span><span class="s4">@returns </span><span class="s3">true if the code is currently running inside a Cloudflare Worker.</span>
+ <span class="s3">*/</span>
+<span class="s0">function </span><span class="s1">isCloudflareRuntime</span><span class="s2">() {</span>
+  <span class="s6">// Since 2022-03-21 the `global_navigator` compatibility flag is on for Cloudflare Workers</span>
+  <span class="s6">// which means that `navigator.userAgent` will be defined.</span>
+  <span class="s6">// eslint-disable-next-line no-undef</span>
+  <span class="s0">if </span><span class="s2">(</span><span class="s0">typeof </span><span class="s1">navigator </span><span class="s2">=== </span><span class="s5">'object' </span><span class="s2">&amp;&amp; </span><span class="s1">navigator </span><span class="s2">!== </span><span class="s0">null </span><span class="s2">&amp;&amp; </span><span class="s0">typeof </span><span class="s1">navigator</span><span class="s2">.</span><span class="s1">userAgent </span><span class="s2">=== </span><span class="s5">'string'</span><span class="s2">) {</span>
+    <span class="s6">// eslint-disable-next-line no-undef</span>
+    <span class="s0">return </span><span class="s1">navigator</span><span class="s2">.</span><span class="s1">userAgent </span><span class="s2">=== </span><span class="s5">'Cloudflare-Workers'</span>
+  <span class="s2">}</span>
+  <span class="s6">// In case `navigator` or `navigator.userAgent` is not defined then try a more sneaky approach</span>
+  <span class="s0">if </span><span class="s2">(</span><span class="s0">typeof </span><span class="s1">Response </span><span class="s2">=== </span><span class="s5">'function'</span><span class="s2">) {</span>
+    <span class="s0">const </span><span class="s1">resp </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Response</span><span class="s2">(</span><span class="s0">null</span><span class="s2">, { </span><span class="s1">cf</span><span class="s2">: { </span><span class="s1">thing</span><span class="s2">: </span><span class="s0">true </span><span class="s2">} })</span>
+    <span class="s0">if </span><span class="s2">(</span><span class="s0">typeof </span><span class="s1">resp</span><span class="s2">.</span><span class="s1">cf </span><span class="s2">=== </span><span class="s5">'object' </span><span class="s2">&amp;&amp; </span><span class="s1">resp</span><span class="s2">.</span><span class="s1">cf </span><span class="s2">!== </span><span class="s0">null </span><span class="s2">&amp;&amp; </span><span class="s1">resp</span><span class="s2">.</span><span class="s1">cf</span><span class="s2">.</span><span class="s1">thing</span><span class="s2">) {</span>
+      <span class="s0">return true</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+  <span class="s0">return false</span>
+<span class="s2">}</span>
+
+<span class="s0">function </span><span class="s1">getStreamFuncs</span><span class="s2">() {</span>
+  <span class="s0">if </span><span class="s2">(</span><span class="s1">isCloudflareRuntime</span><span class="s2">()) {</span>
+    <span class="s0">return </span><span class="s1">getCloudflareStreamFuncs</span><span class="s2">()</span>
+  <span class="s2">}</span>
+  <span class="s0">return </span><span class="s1">getNodejsStreamFuncs</span><span class="s2">()</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

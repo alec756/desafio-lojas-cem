@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>docker-compose.yml</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+docker-compose.yml</font>
+</center></td></tr></table>
+<pre><span class="s0">services</span><span class="s1">:</span>
+  <span class="s0">postgres</span><span class="s1">:</span>
+    <span class="s0">image</span><span class="s1">: </span><span class="s3">postgres:latest</span>
+    <span class="s0">container_name</span><span class="s1">: </span><span class="s3">inventario_db</span>
+    <span class="s0">ports</span><span class="s1">:</span>
+      <span class="s1">- </span><span class="s4">'5433:5432'</span>
+    <span class="s0">environment</span><span class="s1">:</span>
+      <span class="s1">- </span><span class="s3">POSTGRES_USER=admin</span>
+      <span class="s1">- </span><span class="s3">POSTGRES_PASSWORD=admin123</span>
+      <span class="s1">- </span><span class="s3">POSTGRES_DB=desafio_inventario</span>
+    <span class="s0">volumes</span><span class="s1">:</span>
+      <span class="s1">- </span><span class="s3">v4_inventario_data:/var/lib/postgresql/data</span>
+
+  <span class="s0">redis</span><span class="s1">:</span>
+    <span class="s0">image</span><span class="s1">: </span><span class="s3">bitnami/redis:latest</span>
+    <span class="s0">container_name</span><span class="s1">: </span><span class="s3">inventario_redis</span>
+    <span class="s0">environment</span><span class="s1">:</span>
+      <span class="s1">- </span><span class="s3">ALLOW_EMPTY_PASSWORD=yes</span>
+    <span class="s0">ports</span><span class="s1">:</span>
+      <span class="s1">- </span><span class="s4">'6379:6379'</span>
+    <span class="s0">volumes</span><span class="s1">:</span>
+      <span class="s1">- </span><span class="s3">inventario_redis_v2:/bitnami/redis/data</span>
+
+<span class="s0">volumes</span><span class="s1">:</span>
+  <span class="s0">v4_inventario_data</span><span class="s1">:</span>
+  <span class="s0">inventario_redis_v2</span><span class="s1">:</span></pre>
+</body>
+</html>

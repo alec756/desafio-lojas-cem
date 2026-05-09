@@ -1,0 +1,76 @@
+<html>
+<head>
+<title>update.d.mts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #7a7e85;}
+.s5 { color: #5f826b; font-style: italic;}
+.s6 { color: #67a37c; font-style: italic;}
+.s7 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+update.d.mts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">* as </span><span class="s1">magicast from </span><span class="s3">&quot;magicast&quot;</span><span class="s2">;</span>
+
+<span class="s4">//#region src/update.d.ts</span>
+<span class="s5">/**</span>
+ <span class="s5">* </span><span class="s6">@experimental </span><span class="s5">Update a config file or create a new one.</span>
+ <span class="s5">*/</span>
+<span class="s1">declare </span><span class="s0">function </span><span class="s1">updateConfig</span><span class="s2">(</span><span class="s1">opts</span><span class="s2">: </span><span class="s1">UpdateConfigOptions</span><span class="s2">): </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s1">UpdateConfigResult</span><span class="s2">&gt;;</span>
+<span class="s0">interface </span><span class="s1">UpdateConfigResult </span><span class="s2">{</span>
+  <span class="s1">configFile</span><span class="s2">?: </span><span class="s1">string</span><span class="s2">;</span>
+  <span class="s1">created</span><span class="s2">?: </span><span class="s1">boolean</span><span class="s2">;</span>
+<span class="s2">}</span>
+<span class="s1">type MaybePromise</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt; = </span><span class="s1">T </span><span class="s2">| </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt;;</span>
+<span class="s1">type MagicAstOptions </span><span class="s2">= </span><span class="s1">Exclude</span><span class="s2">&lt;</span><span class="s1">Parameters</span><span class="s2">&lt;(</span><span class="s0">typeof </span><span class="s1">magicast</span><span class="s2">)[</span><span class="s3">&quot;parseModule&quot;</span><span class="s2">]&gt;[</span><span class="s7">1</span><span class="s2">], </span><span class="s1">undefined</span><span class="s2">&gt;;</span>
+<span class="s0">interface </span><span class="s1">UpdateConfigOptions </span><span class="s2">{</span>
+  <span class="s5">/**</span>
+   <span class="s5">* Current working directory</span>
+   <span class="s5">*/</span>
+  <span class="s1">cwd</span><span class="s2">: </span><span class="s1">string</span><span class="s2">;</span>
+  <span class="s5">/**</span>
+   <span class="s5">* Config file name</span>
+   <span class="s5">*/</span>
+  <span class="s1">configFile</span><span class="s2">: </span><span class="s1">string</span><span class="s2">;</span>
+  <span class="s5">/**</span>
+   <span class="s5">* Extension used for new config file.</span>
+   <span class="s5">*/</span>
+  <span class="s1">createExtension</span><span class="s2">?: </span><span class="s1">string</span><span class="s2">;</span>
+  <span class="s5">/**</span>
+   <span class="s5">* Magicast options</span>
+   <span class="s5">*/</span>
+  <span class="s1">magicast</span><span class="s2">?: </span><span class="s1">MagicAstOptions</span><span class="s2">;</span>
+  <span class="s5">/**</span>
+   <span class="s5">* Update function.</span>
+   <span class="s5">*/</span>
+  <span class="s1">onUpdate</span><span class="s2">?: (</span><span class="s1">config</span><span class="s2">: </span><span class="s1">any</span><span class="s2">) =&gt; </span><span class="s1">MaybePromise</span><span class="s2">&lt;</span><span class="s0">void</span><span class="s2">&gt;;</span>
+  <span class="s5">/**</span>
+   <span class="s5">* Handle default config creation.</span>
+   <span class="s5">*</span>
+   <span class="s5">* Tip: you can use this option as a hook to prompt users about config creation.</span>
+   <span class="s5">*</span>
+   <span class="s5">* Context object:</span>
+   <span class="s5">*  - path: determined full path to the config file</span>
+   <span class="s5">*</span>
+   <span class="s5">* Returns types:</span>
+   <span class="s5">*  - string: custom config template</span>
+   <span class="s5">*  - true: write the template</span>
+   <span class="s5">*  - false: abort the operation</span>
+   <span class="s5">*/</span>
+  <span class="s1">onCreate</span><span class="s2">?: (</span><span class="s1">ctx</span><span class="s2">: {</span>
+    <span class="s1">configFile</span><span class="s2">: </span><span class="s1">string</span><span class="s2">;</span>
+  <span class="s2">}) =&gt; </span><span class="s1">MaybePromise</span><span class="s2">&lt;</span><span class="s1">string </span><span class="s2">| </span><span class="s1">boolean</span><span class="s2">&gt;;</span>
+<span class="s2">}</span>
+<span class="s4">//#endregion</span>
+<span class="s0">export </span><span class="s2">{ </span><span class="s1">UpdateConfigOptions</span><span class="s2">, </span><span class="s1">UpdateConfigResult</span><span class="s2">, </span><span class="s1">updateConfig </span><span class="s2">};</span></pre>
+</body>
+</html>

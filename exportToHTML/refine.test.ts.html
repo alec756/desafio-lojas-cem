@@ -1,0 +1,336 @@
+<html>
+<head>
+<title>refine.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+.s6 { color: #42c3d4;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+refine.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">ZodIssueCode </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../ZodError.js&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">util </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;refinement&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">obj1 </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">first</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s1">second</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">obj2 </span><span class="s3">= </span><span class="s1">obj1</span><span class="s3">.</span><span class="s1">partial</span><span class="s3">().</span><span class="s1">strict</span><span class="s3">();</span>
+
+  <span class="s2">const </span><span class="s1">obj3 </span><span class="s3">= </span><span class="s1">obj2</span><span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">data</span><span class="s3">) =&gt; </span><span class="s1">data</span><span class="s3">.</span><span class="s1">first </span><span class="s3">|| </span><span class="s1">data</span><span class="s3">.</span><span class="s1">second</span><span class="s3">, </span><span class="s4">&quot;Either first or second should be filled in.&quot;</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj1 </span><span class="s3">=== (</span><span class="s1">obj2 </span><span class="s3">as </span><span class="s1">any</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">obj2 </span><span class="s3">=== (</span><span class="s1">obj3 </span><span class="s3">as </span><span class="s1">any</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(() =&gt; </span><span class="s1">obj1</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({})).</span><span class="s1">toThrow</span><span class="s3">();</span>
+  <span class="s1">expect</span><span class="s3">(() =&gt; </span><span class="s1">obj2</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">third</span><span class="s3">: </span><span class="s4">&quot;adsf&quot; </span><span class="s3">})).</span><span class="s1">toThrow</span><span class="s3">();</span>
+  <span class="s1">expect</span><span class="s3">(() =&gt; </span><span class="s1">obj3</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({})).</span><span class="s1">toThrow</span><span class="s3">();</span>
+  <span class="s1">obj3</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">first</span><span class="s3">: </span><span class="s4">&quot;a&quot; </span><span class="s3">});</span>
+  <span class="s1">obj3</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">second</span><span class="s3">: </span><span class="s4">&quot;a&quot; </span><span class="s3">});</span>
+  <span class="s1">obj3</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">first</span><span class="s3">: </span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s1">second</span><span class="s3">: </span><span class="s4">&quot;a&quot; </span><span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;refinement 2&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">validationSchema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">email</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">email</span><span class="s3">(),</span>
+      <span class="s1">password</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+      <span class="s1">confirmPassword</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">data</span><span class="s3">) =&gt; </span><span class="s1">data</span><span class="s3">.</span><span class="s1">password </span><span class="s3">=== </span><span class="s1">data</span><span class="s3">.</span><span class="s1">confirmPassword</span><span class="s3">, </span><span class="s4">&quot;Both password and confirmation must match&quot;</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(() =&gt;</span>
+    <span class="s1">validationSchema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+      <span class="s1">email</span><span class="s3">: </span><span class="s4">&quot;aaaa@gmail.com&quot;</span><span class="s3">,</span>
+      <span class="s1">password</span><span class="s3">: </span><span class="s4">&quot;aaaaaaaa&quot;</span><span class="s3">,</span>
+      <span class="s1">confirmPassword</span><span class="s3">: </span><span class="s4">&quot;bbbbbbbb&quot;</span><span class="s3">,</span>
+    <span class="s3">})</span>
+  <span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;refinement type guard&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">validationSchema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">s</span><span class="s3">): </span><span class="s1">s </span><span class="s3">is </span><span class="s4">&quot;a&quot; </span><span class="s3">=&gt; </span><span class="s1">s </span><span class="s3">=== </span><span class="s4">&quot;a&quot;</span><span class="s3">),</span>
+  <span class="s3">});</span>
+  <span class="s1">type Input </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">input</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">validationSchema</span><span class="s3">&gt;;</span>
+  <span class="s1">type Schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">validationSchema</span><span class="s3">&gt;;</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s1">Input</span><span class="s3">[</span><span class="s4">&quot;a&quot;</span><span class="s3">]&gt;(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">string</span><span class="s3">, </span><span class="s1">Input</span><span class="s3">[</span><span class="s4">&quot;a&quot;</span><span class="s3">]&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s1">Schema</span><span class="s3">[</span><span class="s4">&quot;a&quot;</span><span class="s3">]&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">string</span><span class="s3">, </span><span class="s1">Schema</span><span class="s3">[</span><span class="s4">&quot;a&quot;</span><span class="s3">]&gt;(</span><span class="s2">false</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;refinement Promise&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">validationSchema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">email</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">email</span><span class="s3">(),</span>
+      <span class="s1">password</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+      <span class="s1">confirmPassword</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">(</span>
+      <span class="s3">(</span><span class="s1">data</span><span class="s3">) =&gt; </span><span class="s1">Promise</span><span class="s3">.</span><span class="s1">resolve</span><span class="s3">().</span><span class="s1">then</span><span class="s3">(() =&gt; </span><span class="s1">data</span><span class="s3">.</span><span class="s1">password </span><span class="s3">=== </span><span class="s1">data</span><span class="s3">.</span><span class="s1">confirmPassword</span><span class="s3">),</span>
+      <span class="s4">&quot;Both password and confirmation must match&quot;</span>
+    <span class="s3">);</span>
+
+  <span class="s2">await </span><span class="s1">validationSchema</span><span class="s3">.</span><span class="s1">parseAsync</span><span class="s3">({</span>
+    <span class="s1">email</span><span class="s3">: </span><span class="s4">&quot;aaaa@gmail.com&quot;</span><span class="s3">,</span>
+    <span class="s1">password</span><span class="s3">: </span><span class="s4">&quot;password&quot;</span><span class="s3">,</span>
+    <span class="s1">confirmPassword</span><span class="s3">: </span><span class="s4">&quot;password&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;custom path&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">password</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+      <span class="s1">confirm</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">data</span><span class="s3">) =&gt; </span><span class="s1">data</span><span class="s3">.</span><span class="s1">confirm </span><span class="s3">=== </span><span class="s1">data</span><span class="s3">.</span><span class="s1">password</span><span class="s3">, { </span><span class="s1">path</span><span class="s3">: [</span><span class="s4">&quot;confirm&quot;</span><span class="s3">] })</span>
+    <span class="s3">.</span><span class="s1">spa</span><span class="s3">({ </span><span class="s1">password</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">, </span><span class="s1">confirm</span><span class="s3">: </span><span class="s4">&quot;qewr&quot; </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">path</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;confirm&quot;</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;use path in refinement context&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">noNested </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">_refinement</span><span class="s3">((</span><span class="s1">_val</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">) =&gt; {</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">ctx</span><span class="s3">.</span><span class="s1">path</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">0</span><span class="s3">) {</span>
+      <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+        <span class="s1">code</span><span class="s3">: </span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">,</span>
+        <span class="s1">message</span><span class="s3">: </span><span class="s4">`schema cannot be nested. path: </span><span class="s1">$</span><span class="s3">{</span><span class="s1">ctx</span><span class="s3">.</span><span class="s1">path</span><span class="s3">.</span><span class="s1">join</span><span class="s3">(</span><span class="s4">&quot;.&quot;</span><span class="s3">)}</span><span class="s4">`</span><span class="s3">,</span>
+      <span class="s3">});</span>
+      <span class="s2">return false</span><span class="s3">;</span>
+    <span class="s3">} </span><span class="s2">else </span><span class="s3">{</span>
+      <span class="s2">return true</span><span class="s3">;</span>
+    <span class="s3">}</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">data </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">foo</span><span class="s3">: </span><span class="s1">noNested</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">t1 </span><span class="s3">= </span><span class="s2">await </span><span class="s1">noNested</span><span class="s3">.</span><span class="s1">spa</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">t2 </span><span class="s3">= </span><span class="s2">await </span><span class="s1">data</span><span class="s3">.</span><span class="s1">spa</span><span class="s3">({ </span><span class="s1">foo</span><span class="s3">: </span><span class="s4">&quot;asdf&quot; </span><span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">t1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">t2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">t2</span><span class="s3">.</span><span class="s1">success </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">t2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">message</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;schema cannot be nested. path: foo&quot;</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;superRefine&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Strings </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">superRefine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">) =&gt; {</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">3</span><span class="s3">) {</span>
+      <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+        <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">too_big</span><span class="s3">,</span>
+        <span class="s1">maximum</span><span class="s3">: </span><span class="s5">3</span><span class="s3">,</span>
+        <span class="s1">type</span><span class="s3">: </span><span class="s4">&quot;array&quot;</span><span class="s3">,</span>
+        <span class="s1">inclusive</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+        <span class="s1">exact</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+        <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;Too many items 😡&quot;</span><span class="s3">,</span>
+      <span class="s3">});</span>
+    <span class="s3">}</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">!== </span><span class="s2">new </span><span class="s1">Set</span><span class="s3">(</span><span class="s1">val</span><span class="s3">).</span><span class="s1">size</span><span class="s3">) {</span>
+      <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+        <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">,</span>
+        <span class="s1">message</span><span class="s3">: </span><span class="s4">`No duplicates allowed.`</span><span class="s3">,</span>
+      <span class="s3">});</span>
+    <span class="s3">}</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">Strings</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">([</span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;asfd&quot;</span><span class="s3">]);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+
+  <span class="s1">Strings</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">([</span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;qwer&quot;</span><span class="s3">]);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;superRefine async&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Strings </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">superRefine</span><span class="s3">(</span><span class="s1">async </span><span class="s3">(</span><span class="s1">val</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">) =&gt; {</span>
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">3</span><span class="s3">) {</span>
+      <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+        <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">too_big</span><span class="s3">,</span>
+        <span class="s1">maximum</span><span class="s3">: </span><span class="s5">3</span><span class="s3">,</span>
+        <span class="s1">type</span><span class="s3">: </span><span class="s4">&quot;array&quot;</span><span class="s3">,</span>
+        <span class="s1">inclusive</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+        <span class="s1">exact</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+        <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;Too many items 😡&quot;</span><span class="s3">,</span>
+      <span class="s3">});</span>
+    <span class="s3">}</span>
+
+    <span class="s2">if </span><span class="s3">(</span><span class="s1">val</span><span class="s3">.</span><span class="s1">length </span><span class="s3">!== </span><span class="s2">new </span><span class="s1">Set</span><span class="s3">(</span><span class="s1">val</span><span class="s3">).</span><span class="s1">size</span><span class="s3">) {</span>
+      <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+        <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">,</span>
+        <span class="s1">message</span><span class="s3">: </span><span class="s4">`No duplicates allowed.`</span><span class="s3">,</span>
+      <span class="s3">});</span>
+    <span class="s3">}</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">Strings</span><span class="s3">.</span><span class="s1">safeParseAsync</span><span class="s3">([</span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;asfd&quot;</span><span class="s3">]);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+
+  <span class="s1">Strings</span><span class="s3">.</span><span class="s1">parseAsync</span><span class="s3">([</span><span class="s4">&quot;asfd&quot;</span><span class="s3">, </span><span class="s4">&quot;qwer&quot;</span><span class="s3">]);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;superRefine - type narrowing&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">type NarrowType </span><span class="s3">= { </span><span class="s1">type</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">age</span><span class="s3">: </span><span class="s1">number </span><span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">type</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+      <span class="s1">age</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">nullable</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">superRefine</span><span class="s3">((</span><span class="s1">arg</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">): </span><span class="s1">arg </span><span class="s3">is </span><span class="s1">NarrowType </span><span class="s3">=&gt; {</span>
+      <span class="s2">if </span><span class="s3">(!</span><span class="s1">arg</span><span class="s3">) {</span>
+        <span class="s0">// still need to make a call to ctx.addIssue</span>
+        <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+          <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">,</span>
+          <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;cannot be null&quot;</span><span class="s3">,</span>
+          <span class="s1">fatal</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+        <span class="s3">});</span>
+        <span class="s2">return false</span><span class="s3">;</span>
+      <span class="s3">}</span>
+      <span class="s2">return true</span><span class="s3">;</span>
+    <span class="s3">});</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">schema</span><span class="s3">&gt;, </span><span class="s1">NarrowType</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({ </span><span class="s1">type</span><span class="s3">: </span><span class="s4">&quot;test&quot;</span><span class="s3">, </span><span class="s1">age</span><span class="s3">: </span><span class="s5">0 </span><span class="s3">}).</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">null</span><span class="s3">).</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;chained mixed refining types&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">type firstRefinement </span><span class="s3">= { </span><span class="s1">first</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">second</span><span class="s3">: </span><span class="s1">number</span><span class="s3">; </span><span class="s1">third</span><span class="s3">: </span><span class="s2">true </span><span class="s3">};</span>
+  <span class="s1">type secondRefinement </span><span class="s3">= { </span><span class="s1">first</span><span class="s3">: </span><span class="s4">&quot;bob&quot;</span><span class="s3">; </span><span class="s1">second</span><span class="s3">: </span><span class="s1">number</span><span class="s3">; </span><span class="s1">third</span><span class="s3">: </span><span class="s2">true </span><span class="s3">};</span>
+  <span class="s1">type thirdRefinement </span><span class="s3">= { </span><span class="s1">first</span><span class="s3">: </span><span class="s4">&quot;bob&quot;</span><span class="s3">; </span><span class="s1">second</span><span class="s3">: </span><span class="s5">33</span><span class="s3">; </span><span class="s1">third</span><span class="s3">: </span><span class="s2">true </span><span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">first</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+      <span class="s1">second</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+      <span class="s1">third</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">boolean</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">nullable</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">arg</span><span class="s3">): </span><span class="s1">arg </span><span class="s3">is </span><span class="s1">firstRefinement </span><span class="s3">=&gt; !!</span><span class="s1">arg</span><span class="s3">?.</span><span class="s1">third</span><span class="s3">)</span>
+    <span class="s3">.</span><span class="s1">superRefine</span><span class="s3">((</span><span class="s1">arg</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">): </span><span class="s1">arg </span><span class="s3">is </span><span class="s1">secondRefinement </span><span class="s3">=&gt; {</span>
+      <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">arg</span><span class="s3">, </span><span class="s1">firstRefinement</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">arg</span><span class="s3">.</span><span class="s1">first </span><span class="s3">!== </span><span class="s4">&quot;bob&quot;</span><span class="s3">) {</span>
+        <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+          <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">,</span>
+          <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;`first` property must be `bob`&quot;</span><span class="s3">,</span>
+        <span class="s3">});</span>
+        <span class="s2">return false</span><span class="s3">;</span>
+      <span class="s3">}</span>
+      <span class="s2">return true</span><span class="s3">;</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">((</span><span class="s1">arg</span><span class="s3">): </span><span class="s1">arg </span><span class="s3">is </span><span class="s1">thirdRefinement </span><span class="s3">=&gt; {</span>
+      <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">arg</span><span class="s3">, </span><span class="s1">secondRefinement</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+      <span class="s2">return </span><span class="s1">arg</span><span class="s3">.</span><span class="s1">second </span><span class="s3">=== </span><span class="s5">33</span><span class="s3">;</span>
+    <span class="s3">});</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">schema</span><span class="s3">&gt;, </span><span class="s1">thirdRefinement</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;get inner type&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">(() =&gt; </span><span class="s2">true</span><span class="s3">)</span>
+    <span class="s3">.</span><span class="s1">innerType</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;chained refinements&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">objectSchema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">length</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+      <span class="s1">size</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">(({ </span><span class="s1">length </span><span class="s3">}) =&gt; </span><span class="s1">length </span><span class="s3">&gt; </span><span class="s5">5</span><span class="s3">, {</span>
+      <span class="s1">path</span><span class="s3">: [</span><span class="s4">&quot;length&quot;</span><span class="s3">],</span>
+      <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;length greater than 5&quot;</span><span class="s3">,</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">(({ </span><span class="s1">size </span><span class="s3">}) =&gt; </span><span class="s1">size </span><span class="s3">&gt; </span><span class="s5">7</span><span class="s3">, {</span>
+      <span class="s1">path</span><span class="s3">: [</span><span class="s4">&quot;size&quot;</span><span class="s3">],</span>
+      <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;size greater than 7&quot;</span><span class="s3">,</span>
+    <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">r1 </span><span class="s3">= </span><span class="s1">objectSchema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({</span>
+    <span class="s1">length</span><span class="s3">: </span><span class="s5">4</span><span class="s3">,</span>
+    <span class="s1">size</span><span class="s3">: </span><span class="s5">9</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">r1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">r1</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">r1</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">r2 </span><span class="s3">= </span><span class="s1">objectSchema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({</span>
+    <span class="s1">length</span><span class="s3">: </span><span class="s5">4</span><span class="s3">,</span>
+    <span class="s1">size</span><span class="s3">: </span><span class="s5">3</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">r2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">r2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">r2</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;fatal superRefine&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Strings </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">string</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">superRefine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">) =&gt; {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">val </span><span class="s3">=== </span><span class="s4">&quot;&quot;</span><span class="s3">) {</span>
+        <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+          <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">,</span>
+          <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;foo&quot;</span><span class="s3">,</span>
+          <span class="s1">fatal</span><span class="s3">: </span><span class="s2">true</span><span class="s3">,</span>
+        <span class="s3">});</span>
+      <span class="s3">}</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">superRefine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">, </span><span class="s1">ctx</span><span class="s3">) =&gt; {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s1">val </span><span class="s3">!== </span><span class="s4">&quot; &quot;</span><span class="s3">) {</span>
+        <span class="s1">ctx</span><span class="s3">.</span><span class="s1">addIssue</span><span class="s3">({</span>
+          <span class="s1">code</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">custom</span><span class="s3">,</span>
+          <span class="s1">message</span><span class="s3">: </span><span class="s4">&quot;bar&quot;</span><span class="s3">,</span>
+        <span class="s3">});</span>
+      <span class="s3">}</span>
+    <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">Strings</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;&quot;</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(!</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) </span><span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;superRefine after skipped transform&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">string</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">regex</span><span class="s3">(</span><span class="s6">/^\d+$/</span><span class="s3">)</span>
+    <span class="s3">.</span><span class="s1">transform</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">Number</span><span class="s3">(</span><span class="s1">val</span><span class="s3">))</span>
+    <span class="s3">.</span><span class="s1">superRefine</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; {</span>
+      <span class="s2">if </span><span class="s3">(</span><span class="s2">typeof </span><span class="s1">val </span><span class="s3">!== </span><span class="s4">&quot;number&quot;</span><span class="s3">) {</span>
+        <span class="s2">throw new </span><span class="s1">Error</span><span class="s3">(</span><span class="s4">&quot;Called without transform&quot;</span><span class="s3">);</span>
+      <span class="s3">}</span>
+    <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s4">&quot;&quot;</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

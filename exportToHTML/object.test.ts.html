@@ -1,0 +1,456 @@
+<html>
+<head>
+<title>object.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+object.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">util </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s2">const </span><span class="s1">Test </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+  <span class="s1">f1</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+  <span class="s1">f2</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(),</span>
+  <span class="s1">f3</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">nullable</span><span class="s3">(),</span>
+  <span class="s1">f4</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">array</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">t</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">union</span><span class="s3">([</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">z</span><span class="s3">.</span><span class="s1">boolean</span><span class="s3">()]) })),</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;object type inference&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">type TestType </span><span class="s3">= {</span>
+    <span class="s1">f1</span><span class="s3">: </span><span class="s1">number</span><span class="s3">;</span>
+    <span class="s1">f2</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">;</span>
+    <span class="s1">f3</span><span class="s3">: </span><span class="s1">string </span><span class="s3">| </span><span class="s2">null</span><span class="s3">;</span>
+    <span class="s1">f4</span><span class="s3">: { </span><span class="s1">t</span><span class="s3">: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">boolean </span><span class="s3">}[];</span>
+  <span class="s3">};</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">z</span><span class="s3">.</span><span class="s1">TypeOf</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">Test</span><span class="s3">&gt;, </span><span class="s1">TestType</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;unknown throw&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">asdf</span><span class="s3">: </span><span class="s1">unknown </span><span class="s3">= </span><span class="s5">35</span><span class="s3">;</span>
+  <span class="s1">expect</span><span class="s3">(() =&gt; </span><span class="s1">Test</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">asdf</span><span class="s3">)).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;shape() should return schema of particular key&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">f1Schema </span><span class="s3">= </span><span class="s1">Test</span><span class="s3">.</span><span class="s1">shape</span><span class="s3">.</span><span class="s1">f1</span><span class="s3">;</span>
+  <span class="s2">const </span><span class="s1">f2Schema </span><span class="s3">= </span><span class="s1">Test</span><span class="s3">.</span><span class="s1">shape</span><span class="s3">.</span><span class="s1">f2</span><span class="s3">;</span>
+  <span class="s2">const </span><span class="s1">f3Schema </span><span class="s3">= </span><span class="s1">Test</span><span class="s3">.</span><span class="s1">shape</span><span class="s3">.</span><span class="s1">f3</span><span class="s3">;</span>
+  <span class="s2">const </span><span class="s1">f4Schema </span><span class="s3">= </span><span class="s1">Test</span><span class="s3">.</span><span class="s1">shape</span><span class="s3">.</span><span class="s1">f4</span><span class="s3">;</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">f1Schema</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodNumber</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">f2Schema</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodOptional</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">f3Schema</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodNullable</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">f4Schema</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodArray</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;correct parsing&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">Test</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">f1</span><span class="s3">: </span><span class="s5">12</span><span class="s3">,</span>
+    <span class="s1">f2</span><span class="s3">: </span><span class="s4">&quot;string&quot;</span><span class="s3">,</span>
+    <span class="s1">f3</span><span class="s3">: </span><span class="s4">&quot;string&quot;</span><span class="s3">,</span>
+    <span class="s1">f4</span><span class="s3">: [</span>
+      <span class="s3">{</span>
+        <span class="s1">t</span><span class="s3">: </span><span class="s4">&quot;string&quot;</span><span class="s3">,</span>
+      <span class="s3">},</span>
+    <span class="s3">],</span>
+  <span class="s3">});</span>
+
+  <span class="s1">Test</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">f1</span><span class="s3">: </span><span class="s5">12</span><span class="s3">,</span>
+    <span class="s1">f3</span><span class="s3">: </span><span class="s2">null</span><span class="s3">,</span>
+    <span class="s1">f4</span><span class="s3">: [</span>
+      <span class="s3">{</span>
+        <span class="s1">t</span><span class="s3">: </span><span class="s2">false</span><span class="s3">,</span>
+      <span class="s3">},</span>
+    <span class="s3">],</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;incorrect #1&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s3">(() =&gt; </span><span class="s1">Test</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({} as </span><span class="s1">any</span><span class="s3">)).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;nonstrict by default&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }).</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">points</span><span class="s3">: </span><span class="s5">2314</span><span class="s3">,</span>
+    <span class="s1">unknown</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s2">const </span><span class="s1">data </span><span class="s3">= {</span>
+  <span class="s1">points</span><span class="s3">: </span><span class="s5">2314</span><span class="s3">,</span>
+  <span class="s1">unknown</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+<span class="s3">};</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;strip by default&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">val </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }).</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">val</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s5">2314 </span><span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;unknownkeys override&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">val </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }).</span><span class="s1">strict</span><span class="s3">().</span><span class="s1">passthrough</span><span class="s3">().</span><span class="s1">strip</span><span class="s3">().</span><span class="s1">nonstrict</span><span class="s3">().</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">val</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;passthrough unknown&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">val </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }).</span><span class="s1">passthrough</span><span class="s3">().</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">val</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;strip unknown&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">val </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }).</span><span class="s1">strip</span><span class="s3">().</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">val</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s5">2314 </span><span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;strict&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">val </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">points</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }).</span><span class="s1">strict</span><span class="s3">().</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s1">data</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">val</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;catchall inference&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">o1 </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">first</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">catchall</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">());</span>
+
+  <span class="s2">const </span><span class="s1">d1 </span><span class="s3">= </span><span class="s1">o1</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">first</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">, </span><span class="s1">num</span><span class="s3">: </span><span class="s5">1243 </span><span class="s3">});</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">number</span><span class="s3">, (</span><span class="s2">typeof </span><span class="s1">d1</span><span class="s3">)[</span><span class="s4">&quot;asdf&quot;</span><span class="s3">]&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">string</span><span class="s3">, (</span><span class="s2">typeof </span><span class="s1">d1</span><span class="s3">)[</span><span class="s4">&quot;first&quot;</span><span class="s3">]&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;catchall overrides strict&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">o1 </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">first</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">() }).</span><span class="s1">strict</span><span class="s3">().</span><span class="s1">catchall</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">());</span>
+
+  <span class="s0">// should run fine</span>
+  <span class="s0">// setting a catchall overrides the unknownKeys behavior</span>
+  <span class="s1">o1</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">asdf</span><span class="s3">: </span><span class="s5">1234</span><span class="s3">,</span>
+  <span class="s3">});</span>
+
+  <span class="s0">// should only run catchall validation</span>
+  <span class="s0">// against unknown keys</span>
+  <span class="s1">o1</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">first</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s1">asdf</span><span class="s3">: </span><span class="s5">1234</span><span class="s3">,</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;catchall overrides strict&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">o1 </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">first</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">strict</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">catchall</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">());</span>
+
+  <span class="s0">// should run fine</span>
+  <span class="s0">// setting a catchall overrides the unknownKeys behavior</span>
+  <span class="s1">o1</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">first</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s1">asdf</span><span class="s3">: </span><span class="s5">1234</span><span class="s3">,</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;test that optional keys are unset&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">SNamedEntity </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">id</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s1">set</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(),</span>
+    <span class="s1">unset</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">SNamedEntity</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+    <span class="s1">id</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">,</span>
+    <span class="s1">set</span><span class="s3">: </span><span class="s1">undefined</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s0">// eslint-disable-next-line ban/ban</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">Object</span><span class="s3">.</span><span class="s1">keys</span><span class="s3">(</span><span class="s1">result</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;id&quot;</span><span class="s3">, </span><span class="s4">&quot;set&quot;</span><span class="s3">]);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;test catchall parsing&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() }).</span><span class="s1">catchall</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">()).</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;Foo&quot;</span><span class="s3">, </span><span class="s1">validExtraKey</span><span class="s3">: </span><span class="s5">61 </span><span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;Foo&quot;</span><span class="s3">, </span><span class="s1">validExtraKey</span><span class="s3">: </span><span class="s5">61 </span><span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">result2 </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() })</span>
+    <span class="s3">.</span><span class="s1">catchall</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">())</span>
+    <span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;Foo&quot;</span><span class="s3">, </span><span class="s1">validExtraKey</span><span class="s3">: </span><span class="s5">61</span><span class="s3">, </span><span class="s1">invalid</span><span class="s3">: </span><span class="s4">&quot;asdf&quot; </span><span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result2</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;test nonexistent keys&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">union</span><span class="s3">([</span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() }), </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() })]);</span>
+  <span class="s2">const </span><span class="s1">obj </span><span class="s3">= { </span><span class="s1">a</span><span class="s3">: </span><span class="s4">&quot;A&quot; </span><span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">Schema</span><span class="s3">.</span><span class="s1">spa</span><span class="s3">(</span><span class="s1">obj</span><span class="s3">); </span><span class="s0">// Works with 1.11.10, breaks with 2.0.0-beta.21</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;test async union&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Schema2 </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">union</span><span class="s3">([</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">ty</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">}),</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">ty</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+    <span class="s3">}),</span>
+  <span class="s3">]);</span>
+
+  <span class="s2">const </span><span class="s1">obj </span><span class="s3">= { </span><span class="s1">ty</span><span class="s3">: </span><span class="s4">&quot;A&quot; </span><span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">Schema2</span><span class="s3">.</span><span class="s1">spa</span><span class="s3">(</span><span class="s1">obj</span><span class="s3">); </span><span class="s0">// Works with 1.11.10, breaks with 2.0.0-beta.21</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;test inferred merged type&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">asdf </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() }).</span><span class="s1">merge</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }));</span>
+  <span class="s1">type asdf </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">asdf</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">asdf</span><span class="s3">, { </span><span class="s1">a</span><span class="s3">: </span><span class="s1">number </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;inferred merged object type with optional properties&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Merged </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">() })</span>
+    <span class="s3">.</span><span class="s1">merge</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() }));</span>
+  <span class="s1">type Merged </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">Merged</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">Merged</span><span class="s3">, { </span><span class="s1">a</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">; </span><span class="s1">b</span><span class="s3">: </span><span class="s1">string </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s0">// todo</span>
+  <span class="s0">// util.assertEqual&lt;Merged, { a?: string | undefined; b: string }&gt;(true);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;inferred unioned object type with optional properties&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Unioned </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">union</span><span class="s3">([</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">() }),</span>
+    <span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() }),</span>
+  <span class="s3">]);</span>
+  <span class="s1">type Unioned </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">Unioned</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">Unioned</span><span class="s3">, { </span><span class="s1">a</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">b</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined </span><span class="s3">} | { </span><span class="s1">a</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">; </span><span class="s1">b</span><span class="s3">: </span><span class="s1">string </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;inferred enum type&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Enum </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">() }).</span><span class="s1">keyof</span><span class="s3">();</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">Enum</span><span class="s3">.</span><span class="s1">Values</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">a</span><span class="s3">: </span><span class="s4">&quot;a&quot;</span><span class="s3">,</span>
+    <span class="s1">b</span><span class="s3">: </span><span class="s4">&quot;b&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">Enum</span><span class="s3">.</span><span class="s1">enum</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">a</span><span class="s3">: </span><span class="s4">&quot;a&quot;</span><span class="s3">,</span>
+    <span class="s1">b</span><span class="s3">: </span><span class="s4">&quot;b&quot;</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">Enum</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">values</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]);</span>
+  <span class="s1">type Enum </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">Enum</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">Enum</span><span class="s3">, </span><span class="s4">&quot;a&quot; </span><span class="s3">| </span><span class="s4">&quot;b&quot;</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;inferred partial object type with optional properties&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Partial </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">() }).</span><span class="s1">partial</span><span class="s3">();</span>
+  <span class="s1">type Partial </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">Partial</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">Partial</span><span class="s3">, { </span><span class="s1">a</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">; </span><span class="s1">b</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;inferred picked object type with optional properties&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Picked </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">() }).</span><span class="s1">pick</span><span class="s3">({ </span><span class="s1">b</span><span class="s3">: </span><span class="s2">true </span><span class="s3">});</span>
+  <span class="s1">type Picked </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">Picked</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">Picked</span><span class="s3">, { </span><span class="s1">b</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;inferred type for unknown/any keys&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">myType </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">anyOptional</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">any</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(),</span>
+    <span class="s1">anyRequired</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">any</span><span class="s3">(),</span>
+    <span class="s1">unknownOptional</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">unknown</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(),</span>
+    <span class="s1">unknownRequired</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">unknown</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+  <span class="s1">type myType </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">myType</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span>
+    <span class="s1">myType</span><span class="s3">,</span>
+    <span class="s3">{</span>
+      <span class="s1">anyOptional</span><span class="s3">?: </span><span class="s1">any</span><span class="s3">;</span>
+      <span class="s1">anyRequired</span><span class="s3">?: </span><span class="s1">any</span><span class="s3">;</span>
+      <span class="s1">unknownOptional</span><span class="s3">?: </span><span class="s1">unknown</span><span class="s3">;</span>
+      <span class="s1">unknownRequired</span><span class="s3">?: </span><span class="s1">unknown</span><span class="s3">;</span>
+    <span class="s3">}</span>
+  <span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;setKey&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">base </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() });</span>
+  <span class="s2">const </span><span class="s1">withNewKey </span><span class="s3">= </span><span class="s1">base</span><span class="s3">.</span><span class="s1">setKey</span><span class="s3">(</span><span class="s4">&quot;age&quot;</span><span class="s3">, </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">());</span>
+
+  <span class="s1">type withNewKey </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">withNewKey</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">withNewKey</span><span class="s3">, { </span><span class="s1">name</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">age</span><span class="s3">: </span><span class="s1">number </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">withNewKey</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">, </span><span class="s1">age</span><span class="s3">: </span><span class="s5">1234 </span><span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;strictcreate&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">strictObj </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">strictObject</span><span class="s3">({</span>
+    <span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+
+  <span class="s2">const </span><span class="s1">syncResult </span><span class="s3">= </span><span class="s1">strictObj</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">, </span><span class="s1">unexpected</span><span class="s3">: </span><span class="s5">13 </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">syncResult</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">asyncResult </span><span class="s3">= </span><span class="s2">await </span><span class="s1">strictObj</span><span class="s3">.</span><span class="s1">spa</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;asdf&quot;</span><span class="s3">, </span><span class="s1">unexpected</span><span class="s3">: </span><span class="s5">13 </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">asyncResult</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;object with refine&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;foo&quot;</span><span class="s3">),</span>
+      <span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">(() =&gt; </span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">b</span><span class="s3">: </span><span class="s5">5 </span><span class="s3">})).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">b</span><span class="s3">: </span><span class="s5">5</span><span class="s3">, </span><span class="s1">a</span><span class="s3">: </span><span class="s4">&quot;foo&quot; </span><span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">parseAsync</span><span class="s3">({ </span><span class="s1">b</span><span class="s3">: </span><span class="s5">5 </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">b</span><span class="s3">: </span><span class="s5">5</span><span class="s3">, </span><span class="s1">a</span><span class="s3">: </span><span class="s4">&quot;foo&quot; </span><span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;intersection of object with date&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">date</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">.</span><span class="s1">and</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">).</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">) })).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">),</span>
+  <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">parseAsync</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">) });</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">) });</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;intersection of object with refine with date&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">date</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">refine</span><span class="s3">(() =&gt; </span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">.</span><span class="s1">and</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">).</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">) })).</span><span class="s1">toEqual</span><span class="s3">({</span>
+    <span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">),</span>
+  <span class="s3">});</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">schema</span><span class="s3">.</span><span class="s1">parseAsync</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">) });</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s2">new </span><span class="s1">Date</span><span class="s3">(</span><span class="s5">1637353595983</span><span class="s3">) });</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;constructor key&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">person </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">strict</span><span class="s3">();</span>
+
+  <span class="s1">expect</span><span class="s3">(() =&gt;</span>
+    <span class="s1">person</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({</span>
+      <span class="s1">name</span><span class="s3">: </span><span class="s4">&quot;bob dylan&quot;</span><span class="s3">,</span>
+      <span class="s1">constructor</span><span class="s3">: </span><span class="s5">61</span><span class="s3">,</span>
+    <span class="s3">})</span>
+  <span class="s3">).</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;constructor key&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">Example </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">prop</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s1">opt</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">(),</span>
+    <span class="s1">arr</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">array</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+
+  <span class="s1">type Example </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">Example</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">keyof Example</span><span class="s3">, </span><span class="s4">&quot;prop&quot; </span><span class="s3">| </span><span class="s4">&quot;opt&quot; </span><span class="s3">| </span><span class="s4">&quot;arr&quot;</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;unknownkeys merging&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s0">// This one is &quot;strict&quot;</span>
+  <span class="s2">const </span><span class="s1">schemaA </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">strict</span><span class="s3">();</span>
+
+  <span class="s0">// This one is &quot;strip&quot;</span>
+  <span class="s2">const </span><span class="s1">schemaB </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+      <span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+    <span class="s3">})</span>
+    <span class="s3">.</span><span class="s1">catchall</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">());</span>
+
+  <span class="s2">const </span><span class="s1">mergedSchema </span><span class="s3">= </span><span class="s1">schemaA</span><span class="s3">.</span><span class="s1">merge</span><span class="s3">(</span><span class="s1">schemaB</span><span class="s3">);</span>
+  <span class="s1">type mergedSchema </span><span class="s3">= </span><span class="s2">typeof </span><span class="s1">mergedSchema</span><span class="s3">;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">mergedSchema</span><span class="s3">[</span><span class="s4">&quot;_def&quot;</span><span class="s3">][</span><span class="s4">&quot;unknownKeys&quot;</span><span class="s3">], </span><span class="s4">&quot;strip&quot;</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">mergedSchema</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">unknownKeys</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;strip&quot;</span><span class="s3">);</span>
+
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">mergedSchema</span><span class="s3">[</span><span class="s4">&quot;_def&quot;</span><span class="s3">][</span><span class="s4">&quot;catchall&quot;</span><span class="s3">], </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodString</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">mergedSchema</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">catchall </span><span class="s2">instanceof </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodString</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s2">const </span><span class="s1">personToExtend </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+  <span class="s1">firstName</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+  <span class="s1">lastName</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(),</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;extend() should return schema with new key&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">PersonWithNickname </span><span class="s3">= </span><span class="s1">personToExtend</span><span class="s3">.</span><span class="s1">extend</span><span class="s3">({ </span><span class="s1">nickName</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() });</span>
+  <span class="s1">type PersonWithNickname </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">PersonWithNickname</span><span class="s3">&gt;;</span>
+
+  <span class="s2">const </span><span class="s1">expected </span><span class="s3">= { </span><span class="s1">firstName</span><span class="s3">: </span><span class="s4">&quot;f&quot;</span><span class="s3">, </span><span class="s1">nickName</span><span class="s3">: </span><span class="s4">&quot;n&quot;</span><span class="s3">, </span><span class="s1">lastName</span><span class="s3">: </span><span class="s4">&quot;l&quot; </span><span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">actual </span><span class="s3">= </span><span class="s1">PersonWithNickname</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">expected</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">actual</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">expected</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">keyof PersonWithNickname</span><span class="s3">, </span><span class="s4">&quot;firstName&quot; </span><span class="s3">| </span><span class="s4">&quot;lastName&quot; </span><span class="s3">| </span><span class="s4">&quot;nickName&quot;</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">PersonWithNickname</span><span class="s3">, { </span><span class="s1">firstName</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">lastName</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">nickName</span><span class="s3">: </span><span class="s1">string </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;extend() should have power to override existing key&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">PersonWithNumberAsLastName </span><span class="s3">= </span><span class="s1">personToExtend</span><span class="s3">.</span><span class="s1">extend</span><span class="s3">({</span>
+    <span class="s1">lastName</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">(),</span>
+  <span class="s3">});</span>
+  <span class="s1">type PersonWithNumberAsLastName </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">PersonWithNumberAsLastName</span><span class="s3">&gt;;</span>
+
+  <span class="s2">const </span><span class="s1">expected </span><span class="s3">= { </span><span class="s1">firstName</span><span class="s3">: </span><span class="s4">&quot;f&quot;</span><span class="s3">, </span><span class="s1">lastName</span><span class="s3">: </span><span class="s5">42 </span><span class="s3">};</span>
+  <span class="s2">const </span><span class="s1">actual </span><span class="s3">= </span><span class="s1">PersonWithNumberAsLastName</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">expected</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">actual</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">expected</span><span class="s3">);</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">PersonWithNumberAsLastName</span><span class="s3">, { </span><span class="s1">firstName</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">lastName</span><span class="s3">: </span><span class="s1">number </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;passthrough index signature&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">a </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">() });</span>
+  <span class="s1">type a </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">a</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;{ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">string </span><span class="s3">}, </span><span class="s1">a</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">b </span><span class="s3">= </span><span class="s1">a</span><span class="s3">.</span><span class="s1">passthrough</span><span class="s3">();</span>
+  <span class="s1">type b </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">b</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;{ </span><span class="s1">a</span><span class="s3">: </span><span class="s1">string </span><span class="s3">} &amp; { [</span><span class="s1">k</span><span class="s3">: </span><span class="s1">string</span><span class="s3">]: </span><span class="s1">unknown </span><span class="s3">}, </span><span class="s1">b</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;xor&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">type Without</span><span class="s3">&lt;</span><span class="s1">T</span><span class="s3">, </span><span class="s1">U</span><span class="s3">&gt; = { [</span><span class="s1">P </span><span class="s2">in </span><span class="s1">Exclude</span><span class="s3">&lt;</span><span class="s1">keyof T</span><span class="s3">, </span><span class="s1">keyof U</span><span class="s3">&gt;]?: </span><span class="s1">never </span><span class="s3">};</span>
+  <span class="s1">type XOR</span><span class="s3">&lt;</span><span class="s1">T</span><span class="s3">, </span><span class="s1">U</span><span class="s3">&gt; = </span><span class="s1">T </span><span class="s2">extends </span><span class="s1">object </span><span class="s3">? (</span><span class="s1">U </span><span class="s2">extends </span><span class="s1">object </span><span class="s3">? (</span><span class="s1">Without</span><span class="s3">&lt;</span><span class="s1">T</span><span class="s3">, </span><span class="s1">U</span><span class="s3">&gt; &amp; </span><span class="s1">U</span><span class="s3">) | (</span><span class="s1">Without</span><span class="s3">&lt;</span><span class="s1">U</span><span class="s3">, </span><span class="s1">T</span><span class="s3">&gt; &amp; </span><span class="s1">T</span><span class="s3">) : </span><span class="s1">U</span><span class="s3">) : </span><span class="s1">T</span><span class="s3">;</span>
+
+  <span class="s1">type A </span><span class="s3">= { </span><span class="s1">name</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">a</span><span class="s3">: </span><span class="s1">number </span><span class="s3">};</span>
+  <span class="s1">type B </span><span class="s3">= { </span><span class="s1">name</span><span class="s3">: </span><span class="s1">string</span><span class="s3">; </span><span class="s1">b</span><span class="s3">: </span><span class="s1">number </span><span class="s3">};</span>
+  <span class="s1">type C </span><span class="s3">= </span><span class="s1">XOR</span><span class="s3">&lt;</span><span class="s1">A</span><span class="s3">, </span><span class="s1">B</span><span class="s3">&gt;;</span>
+  <span class="s1">type Outer </span><span class="s3">= { </span><span class="s1">data</span><span class="s3">: </span><span class="s1">C </span><span class="s3">};</span>
+
+  <span class="s2">const </span><span class="s1">_Outer</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodType</span><span class="s3">&lt;</span><span class="s1">Outer</span><span class="s3">&gt; = </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">data</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">union</span><span class="s3">([</span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">a</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() }), </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">name</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), </span><span class="s1">b</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">number</span><span class="s3">() })]),</span>
+  <span class="s3">});</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

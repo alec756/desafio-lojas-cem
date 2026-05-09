@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>default.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+default.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">z </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">util </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;basic defaults&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;default&quot;</span><span class="s3">).</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">)).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s4">&quot;default&quot;</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;default with transform&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">stringWithDefault </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">string</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">transform</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">toUpperCase</span><span class="s3">())</span>
+    <span class="s3">.</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;default&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">)).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s4">&quot;DEFAULT&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodDefault</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">innerType</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodEffects</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">innerType</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">schema</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodSchema</span><span class="s3">);</span>
+
+  <span class="s1">type inp </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">input</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringWithDefault</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">inp</span><span class="s3">, </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">type out </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">output</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringWithDefault</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">out</span><span class="s3">, </span><span class="s1">string</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;default on existing optional&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">stringWithDefault </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">optional</span><span class="s3">().</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">)).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodDefault</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">innerType</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodOptional</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">stringWithDefault</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">innerType</span><span class="s3">.</span><span class="s1">_def</span><span class="s3">.</span><span class="s1">innerType</span><span class="s3">).</span><span class="s1">toBeInstanceOf</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodString</span><span class="s3">);</span>
+
+  <span class="s1">type inp </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">input</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringWithDefault</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">inp</span><span class="s3">, </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">type out </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">output</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringWithDefault</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">out</span><span class="s3">, </span><span class="s1">string</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;optional on default&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">stringWithDefault </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">).</span><span class="s1">optional</span><span class="s3">();</span>
+
+  <span class="s1">type inp </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">input</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringWithDefault</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">inp</span><span class="s3">, </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">type out </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">output</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringWithDefault</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">out</span><span class="s3">, </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;complex chain example&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">complex </span><span class="s3">= </span><span class="s1">z</span>
+    <span class="s3">.</span><span class="s1">string</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">)</span>
+    <span class="s3">.</span><span class="s1">transform</span><span class="s3">((</span><span class="s1">val</span><span class="s3">) =&gt; </span><span class="s1">val</span><span class="s3">.</span><span class="s1">toUpperCase</span><span class="s3">())</span>
+    <span class="s3">.</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;qwer&quot;</span><span class="s3">)</span>
+    <span class="s3">.</span><span class="s1">removeDefault</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">optional</span><span class="s3">()</span>
+    <span class="s3">.</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;asdfasdf&quot;</span><span class="s3">);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">complex</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">)).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s4">&quot;ASDFASDF&quot;</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;removeDefault&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">stringWithRemovedDefault </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">).</span><span class="s1">removeDefault</span><span class="s3">();</span>
+
+  <span class="s1">type out </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">output</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringWithRemovedDefault</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">out</span><span class="s3">, </span><span class="s1">string</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;nested&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">inner </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">outer </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({ </span><span class="s1">inner </span><span class="s3">}).</span><span class="s1">default</span><span class="s3">({</span>
+    <span class="s1">inner</span><span class="s3">: </span><span class="s1">undefined</span><span class="s3">,</span>
+  <span class="s3">});</span>
+  <span class="s1">type input </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">input</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">outer</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">input</span><span class="s3">, { </span><span class="s1">inner</span><span class="s3">?: </span><span class="s1">string </span><span class="s3">| </span><span class="s1">undefined </span><span class="s3">} | </span><span class="s1">undefined</span><span class="s3">&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">type out </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">output</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">outer</span><span class="s3">&gt;;</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">out</span><span class="s3">, { </span><span class="s1">inner</span><span class="s3">: </span><span class="s1">string </span><span class="s3">}&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">outer</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">inner</span><span class="s3">: </span><span class="s4">&quot;asdf&quot; </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">outer</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({})).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">inner</span><span class="s3">: </span><span class="s4">&quot;asdf&quot; </span><span class="s3">});</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">outer</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({ </span><span class="s1">inner</span><span class="s3">: </span><span class="s1">undefined </span><span class="s3">})).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">inner</span><span class="s3">: </span><span class="s4">&quot;asdf&quot; </span><span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;chained defaults&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">stringWithDefault </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">().</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;inner&quot;</span><span class="s3">).</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;outer&quot;</span><span class="s3">);</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">stringWithDefault</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">);</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;outer&quot;</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;factory&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">ZodDefault</span><span class="s3">.</span><span class="s1">create</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">(), { </span><span class="s2">default</span><span class="s3">: </span><span class="s4">&quot;asdf&quot; </span><span class="s3">}).</span><span class="s1">parse</span><span class="s3">(</span><span class="s1">undefined</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s4">&quot;asdf&quot;</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;native enum&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">enum </span><span class="s1">Fruits </span><span class="s3">{</span>
+    <span class="s1">apple </span><span class="s3">= </span><span class="s4">&quot;apple&quot;</span><span class="s3">,</span>
+    <span class="s1">orange </span><span class="s3">= </span><span class="s4">&quot;orange&quot;</span><span class="s3">,</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">fruit</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">nativeEnum</span><span class="s3">(</span><span class="s1">Fruits</span><span class="s3">).</span><span class="s1">default</span><span class="s3">(</span><span class="s1">Fruits</span><span class="s3">.</span><span class="s1">apple</span><span class="s3">),</span>
+  <span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({})).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">fruit</span><span class="s3">: </span><span class="s1">Fruits</span><span class="s3">.</span><span class="s1">apple </span><span class="s3">});</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;enum&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">schema </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">object</span><span class="s3">({</span>
+    <span class="s1">fruit</span><span class="s3">: </span><span class="s1">z</span><span class="s3">.</span><span class="s1">enum</span><span class="s3">([</span><span class="s4">&quot;apple&quot;</span><span class="s3">, </span><span class="s4">&quot;orange&quot;</span><span class="s3">]).</span><span class="s1">default</span><span class="s3">(</span><span class="s4">&quot;apple&quot;</span><span class="s3">),</span>
+  <span class="s3">});</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">schema</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">({})).</span><span class="s1">toEqual</span><span class="s3">({ </span><span class="s1">fruit</span><span class="s3">: </span><span class="s4">&quot;apple&quot; </span><span class="s3">});</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>write-set-tokens.d.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #5f826b; font-style: italic;}
+.s5 { color: #67a37c; font-style: italic;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+write-set-tokens.d.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">Set </span><span class="s2">} </span><span class="s1">from </span><span class="s3">'./types'</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Takes character code and returns character to be displayed in a set</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{number} charCode Character code of set element</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{string} The string for the sets character</span>
+ <span class="s4">*/</span>
+<span class="s0">export </span><span class="s1">declare </span><span class="s0">function </span><span class="s1">setChar</span><span class="s2">(</span><span class="s1">charCode</span><span class="s2">: </span><span class="s1">number</span><span class="s2">): </span><span class="s1">string</span><span class="s2">;</span>
+<span class="s4">/**</span>
+ <span class="s4">* Writes the tokens for a set</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{Set} set The set to display</span>
+ <span class="s4">* </span><span class="s5">@param </span><span class="s4">{boolean} isNested Whether the token is nested inside another set token</span>
+ <span class="s4">* </span><span class="s5">@returns </span><span class="s4">{string} The tokens for the set</span>
+ <span class="s4">*/</span>
+<span class="s0">export </span><span class="s1">declare </span><span class="s0">function </span><span class="s1">writeSetTokens</span><span class="s2">(</span><span class="s1">set</span><span class="s2">: </span><span class="s1">Set</span><span class="s2">, </span><span class="s1">isNested</span><span class="s2">?: </span><span class="s1">boolean</span><span class="s2">): </span><span class="s1">string</span><span class="s2">;</span>
+</pre>
+</body>
+</html>

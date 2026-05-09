@@ -1,0 +1,131 @@
+<html>
+<head>
+<title>write-set-tokens.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #6aab73;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #cf8e6d;}
+.s4 { color: #2aacb8;}
+.s5 { color: #5f826b; font-style: italic;}
+.s6 { color: #67a37c; font-style: italic;}
+.s7 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+write-set-tokens.js</font>
+</center></td></tr></table>
+<pre><span class="s0">&quot;use strict&quot;</span><span class="s1">;</span>
+<span class="s3">var </span><span class="s2">__createBinding </span><span class="s1">= (</span><span class="s3">this </span><span class="s1">&amp;&amp; </span><span class="s3">this</span><span class="s1">.</span><span class="s2">__createBinding</span><span class="s1">) || (</span><span class="s2">Object</span><span class="s1">.</span><span class="s2">create </span><span class="s1">? (</span><span class="s3">function</span><span class="s1">(</span><span class="s2">o</span><span class="s1">, </span><span class="s2">m</span><span class="s1">, </span><span class="s2">k</span><span class="s1">, </span><span class="s2">k2</span><span class="s1">) {</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">k2 </span><span class="s1">=== </span><span class="s2">undefined</span><span class="s1">) </span><span class="s2">k2 </span><span class="s1">= </span><span class="s2">k</span><span class="s1">;</span>
+    <span class="s2">Object</span><span class="s1">.</span><span class="s2">defineProperty</span><span class="s1">(</span><span class="s2">o</span><span class="s1">, </span><span class="s2">k2</span><span class="s1">, { </span><span class="s2">enumerable</span><span class="s1">: </span><span class="s3">true</span><span class="s1">, </span><span class="s2">get</span><span class="s1">: </span><span class="s3">function</span><span class="s1">() { </span><span class="s3">return </span><span class="s2">m</span><span class="s1">[</span><span class="s2">k</span><span class="s1">]; } });</span>
+<span class="s1">}) : (</span><span class="s3">function</span><span class="s1">(</span><span class="s2">o</span><span class="s1">, </span><span class="s2">m</span><span class="s1">, </span><span class="s2">k</span><span class="s1">, </span><span class="s2">k2</span><span class="s1">) {</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">k2 </span><span class="s1">=== </span><span class="s2">undefined</span><span class="s1">) </span><span class="s2">k2 </span><span class="s1">= </span><span class="s2">k</span><span class="s1">;</span>
+    <span class="s2">o</span><span class="s1">[</span><span class="s2">k2</span><span class="s1">] = </span><span class="s2">m</span><span class="s1">[</span><span class="s2">k</span><span class="s1">];</span>
+<span class="s1">}));</span>
+<span class="s3">var </span><span class="s2">__setModuleDefault </span><span class="s1">= (</span><span class="s3">this </span><span class="s1">&amp;&amp; </span><span class="s3">this</span><span class="s1">.</span><span class="s2">__setModuleDefault</span><span class="s1">) || (</span><span class="s2">Object</span><span class="s1">.</span><span class="s2">create </span><span class="s1">? (</span><span class="s3">function</span><span class="s1">(</span><span class="s2">o</span><span class="s1">, </span><span class="s2">v</span><span class="s1">) {</span>
+    <span class="s2">Object</span><span class="s1">.</span><span class="s2">defineProperty</span><span class="s1">(</span><span class="s2">o</span><span class="s1">, </span><span class="s0">&quot;default&quot;</span><span class="s1">, { </span><span class="s2">enumerable</span><span class="s1">: </span><span class="s3">true</span><span class="s1">, </span><span class="s2">value</span><span class="s1">: </span><span class="s2">v </span><span class="s1">});</span>
+<span class="s1">}) : </span><span class="s3">function</span><span class="s1">(</span><span class="s2">o</span><span class="s1">, </span><span class="s2">v</span><span class="s1">) {</span>
+    <span class="s2">o</span><span class="s1">[</span><span class="s0">&quot;default&quot;</span><span class="s1">] = </span><span class="s2">v</span><span class="s1">;</span>
+<span class="s1">});</span>
+<span class="s3">var </span><span class="s2">__importStar </span><span class="s1">= (</span><span class="s3">this </span><span class="s1">&amp;&amp; </span><span class="s3">this</span><span class="s1">.</span><span class="s2">__importStar</span><span class="s1">) || </span><span class="s3">function </span><span class="s1">(</span><span class="s2">mod</span><span class="s1">) {</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">mod </span><span class="s1">&amp;&amp; </span><span class="s2">mod</span><span class="s1">.</span><span class="s2">__esModule</span><span class="s1">) </span><span class="s3">return </span><span class="s2">mod</span><span class="s1">;</span>
+    <span class="s3">var </span><span class="s2">result </span><span class="s1">= {};</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">mod </span><span class="s1">!= </span><span class="s3">null</span><span class="s1">) </span><span class="s3">for </span><span class="s1">(</span><span class="s3">var </span><span class="s2">k </span><span class="s3">in </span><span class="s2">mod</span><span class="s1">) </span><span class="s3">if </span><span class="s1">(</span><span class="s2">k </span><span class="s1">!== </span><span class="s0">&quot;default&quot; </span><span class="s1">&amp;&amp; </span><span class="s2">Object</span><span class="s1">.</span><span class="s2">prototype</span><span class="s1">.</span><span class="s2">hasOwnProperty</span><span class="s1">.</span><span class="s2">call</span><span class="s1">(</span><span class="s2">mod</span><span class="s1">, </span><span class="s2">k</span><span class="s1">)) </span><span class="s2">__createBinding</span><span class="s1">(</span><span class="s2">result</span><span class="s1">, </span><span class="s2">mod</span><span class="s1">, </span><span class="s2">k</span><span class="s1">);</span>
+    <span class="s2">__setModuleDefault</span><span class="s1">(</span><span class="s2">result</span><span class="s1">, </span><span class="s2">mod</span><span class="s1">);</span>
+    <span class="s3">return </span><span class="s2">result</span><span class="s1">;</span>
+<span class="s1">};</span>
+<span class="s2">Object</span><span class="s1">.</span><span class="s2">defineProperty</span><span class="s1">(</span><span class="s2">exports</span><span class="s1">, </span><span class="s0">&quot;__esModule&quot;</span><span class="s1">, { </span><span class="s2">value</span><span class="s1">: </span><span class="s3">true </span><span class="s1">});</span>
+<span class="s2">exports</span><span class="s1">.</span><span class="s2">writeSetTokens </span><span class="s1">= </span><span class="s2">exports</span><span class="s1">.</span><span class="s2">setChar </span><span class="s1">= </span><span class="s3">void </span><span class="s4">0</span><span class="s1">;</span>
+<span class="s3">const </span><span class="s2">types_1 </span><span class="s1">= </span><span class="s2">require</span><span class="s1">(</span><span class="s0">&quot;./types&quot;</span><span class="s1">);</span>
+<span class="s3">const </span><span class="s2">sets </span><span class="s1">= </span><span class="s2">__importStar</span><span class="s1">(</span><span class="s2">require</span><span class="s1">(</span><span class="s0">&quot;./sets-lookup&quot;</span><span class="s1">));</span>
+<span class="s5">/**</span>
+ <span class="s5">* Takes character code and returns character to be displayed in a set</span>
+ <span class="s5">* </span><span class="s6">@param </span><span class="s5">{number} charCode Character code of set element</span>
+ <span class="s5">* </span><span class="s6">@returns </span><span class="s5">{string} The string for the sets character</span>
+ <span class="s5">*/</span>
+<span class="s3">function </span><span class="s2">setChar</span><span class="s1">(</span><span class="s2">charCode</span><span class="s1">) {</span>
+    <span class="s3">return </span><span class="s2">charCode </span><span class="s1">=== </span><span class="s4">94 </span><span class="s1">? </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">^' </span><span class="s1">:</span>
+        <span class="s2">charCode </span><span class="s1">=== </span><span class="s4">92 </span><span class="s1">? </span><span class="s0">'</span><span class="s3">\\\\</span><span class="s0">' </span><span class="s1">:</span>
+            <span class="s2">charCode </span><span class="s1">=== </span><span class="s4">93 </span><span class="s1">? </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">]' </span><span class="s1">:</span>
+                <span class="s2">charCode </span><span class="s1">=== </span><span class="s4">45 </span><span class="s1">? </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">-' </span><span class="s1">:</span>
+                    <span class="s2">String</span><span class="s1">.</span><span class="s2">fromCharCode</span><span class="s1">(</span><span class="s2">charCode</span><span class="s1">);</span>
+<span class="s1">}</span>
+<span class="s2">exports</span><span class="s1">.</span><span class="s2">setChar </span><span class="s1">= </span><span class="s2">setChar</span><span class="s1">;</span>
+<span class="s5">/**</span>
+ <span class="s5">* Test if a character set matches a 'set-lookup'</span>
+ <span class="s5">* </span><span class="s6">@param </span><span class="s5">{SetTokens} set The set to be tested</span>
+ <span class="s5">* </span><span class="s6">@param </span><span class="s5">{SetLookup} param The predefined 'set-lookup' &amp; the number of elements in the lookup</span>
+ <span class="s5">* </span><span class="s6">@returns </span><span class="s5">{boolean} True if the character set corresponds to the 'set-lookup'</span>
+ <span class="s5">*/</span>
+<span class="s3">function </span><span class="s2">isSameSet</span><span class="s1">(</span><span class="s2">set</span><span class="s1">, { </span><span class="s2">lookup</span><span class="s1">, </span><span class="s2">len </span><span class="s1">}) {</span>
+    <span class="s7">// If the set and the lookup are not of the same length</span>
+    <span class="s7">// then we immediately know that the lookup will be false</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">len </span><span class="s1">!== </span><span class="s2">set</span><span class="s1">.</span><span class="s2">length</span><span class="s1">) {</span>
+        <span class="s3">return false</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s3">const </span><span class="s2">map </span><span class="s1">= </span><span class="s2">lookup</span><span class="s1">();</span>
+    <span class="s3">for </span><span class="s1">(</span><span class="s3">const </span><span class="s2">elem of set</span><span class="s1">) {</span>
+        <span class="s3">if </span><span class="s1">(</span><span class="s2">elem</span><span class="s1">.</span><span class="s2">type </span><span class="s1">=== </span><span class="s2">types_1</span><span class="s1">.</span><span class="s2">types</span><span class="s1">.</span><span class="s2">SET</span><span class="s1">) {</span>
+            <span class="s3">return false</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s3">const </span><span class="s2">key </span><span class="s1">= </span><span class="s2">elem</span><span class="s1">.</span><span class="s2">type </span><span class="s1">=== </span><span class="s2">types_1</span><span class="s1">.</span><span class="s2">types</span><span class="s1">.</span><span class="s2">CHAR </span><span class="s1">? </span><span class="s2">elem</span><span class="s1">.</span><span class="s2">value </span><span class="s1">: </span><span class="s0">`</span><span class="s2">$</span><span class="s1">{</span><span class="s2">elem</span><span class="s1">.</span><span class="s2">from</span><span class="s1">}</span><span class="s0">-</span><span class="s2">$</span><span class="s1">{</span><span class="s2">elem</span><span class="s1">.</span><span class="s2">to</span><span class="s1">}</span><span class="s0">`</span><span class="s1">;</span>
+        <span class="s3">if </span><span class="s1">(</span><span class="s2">map</span><span class="s1">[</span><span class="s2">key</span><span class="s1">]) {</span>
+            <span class="s2">map</span><span class="s1">[</span><span class="s2">key</span><span class="s1">] = </span><span class="s3">false</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s3">else </span><span class="s1">{</span>
+            <span class="s3">return false</span><span class="s1">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s3">return true</span><span class="s1">;</span>
+<span class="s1">}</span>
+<span class="s5">/**</span>
+ <span class="s5">* Writes the tokens for a set</span>
+ <span class="s5">* </span><span class="s6">@param </span><span class="s5">{Set} set The set to display</span>
+ <span class="s5">* </span><span class="s6">@param </span><span class="s5">{boolean} isNested Whether the token is nested inside another set token</span>
+ <span class="s5">* </span><span class="s6">@returns </span><span class="s5">{string} The tokens for the set</span>
+ <span class="s5">*/</span>
+<span class="s3">function </span><span class="s2">writeSetTokens</span><span class="s1">(</span><span class="s2">set</span><span class="s1">, </span><span class="s2">isNested </span><span class="s1">= </span><span class="s3">false</span><span class="s1">) {</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">isSameSet</span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">set</span><span class="s1">, </span><span class="s2">sets</span><span class="s1">.</span><span class="s2">INTS</span><span class="s1">)) {</span>
+        <span class="s3">return </span><span class="s2">set</span><span class="s1">.</span><span class="s2">not </span><span class="s1">? </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">D' </span><span class="s1">: </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">d'</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">isSameSet</span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">set</span><span class="s1">, </span><span class="s2">sets</span><span class="s1">.</span><span class="s2">WORDS</span><span class="s1">)) {</span>
+        <span class="s3">return </span><span class="s2">set</span><span class="s1">.</span><span class="s2">not </span><span class="s1">? </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">W' </span><span class="s1">: </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">w'</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s7">// Notanychar is only relevant when not nested inside another set token</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">not </span><span class="s1">&amp;&amp; </span><span class="s2">isSameSet</span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">set</span><span class="s1">, </span><span class="s2">sets</span><span class="s1">.</span><span class="s2">NOTANYCHAR</span><span class="s1">)) {</span>
+        <span class="s3">return </span><span class="s0">'.'</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">isSameSet</span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">set</span><span class="s1">, </span><span class="s2">sets</span><span class="s1">.</span><span class="s2">WHITESPACE</span><span class="s1">)) {</span>
+        <span class="s3">return </span><span class="s2">set</span><span class="s1">.</span><span class="s2">not </span><span class="s1">? </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">S' </span><span class="s1">: </span><span class="s0">'</span><span class="s3">\\</span><span class="s0">s'</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s3">let </span><span class="s2">tokenString </span><span class="s1">= </span><span class="s0">''</span><span class="s1">;</span>
+    <span class="s3">for </span><span class="s1">(</span><span class="s3">let </span><span class="s2">i </span><span class="s1">= </span><span class="s4">0</span><span class="s1">; </span><span class="s2">i </span><span class="s1">&lt; </span><span class="s2">set</span><span class="s1">.</span><span class="s2">set</span><span class="s1">.</span><span class="s2">length</span><span class="s1">; </span><span class="s2">i</span><span class="s1">++) {</span>
+        <span class="s3">const </span><span class="s2">subset </span><span class="s1">= </span><span class="s2">set</span><span class="s1">.</span><span class="s2">set</span><span class="s1">[</span><span class="s2">i</span><span class="s1">];</span>
+        <span class="s2">tokenString </span><span class="s1">+= </span><span class="s2">writeSetToken</span><span class="s1">(</span><span class="s2">subset</span><span class="s1">);</span>
+    <span class="s1">}</span>
+    <span class="s3">const </span><span class="s2">contents </span><span class="s1">= </span><span class="s0">`</span><span class="s2">$</span><span class="s1">{</span><span class="s2">set</span><span class="s1">.</span><span class="s2">not </span><span class="s1">? </span><span class="s0">'^' </span><span class="s1">: </span><span class="s0">''</span><span class="s1">}</span><span class="s2">$</span><span class="s1">{</span><span class="s2">tokenString</span><span class="s1">}</span><span class="s0">`</span><span class="s1">;</span>
+    <span class="s3">return </span><span class="s2">isNested </span><span class="s1">? </span><span class="s2">contents </span><span class="s1">: </span><span class="s0">`[</span><span class="s2">$</span><span class="s1">{</span><span class="s2">contents</span><span class="s1">}</span><span class="s0">]`</span><span class="s1">;</span>
+<span class="s1">}</span>
+<span class="s2">exports</span><span class="s1">.</span><span class="s2">writeSetTokens </span><span class="s1">= </span><span class="s2">writeSetTokens</span><span class="s1">;</span>
+<span class="s5">/**</span>
+ <span class="s5">* Writes a token within a set</span>
+ <span class="s5">* </span><span class="s6">@param </span><span class="s5">{Range | Char | Set} set The set token to display</span>
+ <span class="s5">* </span><span class="s6">@returns </span><span class="s5">{string} The token as a string</span>
+ <span class="s5">*/</span>
+<span class="s3">function </span><span class="s2">writeSetToken</span><span class="s1">(</span><span class="s2">set</span><span class="s1">) {</span>
+    <span class="s3">if </span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">type </span><span class="s1">=== </span><span class="s2">types_1</span><span class="s1">.</span><span class="s2">types</span><span class="s1">.</span><span class="s2">CHAR</span><span class="s1">) {</span>
+        <span class="s3">return </span><span class="s2">setChar</span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">value</span><span class="s1">);</span>
+    <span class="s1">}</span>
+    <span class="s3">else if </span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">type </span><span class="s1">=== </span><span class="s2">types_1</span><span class="s1">.</span><span class="s2">types</span><span class="s1">.</span><span class="s2">RANGE</span><span class="s1">) {</span>
+        <span class="s3">return </span><span class="s0">`</span><span class="s2">$</span><span class="s1">{</span><span class="s2">setChar</span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">from</span><span class="s1">)}</span><span class="s0">-</span><span class="s2">$</span><span class="s1">{</span><span class="s2">setChar</span><span class="s1">(</span><span class="s2">set</span><span class="s1">.</span><span class="s2">to</span><span class="s1">)}</span><span class="s0">`</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s3">return </span><span class="s2">writeSetTokens</span><span class="s1">(</span><span class="s2">set</span><span class="s1">, </span><span class="s3">true</span><span class="s1">);</span>
+<span class="s1">}</span>
+<span class="s7">//# sourceMappingURL=write-set-tokens.js.map</span></pre>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>product.service.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+product.service.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">ProductRepository </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;../repositories/product.repository&quot;</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s2">{ </span><span class="s1">Prisma</span><span class="s2">, </span><span class="s1">Product </span><span class="s2">} </span><span class="s1">from </span><span class="s3">&quot;@prisma/client&quot;</span><span class="s2">;</span>
+
+<span class="s0">export class </span><span class="s1">ProductService </span><span class="s2">{</span>
+    <span class="s0">private </span><span class="s1">repository</span><span class="s2">: </span><span class="s1">ProductRepository</span><span class="s2">;</span>
+
+    <span class="s1">constructor</span><span class="s2">() {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">repository </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ProductRepository</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async createProduct</span><span class="s2">(</span><span class="s1">data</span><span class="s2">: </span><span class="s1">Prisma</span><span class="s2">.</span><span class="s1">ProductCreateInput</span><span class="s2">): </span><span class="s1">Promise</span><span class="s2">&lt;</span><span class="s1">Product</span><span class="s2">&gt; {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">Number</span><span class="s2">(</span><span class="s1">data</span><span class="s2">.</span><span class="s1">price</span><span class="s2">) &lt;= </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">&quot;O preço do produto deve ser maior que zero.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">data</span><span class="s2">.</span><span class="s1">stock_quantity </span><span class="s2">&lt; </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">&quot;A quantidade em estoque não pode ser negativa.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return await this</span><span class="s2">.</span><span class="s1">repository</span><span class="s2">.</span><span class="s1">create</span><span class="s2">(</span><span class="s1">data</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async listProducts</span><span class="s2">() {</span>
+        <span class="s0">return await this</span><span class="s2">.</span><span class="s1">repository</span><span class="s2">.</span><span class="s1">findAll</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async getProduct</span><span class="s2">(</span><span class="s1">id</span><span class="s2">: </span><span class="s1">string</span><span class="s2">) {</span>
+        <span class="s0">const </span><span class="s1">product </span><span class="s2">= </span><span class="s0">await this</span><span class="s2">.</span><span class="s1">repository</span><span class="s2">.</span><span class="s1">findById</span><span class="s2">(</span><span class="s1">id</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">product</span><span class="s2">) </span><span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">&quot;Produto não encontrado.&quot;</span><span class="s2">);</span>
+        <span class="s0">return </span><span class="s1">product</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async updateProduct</span><span class="s2">(</span><span class="s1">id</span><span class="s2">: </span><span class="s1">string</span><span class="s2">, </span><span class="s1">data</span><span class="s2">: </span><span class="s1">Prisma</span><span class="s2">.</span><span class="s1">ProductUpdateInput</span><span class="s2">) {</span>
+        <span class="s0">await this</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">(</span><span class="s1">id</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">data</span><span class="s2">.</span><span class="s1">price </span><span class="s2">&amp;&amp; </span><span class="s1">Number</span><span class="s2">(</span><span class="s1">data</span><span class="s2">.</span><span class="s1">price</span><span class="s2">) &lt;= </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">Error</span><span class="s2">(</span><span class="s3">&quot;O novo preço deve ser maior que zero.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">return await this</span><span class="s2">.</span><span class="s1">repository</span><span class="s2">.</span><span class="s1">update</span><span class="s2">(</span><span class="s1">id</span><span class="s2">, </span><span class="s1">data</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">async deleteProduct</span><span class="s2">(</span><span class="s1">id</span><span class="s2">: </span><span class="s1">string</span><span class="s2">) {</span>
+        <span class="s0">await this</span><span class="s2">.</span><span class="s1">getProduct</span><span class="s2">(</span><span class="s1">id</span><span class="s2">);</span>
+        <span class="s0">return await this</span><span class="s2">.</span><span class="s1">repository</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s1">id</span><span class="s2">);</span>
+    <span class="s2">}</span>
+<span class="s2">}</span></pre>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>schema.prisma</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+schema.prisma</font>
+</center></td></tr></table>
+<pre><span class="s0">generator </span><span class="s2">client {</span>
+  <span class="s2">provider = </span><span class="s3">&quot;prisma-client-js&quot;</span>
+<span class="s2">}</span>
+<span class="s0">datasource </span><span class="s2">db {</span>
+  <span class="s2">provider = </span><span class="s3">&quot;postgresql&quot;</span>
+  <span class="s4">// A linha 'url' foi removida daqui</span>
+<span class="s2">}</span>
+
+<span class="s0">generator </span><span class="s2">client {</span>
+  <span class="s2">provider = </span><span class="s3">&quot;prisma-client-js&quot;</span>
+<span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s0">model </span><span class="s2">Product {</span>
+  <span class="s2">id             String   </span><span class="s1">@</span><span class="s2">id </span><span class="s1">@</span><span class="s2">default(uuid())</span>
+  <span class="s2">name           String</span>
+  <span class="s2">description    String?</span>
+  <span class="s2">price          Decimal</span>
+  <span class="s2">stock_quantity Int</span>
+  <span class="s2">created_at     DateTime </span><span class="s1">@</span><span class="s2">default(now())</span>
+
+  <span class="s1">@@</span><span class="s2">map(</span><span class="s3">&quot;products&quot;</span><span class="s2">)</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

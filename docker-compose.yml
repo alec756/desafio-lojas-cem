@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: inventario_db_novo
+    ports:
+      - '5434:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=desafio_inventario
+    volumes:
+      - v5_inventario_data:/var/lib/postgresql/data
+
+  redis:
+    image: bitnami/redis:latest
+    container_name: inventario_redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - inventario_redis_v2:/bitnami/redis/data
+
+volumes:
+  v5_inventario_data:
+  inventario_redis_v2:

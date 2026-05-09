@@ -1,0 +1,164 @@
+<html>
+<head>
+<title>set.test.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+set.test.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">// @ts-ignore TS6133</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">expect</span><span class="s3">, </span><span class="s1">test </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;vitest&quot;</span><span class="s3">;</span>
+
+<span class="s2">import </span><span class="s3">* as </span><span class="s1">z from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">ZodIssueCode </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;zod/v3&quot;</span><span class="s3">;</span>
+<span class="s2">import </span><span class="s3">{ </span><span class="s1">util </span><span class="s3">} </span><span class="s1">from </span><span class="s4">&quot;../helpers/util.js&quot;</span><span class="s3">;</span>
+
+<span class="s2">const </span><span class="s1">stringSet </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">set</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">());</span>
+<span class="s1">type stringSet </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">infer</span><span class="s3">&lt;</span><span class="s2">typeof </span><span class="s1">stringSet</span><span class="s3">&gt;;</span>
+
+<span class="s2">const </span><span class="s1">minTwo </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">set</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">min</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+<span class="s2">const </span><span class="s1">maxTwo </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">set</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">max</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+<span class="s2">const </span><span class="s1">justTwo </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">set</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">size</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+<span class="s2">const </span><span class="s1">nonEmpty </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">set</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">nonempty</span><span class="s3">();</span>
+<span class="s2">const </span><span class="s1">nonEmptyMax </span><span class="s3">= </span><span class="s1">z</span><span class="s3">.</span><span class="s1">set</span><span class="s3">(</span><span class="s1">z</span><span class="s3">.</span><span class="s1">string</span><span class="s3">()).</span><span class="s1">nonempty</span><span class="s3">().</span><span class="s1">max</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;type inference&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">util</span><span class="s3">.</span><span class="s1">assertEqual</span><span class="s3">&lt;</span><span class="s1">stringSet</span><span class="s3">, </span><span class="s1">Set</span><span class="s3">&lt;</span><span class="s1">string</span><span class="s3">&gt;&gt;(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;valid parse&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;first&quot;</span><span class="s3">, </span><span class="s4">&quot;second&quot;</span><span class="s3">]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;first&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;second&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;third&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s3">}</span>
+
+  <span class="s1">expect</span><span class="s3">(() =&gt; {</span>
+    <span class="s1">minTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]));</span>
+    <span class="s1">minTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">, </span><span class="s4">&quot;c&quot;</span><span class="s3">]));</span>
+    <span class="s1">maxTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]));</span>
+    <span class="s1">maxTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">]));</span>
+    <span class="s1">justTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]));</span>
+    <span class="s1">nonEmpty</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">]));</span>
+    <span class="s1">nonEmptyMax</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">]));</span>
+  <span class="s3">}).</span><span class="s1">not</span><span class="s3">.</span><span class="s1">toThrow</span><span class="s3">();</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;valid parse async&quot;</span><span class="s3">, </span><span class="s1">async </span><span class="s3">() =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s2">await </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">spa</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;first&quot;</span><span class="s3">, </span><span class="s4">&quot;second&quot;</span><span class="s3">]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;first&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;second&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;third&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s3">}</span>
+
+  <span class="s2">const </span><span class="s1">asyncResult </span><span class="s3">= </span><span class="s2">await </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;first&quot;</span><span class="s3">, </span><span class="s4">&quot;second&quot;</span><span class="s3">]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">asyncResult</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">asyncResult</span><span class="s3">.</span><span class="s1">success</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">asyncResult</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;first&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">asyncResult</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;second&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">asyncResult</span><span class="s3">.</span><span class="s1">data</span><span class="s3">.</span><span class="s1">has</span><span class="s3">(</span><span class="s4">&quot;third&quot;</span><span class="s3">)).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;valid parse: size-related methods&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s1">expect</span><span class="s3">(() =&gt; {</span>
+    <span class="s1">minTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]));</span>
+    <span class="s1">minTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">, </span><span class="s4">&quot;c&quot;</span><span class="s3">]));</span>
+    <span class="s1">maxTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]));</span>
+    <span class="s1">maxTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">]));</span>
+    <span class="s1">justTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]));</span>
+    <span class="s1">nonEmpty</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">]));</span>
+    <span class="s1">nonEmptyMax</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">]));</span>
+  <span class="s3">}).</span><span class="s1">not</span><span class="s3">.</span><span class="s1">toThrow</span><span class="s3">();</span>
+
+  <span class="s2">const </span><span class="s1">sizeZeroResult </span><span class="s3">= </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">());</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">sizeZeroResult</span><span class="s3">.</span><span class="s1">size</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s5">0</span><span class="s3">);</span>
+
+  <span class="s2">const </span><span class="s1">sizeTwoResult </span><span class="s3">= </span><span class="s1">minTwo</span><span class="s3">.</span><span class="s1">parse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;a&quot;</span><span class="s3">, </span><span class="s4">&quot;b&quot;</span><span class="s3">]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">sizeTwoResult</span><span class="s3">.</span><span class="s1">size</span><span class="s3">).</span><span class="s1">toBe</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;failing when parsing empty set in nonempty &quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">nonEmpty</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">());</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">too_small</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;failing when set is smaller than min() &quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">minTwo</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;just_one&quot;</span><span class="s3">]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">too_small</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;failing when set is bigger than max() &quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">maxTwo</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s4">&quot;one&quot;</span><span class="s3">, </span><span class="s4">&quot;two&quot;</span><span class="s3">, </span><span class="s4">&quot;three&quot;</span><span class="s3">]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">too_big</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;doesn’t throw when an empty set is given&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">true</span><span class="s3">);</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;throws when a Map is given&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Map</span><span class="s3">([]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">invalid_type</span><span class="s3">);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;throws when the given set has invalid input&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s1">Symbol</span><span class="s3">()]));</span>
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">1</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">invalid_type</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">path</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s5">0</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+
+<span class="s1">test</span><span class="s3">(</span><span class="s4">&quot;throws when the given set has multiple invalid entries&quot;</span><span class="s3">, () =&gt; {</span>
+  <span class="s2">const </span><span class="s1">result </span><span class="s3">= </span><span class="s1">stringSet</span><span class="s3">.</span><span class="s1">safeParse</span><span class="s3">(</span><span class="s2">new </span><span class="s1">Set</span><span class="s3">([</span><span class="s5">1</span><span class="s3">, </span><span class="s5">2</span><span class="s3">] as </span><span class="s1">any</span><span class="s3">[]) as </span><span class="s1">Set</span><span class="s3">&lt;</span><span class="s1">any</span><span class="s3">&gt;);</span>
+
+  <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s2">false</span><span class="s3">);</span>
+  <span class="s2">if </span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">success </span><span class="s3">=== </span><span class="s2">false</span><span class="s3">) {</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">.</span><span class="s1">length</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s5">2</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">invalid_type</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">0</span><span class="s3">].</span><span class="s1">path</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s5">0</span><span class="s3">]);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">1</span><span class="s3">].</span><span class="s1">code</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">(</span><span class="s1">ZodIssueCode</span><span class="s3">.</span><span class="s1">invalid_type</span><span class="s3">);</span>
+    <span class="s1">expect</span><span class="s3">(</span><span class="s1">result</span><span class="s3">.</span><span class="s1">error</span><span class="s3">.</span><span class="s1">issues</span><span class="s3">[</span><span class="s5">1</span><span class="s3">].</span><span class="s1">path</span><span class="s3">).</span><span class="s1">toEqual</span><span class="s3">([</span><span class="s5">1</span><span class="s3">]);</span>
+  <span class="s3">}</span>
+<span class="s3">});</span>
+</pre>
+</body>
+</html>

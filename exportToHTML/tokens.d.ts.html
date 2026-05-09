@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>tokens.d.ts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+tokens.d.ts</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s2">{ </span><span class="s1">types </span><span class="s2">} </span><span class="s1">from </span><span class="s3">'./types'</span><span class="s2">;</span>
+<span class="s1">declare type Base</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">, </span><span class="s1">K</span><span class="s2">&gt; = {</span>
+    <span class="s1">type</span><span class="s2">: </span><span class="s1">T</span><span class="s2">;</span>
+<span class="s2">} &amp; </span><span class="s1">K</span><span class="s2">;</span>
+<span class="s1">declare type ValueType</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">, </span><span class="s1">K</span><span class="s2">&gt; = </span><span class="s1">Base</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">, {</span>
+    <span class="s1">value</span><span class="s2">: </span><span class="s1">K</span><span class="s2">;</span>
+<span class="s2">}&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Root </span><span class="s2">= </span><span class="s1">Base</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">ROOT</span><span class="s2">, {</span>
+    <span class="s1">stack</span><span class="s2">?: </span><span class="s1">Token</span><span class="s2">[];</span>
+    <span class="s1">options</span><span class="s2">?: </span><span class="s1">Token</span><span class="s2">[][];</span>
+    <span class="s1">flags</span><span class="s2">?: </span><span class="s1">string</span><span class="s2">[];</span>
+<span class="s2">}&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Group </span><span class="s2">= </span><span class="s1">Base</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">GROUP</span><span class="s2">, {</span>
+    <span class="s1">stack</span><span class="s2">?: </span><span class="s1">Token</span><span class="s2">[];</span>
+    <span class="s1">options</span><span class="s2">?: </span><span class="s1">Token</span><span class="s2">[][];</span>
+    <span class="s1">remember</span><span class="s2">: </span><span class="s1">boolean</span><span class="s2">;</span>
+    <span class="s1">followedBy</span><span class="s2">?: </span><span class="s1">boolean</span><span class="s2">;</span>
+    <span class="s1">notFollowedBy</span><span class="s2">?: </span><span class="s1">boolean</span><span class="s2">;</span>
+    <span class="s1">lookBehind</span><span class="s2">?: </span><span class="s1">boolean</span><span class="s2">;</span>
+    <span class="s1">name</span><span class="s2">?: </span><span class="s1">string</span><span class="s2">;</span>
+<span class="s2">}&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Set </span><span class="s2">= </span><span class="s1">Base</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">SET</span><span class="s2">, {</span>
+    <span class="s1">set</span><span class="s2">: </span><span class="s1">SetTokens</span><span class="s2">;</span>
+    <span class="s1">not</span><span class="s2">: </span><span class="s1">boolean</span><span class="s2">;</span>
+<span class="s2">}&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Range </span><span class="s2">= </span><span class="s1">Base</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">RANGE</span><span class="s2">, {</span>
+    <span class="s1">from</span><span class="s2">: </span><span class="s1">number</span><span class="s2">;</span>
+    <span class="s1">to</span><span class="s2">: </span><span class="s1">number</span><span class="s2">;</span>
+<span class="s2">}&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Repetition </span><span class="s2">= </span><span class="s1">Base</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">REPETITION</span><span class="s2">, {</span>
+    <span class="s1">min</span><span class="s2">: </span><span class="s1">number</span><span class="s2">;</span>
+    <span class="s1">max</span><span class="s2">: </span><span class="s1">number</span><span class="s2">;</span>
+    <span class="s1">value</span><span class="s2">: </span><span class="s1">Token</span><span class="s2">;</span>
+<span class="s2">}&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Position </span><span class="s2">= </span><span class="s1">ValueType</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">POSITION</span><span class="s2">, </span><span class="s3">'$' </span><span class="s2">| </span><span class="s3">'^' </span><span class="s2">| </span><span class="s3">'b' </span><span class="s2">| </span><span class="s3">'B'</span><span class="s2">&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Reference </span><span class="s2">= </span><span class="s1">ValueType</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">REFERENCE</span><span class="s2">, </span><span class="s1">number</span><span class="s2">&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Char </span><span class="s2">= </span><span class="s1">ValueType</span><span class="s2">&lt;</span><span class="s1">types</span><span class="s2">.</span><span class="s1">CHAR</span><span class="s2">, </span><span class="s1">number</span><span class="s2">&gt;;</span>
+<span class="s0">export </span><span class="s1">declare type Token </span><span class="s2">= </span><span class="s1">Group </span><span class="s2">| </span><span class="s1">Position </span><span class="s2">| </span><span class="s1">Set </span><span class="s2">| </span><span class="s1">Range </span><span class="s2">| </span><span class="s1">Repetition </span><span class="s2">| </span><span class="s1">Reference </span><span class="s2">| </span><span class="s1">Char</span><span class="s2">;</span>
+<span class="s0">export </span><span class="s1">declare type Tokens </span><span class="s2">= </span><span class="s1">Root </span><span class="s2">| </span><span class="s1">Token</span><span class="s2">;</span>
+<span class="s0">export </span><span class="s1">declare type SetTokens </span><span class="s2">= (</span><span class="s1">Range </span><span class="s2">| </span><span class="s1">Char </span><span class="s2">| </span><span class="s1">Set</span><span class="s2">)[];</span>
+<span class="s0">export </span><span class="s2">{};</span>
+</pre>
+</body>
+</html>
