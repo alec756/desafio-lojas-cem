@@ -16,17 +16,17 @@ Content-Type: application/json
     client.log("ID Salvo na memória: " + response.body.id);
 %}
 
-### --------------------------------------------------------
+
 
 ### 2. Listar todos os produtos
 GET {{baseUrl}}/products
 
-### --------------------------------------------------------
+
 
 ### 3. Buscar o produto específico (usando o ID salvo)
 GET {{baseUrl}}/products/{{produto_id}}
 
-### --------------------------------------------------------
+
 
 ### 4. Atualizar um produto (Simulando mudança de preço ou venda)
 PUT {{baseUrl}}/products/{{produto_id}}
@@ -39,12 +39,12 @@ Content-Type: application/json
   "stock_quantity": 11
 }
 
-### --------------------------------------------------------
+
 
 ### 5. Deletar o produto (usando o ID salvo e com a URL corrigida)
 DELETE {{baseUrl}}/products/{{produto_id}}
 
-### --------------------------------------------------------
+
 
 ### 6. Teste de Erro: Preço Negativo (Testando as travas do sistema)
 POST {{baseUrl}}/products

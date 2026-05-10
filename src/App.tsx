@@ -11,10 +11,10 @@ interface Product {
 
 export default function App() {
     const [products, setProducts] = useState<Product[]>([]);
-    const [searchQuery, setSearchQuery] = useState(''); // Estado para a barra de busca
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingId, setEditingId] = useState<string | null>(null); // Saber se estamos editando ou criando
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -72,7 +72,7 @@ export default function App() {
             setIsModalOpen(false);
         } catch (err) {
             console.error("Erro ao salvar produto:", err);
-            alert("Erro ao gravar. Verifique se o backend está preparado!");
+            alert("Não foi possível salvar as alterações. Verifique a conexão com o servidor.");
         }
     }
 
@@ -105,7 +105,7 @@ export default function App() {
                 </div>
 
                 <div className="flex w-full md:w-auto gap-4">
-                    {/* Barra de Pesquisa */}
+
                     <input
                         type="text"
                         placeholder="Buscar produto..."
@@ -123,7 +123,7 @@ export default function App() {
                 </div>
             </header>
 
-            {/* Modal de Cadastro/Edição */}
+
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                     <div className="bg-zinc-900/90 p-8 rounded-lg border border-red-700/50 shadow-[0_0_40px_rgba(185,28,28,0.15)] w-full max-w-md">
@@ -191,7 +191,7 @@ export default function App() {
                 </div>
             )}
 
-            {/* Lista de Produtos filtrada */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredProducts.map((product) => (
                     <div
@@ -219,7 +219,7 @@ export default function App() {
                                 </span>
                             </div>
 
-                            {/* BOTOES DE AÇÃO: Editar e Excluir */}
+
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => handleOpenEditModal(product)}
@@ -238,7 +238,7 @@ export default function App() {
                     </div>
                 ))}
 
-                {/* Mensagem caso a busca não encontre nada */}
+
                 {filteredProducts.length === 0 && (
                     <div className="col-span-full text-center py-12 text-zinc-600 font-mono">
                         NENHUM REGISTRO ENCONTRADO.

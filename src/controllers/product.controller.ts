@@ -15,7 +15,7 @@ export class ProductController {
 
     async create(req: FastifyRequest, rep: FastifyReply) {
         try {
-            const data = productSchema.parse(req.body); // Valida antes de criar
+            const data = productSchema.parse(req.body);
             const product = await productService.createProduct(data);
             return rep.status(201).send(product);
         } catch (error: any) {
@@ -61,7 +61,7 @@ export class ProductController {
         try {
             const { id } = paramsSchema.parse(req.params);
             await productService.deleteProduct(id);
-            return rep.status(204).send(); // 204 significa "Deletado com sucesso, sem conteúdo pra retornar"
+            return rep.status(204).send();
         } catch (error: any) {
             return rep.status(400).send({ error: error.message });
         }

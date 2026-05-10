@@ -8,7 +8,7 @@ export class ProductService {
     }
 
     async listProducts() {
-        return await this.repository.findAll(); // Use "this.repository"
+        return await this.repository.findAll();
     }
 
 
@@ -22,10 +22,6 @@ export class ProductService {
         }
 
         return await this.repository.create(data);
-    }
-
-    async findById(id: string) {
-        return await this.repository.findById(id);
     }
 
     async getProduct(id: string) {
