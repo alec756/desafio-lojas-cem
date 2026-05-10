@@ -1,7 +1,7 @@
 
 # Gestão de Estoque Lojas Cem
 
-Este projeto nasceu de um desafio técnico real: criar uma solução robusta e intuitiva para o gerenciamento de produtos das **Lojas Cem**. Mais do que apenas um exercício de código, o **Crimson Inventory** foi construído focando em performance, segurança de dados e uma experiência de usuário fluida.
+Este projeto nasceu de um desafio técnico real: criar uma solução robusta e intuitiva para o gerenciamento de produtos das **Lojas Cem**. Mais do que apenas um exercício de código, a **Gestão de invetário** foi construída focando em performance, segurança de dados e uma experiência de usuário fluida.
 
 ## Por que este projeto é especial?
 
